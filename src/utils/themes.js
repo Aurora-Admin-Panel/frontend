@@ -1,0 +1,43 @@
+const themes = [
+    "auto",
+    "aurora-classic",
+    "light",
+    "dark",
+    "cupcake",
+    "bumblebee",
+    "emerald",
+    "corporate",
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "garden",
+    "forest",
+    "aqua",
+    "lofi",
+    "pastel",
+    "fantasy",
+    "wireframe",
+    "black",
+    "luxury",
+    "dracula",
+    "cmyk",
+    "autumn",
+    "business",
+    "acid",
+    "lemonade",
+    "night",
+    "coffee",
+    "winter",
+    "monochrome",
+    "moonlight",
+    "midnight",
+    "sunset",
+    "morning",
+  ];
+
+export const light_theme = 'light';
+export const dark_theme = 'dark';
+
+export default themes;

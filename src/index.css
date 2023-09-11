@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.menu {
+    :where(li:not(.menu-title):not(:empty)) > :where(:not(ul).active),
+    :where(li:not(.menu-title):not(:empty)) > :where(*:not(ul):active) {
+      @apply bg-transparent text-base-content border-primary border-l-4;
+    }
+}
+
+.stat {
+  @apply gap-x-4 border-base-content border-opacity-10 px-4 sm:px-6 py-2 sm:py-4;
+
+  &-value {
+    @apply text-2xl font-extrabold;
+  }
+  &-desc {
+    @apply text-base opacity-60;
+  }
+}

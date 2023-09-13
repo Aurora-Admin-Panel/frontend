@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Icon from "../icon";
+import Icon from "../Icon";
 import ServerPortsStat from "./ServerPortsStat";
 import ServerSSHStat from "./ServerSSHStat";
 import ServerStat from "./ServerStat";

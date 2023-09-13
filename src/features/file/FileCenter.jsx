@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import Icon from "../icon";
+import Icon from "../Icon";
 import Paginator from "../Paginator";
 import { showModal } from "../../store/reducers/modal";
 import FileCard from "./FileCard";
@@ -74,13 +74,16 @@ const FileCenter = () => {
         </div>
       </div>
 
-      <div className="flex max-h-screen w-full flex-col overflow-y-auto">
+      <div className="flex w-full flex-col">
         {loading ? (
           <DataLoading />
         ) : (
-          <div className="grid w-full grid-cols-1 gap-4 px-2 pt-2 pb-4  sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="flex flex-row flex-wrap pt-2 pb-4">
             {(data?.paginatedFiles?.items ?? []).map((file) => (
-              <FileCard key={file.id} file={file} onUpdate={refetch} />
+              <div className="flex flex-col w-full sm:w-1/2 md:w-1/3 xl:w-1/4 2xl:w-1/6 py-2 items-center" key={file.id}>
+                <FileCard key={file.id} file={file} onUpdate={refetch} />
+
+              </div>
             ))}
           </div>
         )}

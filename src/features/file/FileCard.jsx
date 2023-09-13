@@ -5,6 +5,7 @@ import { gql, useMutation } from "@apollo/client";
 import { getReadableSize } from "../../utils/formatter";
 import { showModal } from "../../store/reducers/modal";
 import { useEffect } from "react";
+import Icon from "../Icon";
 
 const DELETE_FILE = gql`
   mutation DeleteFile($id: Int!) {
@@ -29,11 +30,27 @@ const fileTypeToBadge = (type) => {
   }
 };
 
+const fileTypeToIcon = (type) => {
+  switch (type) {
+    case "IMAGE":
+      return <Icon icon="Image" />;
+    case "VIDEO":
+      return <Icon icon="VideoCamera" />;
+    case "TEXT":
+      return <Icon icon="FileText" />;
+    case "EXECUTABLE":
+      return <Icon icon="Terminal" />;
+    case "SECRET":
+      return <Icon icon="Key" />;
+    default:
+      return <Icon icon="File" />;
+  }
+};
+
 const FileCard = ({ file, onUpdate }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [deleteFile, { called, error }] =
-    useMutation(DELETE_FILE);
+  const [deleteFile, { called, error }] = useMutation(DELETE_FILE);
   const handleClickCancel = () => {
     dispatch(
       showModal({
@@ -56,27 +73,35 @@ const FileCard = ({ file, onUpdate }) => {
   }, [called, error]);
 
   return (
-    <div className="card indicator h-32 w-64 justify-self-center bg-base-100 shadow-xl">
+    <div className="card indicator h-32 w-48 justify-self-center bg-base-100 shadow-xl">
       {file.version && (
         <span className="badge indicator-item badge-sm border-base-300 bg-base-200 text-base-content">
           {file.version}
         </span>
       )}
-      <div className="card-body px-6 py-4">
+      <div className="card-body gap-2 px-6 py-4">
         <div className="tooltip tooltip-bottom" data-tip={file.name}>
-          <h2 className="card-title h-8 truncate">{file.name}</h2>
+          <h2 className="card-title h-6 truncate text-md">{file.name}</h2>
         </div>
-        <div className="flex space-x-2">
-          <div className={classNames("badge", fileTypeToBadge(file.type))}>
+        <div className="flex items-center space-x-2">
+          <div className="flex flex-row items-center text-xs text-secondary">
+            <div className="mr-1 flex flex-row items-center">
+              {fileTypeToIcon(file.type)}
+            </div>
             {t(file.type)}
           </div>
-          <div className="badge badge-outline">
-            {getReadableSize(file.size)}
-          </div>
+          <div className="text-xs">{getReadableSize(file.size)}</div>
         </div>
+        {file.notes ? (
+          <div className="tooltip tooltip-bottom" data-tip={file.notes}>
+            <div className="truncate text-xs text-primary flex items-start">{file.notes}</div>
+          </div>
+        ) : (
+          <div className="h-4"></div>
+        )}
         <div className="card-actions justify-end">
           <button
-            className="btn btn-outline btn-error btn-xs"
+            className="btn btn-error btn-outline btn-xs"
             onClick={handleClickCancel}
           >
             {t("Delete")}

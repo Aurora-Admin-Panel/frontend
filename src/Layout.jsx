@@ -1,9 +1,7 @@
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import NavBar from "./features/layout/NavBar";
-import MainContent from "./features/layout/MainContent";
 import SideBar from "./features/layout/SideBar";
-import ModalManager from "./features/modal/Modalmanager";
 import ThemedSuspense from "./features/ThemedSuspense";
 import { initializeWebSocket, closeWebSocket } from "./store/websocketManager";
 import { useSelector } from "react-redux";
@@ -16,20 +14,24 @@ const Layout = () => {
     }
     return () => {
       closeWebSocket();
-    }
+    };
   }, [token]);
 
   return (
-    <div className="flex max-h-screen flex-col items-center">
-      <ModalManager />
-      <NavBar />
-      <div className="bg-base-100 drawer drawer-mobile">
-        <MainContent>
-          <Suspense fallback={<ThemedSuspense />}>
-            <Outlet />
-          </Suspense>
-        </MainContent>
-        <SideBar />
+    <div>
+      <div className="drawer-mobile drawer bg-base-100 lg:drawer-open">
+        <input id="drawer" type="checkbox" className="drawer-toggle" />
+        <div className="drawer-content">
+          <div>
+            <NavBar />
+            <Suspense fallback={<ThemedSuspense />}>
+              <Outlet />
+            </Suspense>
+          </div>
+        </div>
+        <div className="drawer-side z-40">
+          <SideBar />
+        </div>
       </div>
     </div>
   );

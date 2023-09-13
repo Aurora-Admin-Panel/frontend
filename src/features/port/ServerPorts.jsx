@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import gql from "graphql-tag";
-import Icon from "../icon";
+import Icon from "../Icon";
 import Error from "../layout/Error";
 import { motion, AnimatePresence } from "framer-motion";
 import useQueryParams from "../../hooks/useQueryParams";

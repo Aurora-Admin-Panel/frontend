@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import ServerCard from "./ServerCard";
-import Icon from "../icon";
+import Icon from "../Icon";
 import { gql } from "graphql-tag";
 import { useLocation } from "react-router-dom";
 import { useGetServersQuery } from "./ServerList.generated";
@@ -68,7 +68,7 @@ const ServerList = () => {
         </div>
       </div>
 
-      <div className="flex max-h-screen w-full flex-auto flex-col items-center space-y-3 overflow-y-auto px-2 pt-2 pb-4">
+      <div className="flex w-full flex-auto flex-col items-center space-y-3 px-2 pt-2 pb-4">
         {(data?.paginatedServers?.items ?? []).map((server) => (
           <ServerCard key={server.id} server={server} refetch={refetch} />
         ))}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import gql from "graphql-tag";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import Icon from "../icon";
+import Icon from "../Icon";
 import { TwoDotIcon } from "../../icons";
 import { hideModal } from "../../store/reducers/modal";
 import { FileTypeEnum } from "../../store/apis/types.generated";

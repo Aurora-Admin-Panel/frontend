@@ -7,10 +7,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import ThemedSuspense from "./features/ThemedSuspense";
-import Banner from "./features/Banner";
-import Notification from "./features/Notification"
 
-
+const ModalManager = lazy(() => import("./features/modal/ModalManager"));
+const Banner = lazy(() => import("./features/Banner"));
+const Notification = lazy(() => import("./features/Notification"));
 const Layout = lazy(() => import("./Layout"));
 const Login = lazy(() => import("./features/auth/Login"));
 const CreateAccount = lazy(() => import("./features/auth/CreateAccoount"));
@@ -28,6 +28,7 @@ const App = () => {
   return (
     <Router>
       <Banner />
+      <ModalManager />
       <Notification />
       <Routes>
         <Route path="/login" element={<Login />} />

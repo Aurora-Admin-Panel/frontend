@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
 import { useWSQuery } from "../../store/baseApi";
-import Icon from "../icon";
+import Icon from "../Icon";
 
 const ServerSSHStat = ({ data, isLoading, refetch }) => {
   const { t } = useTranslation();

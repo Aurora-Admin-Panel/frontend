@@ -12,7 +12,7 @@ const Hero = () => {
                         aut repudiandae et a id nisi.
                     </p>
                     <label
-                        htmlFor="my-drawer-2"
+                        htmlFor="drawer"
                         className="btn btn-primary drawer-button lg:hidden"
                     >
                         Open drawer

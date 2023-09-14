@@ -19,15 +19,17 @@ const Layout = () => {
 
   return (
     <div>
-      <div className="drawer-mobile drawer bg-base-100 lg:drawer-open">
+      <div className="drawer bg-base-100 lg:drawer-open">
         <input id="drawer" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
-          <div>
-            <NavBar />
-            <Suspense fallback={<ThemedSuspense />}>
-              <Outlet />
-            </Suspense>
-          </div>
+          <NavBar />
+          <Suspense fallback={<ThemedSuspense />}>
+            <div className="w-full flex flex-col items-center">
+              <div className="container">
+                <Outlet />
+              </div>
+            </div>
+          </Suspense>
         </div>
         <div className="drawer-side z-40">
           <SideBar />

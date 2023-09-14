@@ -50,13 +50,13 @@ const SideBar = () => {
   return (
     <>
       <label htmlFor="drawer" className="drawer-overlay"></label>
-      <aside className="w-60 bg-base-100 h-full">
+      <aside className="w-60 bg-base-100 min-h-full">
         <div className="backgrop-blur sticky top-0 z-20 hidden items-center gap-2 bg-base-100 bg-opacity-90 px-4 py-2 lg:flex">
           <a className="btn btn-ghost text-xl normal-case">
             {t("Aurora Admin Panel")}
           </a>
         </div>
-        <ul className="menu-normal menu min-h-full text-base-content">
+        <ul className="menu-normal menu text-base-content">
           {routes.map(
             (route, i) => (
               // route.routes && route.permissions.includes(permission) ? (
@@ -69,7 +69,7 @@ const SideBar = () => {
                 key={route.name}
                 onClick={() => {
                   if (!matchDesktop)
-                    document.getElementById("my-drawer-2").click();
+                    document.getElementById("drawer").click();
                 }}
               >
                 <NavLink to={route.path} className="pb-3 pt-3">

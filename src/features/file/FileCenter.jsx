@@ -80,7 +80,7 @@ const FileCenter = () => {
         ) : (
           <div className="flex flex-row flex-wrap pt-2 pb-4">
             {(data?.paginatedFiles?.items ?? []).map((file) => (
-              <div className="flex flex-col w-full sm:w-1/2 md:w-1/3 xl:w-1/4 2xl:w-1/6 py-2 items-center" key={file.id}>
+              <div className="flex flex-col w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 py-2 items-center" key={file.id}>
                 <FileCard key={file.id} file={file} onUpdate={refetch} />
 
               </div>

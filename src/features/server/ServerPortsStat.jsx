@@ -4,7 +4,7 @@ const ServerPortsStat = ({ usedPorts, totalPorts }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="shadown-none stats w-48">
+    <div className="shadow-none stats">
       <div className="stat place-items-center">
         <div className="stat-title">{t("Ports")}</div>
         <div className="text-xl font-extrabold">

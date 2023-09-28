@@ -12,12 +12,16 @@ import { store, persistor } from "./store";
 import ThemedSuspense from "./features/ThemedSuspense";
 // import { initializeWebSocket } from "./store/websocketManager";
 import {
+  split,
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
   gql,
 } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient as createWSClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 if (!!!import.meta.env.DEV) {
   Sentry.init({
@@ -30,12 +34,30 @@ if (!!!import.meta.env.DEV) {
 }
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: createUploadLink({
-    uri: "/api/graphql",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+  link: split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      );
     },
-  }),
+    new GraphQLWsLink(
+      createWSClient({
+        // url: `ws://${window.location.host}/api/graphql`,
+        url: `ws://192.168.1.14:8888/api/graphql`,
+        connectionParams: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+    ),
+    createUploadLink({
+      uri: "/api/graphql",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+  ),
 });
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

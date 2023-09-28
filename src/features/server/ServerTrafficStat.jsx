@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next';
+import Icon from '../Icon';
 
 const ServerTrafficStat = ({ downstreamTraffic, upstreamTraffic }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="shadown-none stats w-48">
-        <div className="stat place-items-center">
+        <div className="shadow-none stats">
+        <div className="stat place-items-center grid-cols-2">
           <div className="stat-title">{t("Traffic")}</div>
-          <div className=" text-accent text-xl font-bold">
-            <span className="text-accent-focus">↘{downstreamTraffic}</span>
-            <span className="text-accent-focus">↗{upstreamTraffic}</span>
+          <div className="flex flex-col items-center text-accent text-xl font-bold">
+            <span className="flex flex-row items-center text-accent-focus"><Icon icon="ArrowUp" size={16} />{downstreamTraffic}</span>
+            <span className="flex flex-row items-center text-accent-focus"><Icon icon="ArrowDown" size={16} />{upstreamTraffic}</span>
           </div>
         </div>
       </div>

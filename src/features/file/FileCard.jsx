@@ -79,9 +79,11 @@ const FileCard = ({ file, onUpdate }) => {
           {file.version}
         </span>
       )}
-      <div className="card-body gap-2 px-6 py-4">
+      <div className="card-body gap-2 px-4 py-4">
         <div className="tooltip tooltip-bottom" data-tip={file.name}>
-          <h2 className="card-title h-6 truncate text-md">{file.name}</h2>
+          <h2 className="text-md card-title h-6 justify-start">
+            <p className="truncate flex-grow-0">{file.name}</p>
+          </h2>
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex flex-row items-center text-xs text-secondary">
@@ -94,7 +96,9 @@ const FileCard = ({ file, onUpdate }) => {
         </div>
         {file.notes ? (
           <div className="tooltip tooltip-bottom" data-tip={file.notes}>
-            <div className="truncate text-xs text-primary flex items-start">{file.notes}</div>
+            <div className="flex items-start truncate text-xs text-primary">
+              {file.notes}
+            </div>
           </div>
         ) : (
           <div className="h-4"></div>

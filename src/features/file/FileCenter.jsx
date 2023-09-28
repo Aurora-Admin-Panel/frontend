@@ -74,16 +74,13 @@ const FileCenter = () => {
         </div>
       </div>
 
-      <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col px-4">
         {loading ? (
           <DataLoading />
         ) : (
-          <div className="flex flex-row flex-wrap pt-2 pb-4">
+          <div className="grid grid-cols-1 gap-4 overflow-x-hidden pb-4 pt-2 sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {(data?.paginatedFiles?.items ?? []).map((file) => (
-              <div className="flex flex-col w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 py-2 items-center" key={file.id}>
-                <FileCard key={file.id} file={file} onUpdate={refetch} />
-
-              </div>
+              <FileCard key={file.id} file={file} onUpdate={refetch} />
             ))}
           </div>
         )}

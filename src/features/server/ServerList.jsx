@@ -61,26 +61,30 @@ const ServerList = () => {
           <h1 className="text-2xl font-extrabold">{t("Servers")}</h1>
           <label
             className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-            onClick={() => dispatch(showModal({ modalType: "serverInfo", onConfirm: refetch }))}
+            onClick={() =>
+              dispatch(
+                showModal({ modalType: "serverInfo", onConfirm: refetch })
+              )
+            }
           >
             <Icon icon="Plus" />
           </label>
         </div>
       </div>
 
-      <div className="flex w-full flex-auto flex-col items-center space-y-3 px-2 pt-2 pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 px-2 pb-4 pt-2">
         {(data?.paginatedServers?.items ?? []).map((server) => (
           <ServerCard key={server.id} server={server} refetch={refetch} />
         ))}
-        <Paginator
-          isLoading={isLoading || isFetching}
-          count={data?.paginatedServers?.count}
-          limit={limit}
-          offset={offset}
-          setLimit={setLimit}
-          setOffset={setOffset}
-        ></Paginator>
       </div>
+      <Paginator
+        isLoading={isLoading || isFetching}
+        count={data?.paginatedServers?.count}
+        limit={limit}
+        offset={offset}
+        setLimit={setLimit}
+        setOffset={setOffset}
+      ></Paginator>
     </>
   );
 };

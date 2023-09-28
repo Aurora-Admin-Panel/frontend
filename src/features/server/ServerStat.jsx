@@ -6,7 +6,7 @@ const ServerStat = ({ cpuStat, memStat, diskStat }) => {
 
   return (
     <div className="flex flex-row items-center">
-      <div className="shadown-none stats">
+      <div className="shadow-none stats">
         <div className="stat place-items-center">
           <div className="stat-title">{t("CPU")}</div>
           <div className="stat-desc text-success">{cpuStat}</div>

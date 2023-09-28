@@ -6,8 +6,10 @@ import ThemedSuspense from "./features/ThemedSuspense";
 import { initializeWebSocket, closeWebSocket } from "./store/websocketManager";
 import { useSelector } from "react-redux";
 
+
 const Layout = () => {
   const token = useSelector((state) => state.auth.token);
+
   useEffect(() => {
     if (token) {
       initializeWebSocket(token);

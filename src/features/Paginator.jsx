@@ -17,7 +17,7 @@ const Paginator = ({ count, limit, offset, setLimit, setOffset, limitOptions=nul
   return (
     <div className="flex w-full flex-row justify-end mx-auto space-x-2">
       <div className="flex flex-row items-center justify-center space-x-2">
-        <span className="text-xs md:text-md font-medium">{t("total", { count: countRef.current })}</span>
+        <span className="text-xs md:text-sm">{t("total", { count: countRef.current })}</span>
         <select
           className={classNames("select select-xs md:select-sm")}
           value={limit}

@@ -73,7 +73,7 @@ const ServerCard = ({ server, refetch }) => {
           </div>
           <div className="flex grow flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center  ">
-              <ServerStat cpuStat="20%" memStat="50%" diskStat="80%" />
+              <ServerStat serverId={server.id} />
             </div>
           </div>
         </div>

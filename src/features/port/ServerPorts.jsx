@@ -76,9 +76,10 @@ const SelectCard = ({ selected, setSelected }) => {
   return (
     <motion.div
       className={classNames(
-        "fixed z-40 mx-auto w-auto max-w-screen-sm rounded-lg bg-base-200 shadow-xl",
+        "fixed z-40 mx-auto w-72 max-w-screen-sm rounded-lg bg-base-200 shadow-xl",
         {
-          "top-1/4": !!!selected.position || selected.position === "middle",
+          "left-0 right-0 top-1/4":
+            !!!selected.position || selected.position === "middle",
           "bottom-0": selected.position === "bottom",
         }
       )}
@@ -116,31 +117,11 @@ const ServerPorts = () => {
   if (error) return <Error error={error} />;
   return (
     <>
-      <AnimatePresence>
-        {selected && (
-          <SelectCard
-            selected={selected}
-            setSelected={(payload) =>
-              setSelected(
-                payload
-                  ? {
-                      ...payload,
-                      id: selected.id,
-                      port: data?.paginatedPorts?.items.find(
-                        (port) => port.id === selected.id
-                      ),
-                    }
-                  : null
-              )
-            }
-          />
-        )}
-      </AnimatePresence>
       <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
         <div className="flex flex-row items-center justify-start">
           <h1 className="text-2xl font-extrabold">{t("Ports")}</h1>
           <label
-            className="modal-button btn btn-primary btn-circle btn-xs ml-2"
+            className="modal-button btn btn-circle btn-primary btn-xs ml-2"
             onClick={() =>
               dispatch(
                 showModal({
@@ -155,12 +136,32 @@ const ServerPorts = () => {
         </div>
       </div>
 
-      <div className="relative flex max-h-screen w-full flex-col overflow-y-auto">
+      <div className="relative flex w-full flex-col overflow-y-hidden">
+        <AnimatePresence>
+          {selected && (
+            <SelectCard
+              selected={selected}
+              setSelected={(payload) =>
+                setSelected(
+                  payload
+                    ? {
+                        ...payload,
+                        id: selected.id,
+                        port: data?.paginatedPorts?.items.find(
+                          (port) => port.id === selected.id
+                        ),
+                      }
+                    : null
+                )
+              }
+            />
+          )}
+        </AnimatePresence>
         {isLoading ? (
           <DataLoading />
         ) : (
           <>
-            <div className="grid w-full grid-cols-2 gap-4 px-2 pt-2 pb-4  sm:grid-cols-3 md:grid-cols-4  lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+            <div className="grid w-full grid-cols-1 gap-4 px-2 pb-4 pt-2 place-content-evenly place-items-center xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4  lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
               {(data?.paginatedPorts?.items ?? []).map((port) => (
                 <motion.div key={port.id} layoutId={port.id}>
                   <PortCard

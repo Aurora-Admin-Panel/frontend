@@ -15,7 +15,7 @@ const Paginator = ({ count, limit, offset, setLimit, setOffset, limitOptions=nul
   }
   const { t } = useTranslation();
   return (
-    <div className="flex w-full flex-row justify-end mx-auto space-x-2">
+    <div className="flex w-full flex-row justify-end mx-auto space-x-2 mt-2 mb-8 px-4">
       <div className="flex flex-row items-center justify-center space-x-2">
         <span className="text-xs md:text-sm">{t("total", { count: countRef.current })}</span>
         <select

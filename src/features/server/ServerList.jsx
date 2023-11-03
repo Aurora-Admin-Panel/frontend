@@ -72,7 +72,7 @@ const ServerList = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 px-2 pb-4 pt-2">
+      <div className="grid grid-cols-1 gap-6 px-2 pb-4 pt-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {(data?.paginatedServers?.items ?? []).map((server) => (
           <ServerCard key={server.id} server={server} refetch={refetch} />
         ))}

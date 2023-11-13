@@ -2,7 +2,18 @@ import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { animate } from "framer-motion";
+import { gql, useQuery } from "@apollo/client";
 import Icon from "../Icon";
+import { getReadableSize } from "../../utils/formatter";
+
+const GET_SERVER_TRAFFIC_QUERY = gql`
+  query GetServerTraffic($serverId: Int!) {
+    server(id: $serverId) {
+      uploadTotal
+      downloadTotal
+    }
+  }
+`;
 
 function Counter({ from, to }) {
   const nodeRef = useRef();
@@ -24,8 +35,9 @@ function Counter({ from, to }) {
 }
 
 const ServerTrafficStat = ({
-  downstreamTraffic,
-  upstreamTraffic,
+  serverId,
+  uploadTotal,
+  downloadTotal,
   sshConnected,
 }) => {
   const { t } = useTranslation();
@@ -42,7 +54,7 @@ const ServerTrafficStat = ({
             )}
           >
             <Icon icon="ArrowUp" size={16} />
-            {downstreamTraffic}
+            {getReadableSize(downloadTotal)}
           </span>
           <span
             className={classNames(
@@ -51,7 +63,7 @@ const ServerTrafficStat = ({
             )}
           >
             <Icon icon="ArrowDown" size={16} />
-            {upstreamTraffic}
+            {getReadableSize(uploadTotal)}
           </span>
         </div>
       </div>

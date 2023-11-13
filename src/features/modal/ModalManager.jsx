@@ -5,6 +5,7 @@ import PortFunctionModal from "../port/PortFunctionModal";
 import PortRestrictionModal from "../port/PortRestrictionModal";
 import FileModal from "../file/FileModal";
 import ConfirmationModal from "./ConfirmationModal";
+import DataLoading from "../DataLoading";
 
 const ModalManager = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,8 @@ const ModalManager = () => {
         return <PortRestrictionModal {...modalProps} />;
       case "confirmation":
         return <ConfirmationModal {...modalProps} />;
+      case "loading":
+        return <DataLoading />;
       default:
         return null;
     }
@@ -33,7 +36,7 @@ const ModalManager = () => {
         "modal-open": isOpen,
       })}
     >
-      <div className="modal-box relative">{renderModal()}</div>
+      {renderModal()}
     </div>
   );
 };

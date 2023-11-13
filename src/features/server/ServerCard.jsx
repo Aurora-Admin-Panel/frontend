@@ -76,8 +76,9 @@ const ServerCard = ({ server, refetch }) => {
           <div className="flex grow flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center xs:flex-row">
               <ServerTrafficStat
-                upstreamTraffic={getReadableSize(server.uploadTotal)}
-                downstreamTraffic={getReadableSize(server.downloadTotal)}
+                serverId={server.id}
+                uploadTotal={server.uploadTotal}
+                downloadTotal={server.downloadTotal}
                 sshConnected={sshConnected}
               />
             </div>

@@ -66,7 +66,7 @@ const FileModal = ({ ...props }) => {
   if (error) return <Error error={error} />;
 
   return (
-    <>
+    <div className="modal-box relative">
       <label
         className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
         onClick={handleCancel}
@@ -153,7 +153,7 @@ const FileModal = ({ ...props }) => {
           添加
         </button>
       </div>
-    </>
+    </div>
   );
 };
 

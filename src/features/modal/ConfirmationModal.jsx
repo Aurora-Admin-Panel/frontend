@@ -19,7 +19,7 @@ const ConfirmationModal = ({ ...props }) => {
   };
 
   return (
-    <>
+    <div className="modal-box relative">
       <h3 className="-mt-3 text-lg font-bold">{title}</h3>
       <div className="mt-4 flex w-full flex-col space-y-0 px-2">
         <p>{message}</p>
@@ -35,7 +35,7 @@ const ConfirmationModal = ({ ...props }) => {
           {confirmText || t("Confirm")}
         </button>
       </div>
-    </>
+    </div>
   );
 };
 

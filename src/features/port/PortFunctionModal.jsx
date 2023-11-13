@@ -35,7 +35,7 @@ const PortFunctionModal = () => {
   useEffect(() => {}, []);
 
   return (
-    <>
+    <div className="modal-box relative">
       <label
         className="btn btn-outline btn-circle btn-sm absolute right-2 top-2"
         onClick={() => dispatch(hideModal())}
@@ -77,7 +77,7 @@ const PortFunctionModal = () => {
           {serverId ? t("Edit") : t("Add")}
         </button>
       </div>
-    </>
+    </div>
   );
 };
 

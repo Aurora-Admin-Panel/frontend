@@ -209,181 +209,186 @@ const ServerInfoModal = () => {
     }
   }, [serverData]);
 
-
   return (
     <>
-      <label
-        className="btn btn-outline btn-circle btn-sm absolute right-2 top-2"
-        onClick={() => dispatch(hideModal())}
-      >
-        ✕
-      </label>
-      <h3 className="-mt-3 text-lg font-bold">{t("Add Server")}</h3>
       {serverLoading || secretsLoading ? (
         <DataLoading />
       ) : (
-        <div className="mt-4 flex w-full flex-col space-y-0 px-2">
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">{t("Name")}</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("Server Name Placeholder")}
-              className="input input-bordered w-full"
-            />
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">{t("Address")}</span>
-            </label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="www.example.com"
-              className="input input-bordered w-full"
-            />
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">{t("SSH Connection Info")}</span>
-            </label>
-            <div className="flex flex-row items-center">
-              <input
-                type="text"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                placeholder={t("Username")}
-                className="input input-bordered w-1/4 text-xs"
-              />
-              <Icon icon="At" className="mx-1" />
-              <input
-                type="text"
-                value={host}
-                onChange={(e) => setHost(e.target.value)}
-                placeholder={t("Host") + " " + t("Default as address")}
-                className="input input-bordered w-1/2 text-xs"
-              />
-              <TwoDotIcon />
-              <input
-                type="text"
-                value={port}
-                onChange={(e) => setPort(e.target.value)}
-                placeholder={t("Port")}
-                className="input input-bordered w-1/4 text-xs"
-              />
-            </div>
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">{t("SSH Password")}</span>
-              <span className="label-text-alt flex items-center">
-                <input
-                  type="checkbox"
-                  checked={sshPasswordNotNeeded}
-                  onChange={() =>
-                    setSSHPasswordNotNeeded(!sshPasswordNotNeeded)
-                  }
-                  className="checkbox checkbox-primary checkbox-xs"
-                />
-                <span className="label-text pl-1">
-                  {t("SSH password not needed")}
-                </span>
-              </span>
-            </label>
-            <input
-              type="password"
-              value={sshPassword}
-              onChange={(e) => setSSHPassword(e.target.value)}
-              placeholder={
-                sshPasswordSet
-                  ? t("SSH Password Set Placeholder")
-                  : t("SSH Password Placeholder")
-              }
-              className={classNames("input input-bordered w-full", {
-                "input-disabled": sshPasswordNotNeeded,
-              })}
-            />
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">{t("SUDO Password")}</span>
-              <span className="label-text-alt flex items-center">
-                <input
-                  type="checkbox"
-                  checked={sudoPasswordNotNeeded}
-                  onChange={() =>
-                    setSudoPasswordNotNeeded(!sudoPasswordNotNeeded)
-                  }
-                  className="checkbox checkbox-primary checkbox-xs"
-                />
-                <span className="label-text pl-1">
-                  {t("SUDO password not needed")}
-                </span>
-              </span>
-            </label>
-            <input
-              type="password"
-              value={sudoPassword}
-              onChange={(e) => setSudoPassword(e.target.value)}
-              placeholder={
-                sudoPasswordSet
-                  ? t("SUDO Password Set Placeholder")
-                  : t("SUDO Password Placeholder")
-              }
-              className={classNames("input input-bordered w-full", {
-                "input-disabled": sudoPasswordNotNeeded,
-              })}
-            />
-          </div>
-          <div className="flex flex-col items-center justify-center space-x-2 sm:flex-row">
-            <div className="form-control sm:w-1/2 w-full">
+        <div className="modal-box relative">
+          <label
+            className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
+            onClick={() => dispatch(hideModal())}
+          >
+            ✕
+          </label>
+          <h3 className="-mt-3 text-lg font-bold">{t("Add Server")}</h3>
+
+          <div className="mt-4 flex w-full flex-col space-y-0 px-2">
+            <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">{t("Upload SSH Key")}</span>
+                <span className="label-text">{t("Name")}</span>
               </label>
               <input
-                type="file"
-                onChange={(e) => setKeyFile(e.target.files[0])}
-                className="file-input file-input-bordered file-input-md w-full max-w-xs"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("Server Name Placeholder")}
+                className="input input-bordered w-full"
               />
             </div>
-            <div className="form-control sm:w-1/2 w-full">
+            <div className="form-control w-full">
               <label className="label">
-                <span className="label-text">{t("Select SSH Key")}</span>
+                <span className="label-text">{t("Address")}</span>
               </label>
-              <select
-                className="select select-bordered select-md"
-                value={keyFileId}
-                onChange={(e) => setKeyFileId(e.target.value)}
-              >
-                <option value={""}>{t("No SSH Key")}</option>
-                {secretsData?.files.map((file) => (
-                  <option key={file.id} value={file.id}>
-                    {file.name}
-                  </option>
-                ))}
-              </select>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="www.example.com"
+                className="input input-bordered w-full"
+              />
             </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">{t("SSH Connection Info")}</span>
+              </label>
+              <div className="flex flex-row items-center">
+                <input
+                  type="text"
+                  value={user}
+                  onChange={(e) => setUser(e.target.value)}
+                  placeholder={t("Username")}
+                  className="input input-bordered w-1/4 text-xs"
+                />
+                <Icon icon="At" className="mx-1" />
+                <input
+                  type="text"
+                  value={host}
+                  onChange={(e) => setHost(e.target.value)}
+                  placeholder={t("Host") + " " + t("Default as address")}
+                  className="input input-bordered w-1/2 text-xs"
+                />
+                <TwoDotIcon />
+                <input
+                  type="text"
+                  value={port}
+                  onChange={(e) => setPort(e.target.value)}
+                  placeholder={t("Port")}
+                  className="input input-bordered w-1/4 text-xs"
+                />
+              </div>
+            </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">{t("SSH Password")}</span>
+                <span className="label-text-alt flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={sshPasswordNotNeeded}
+                    onChange={() =>
+                      setSSHPasswordNotNeeded(!sshPasswordNotNeeded)
+                    }
+                    className="checkbox-primary checkbox checkbox-xs"
+                  />
+                  <span className="label-text pl-1">
+                    {t("SSH password not needed")}
+                  </span>
+                </span>
+              </label>
+              <input
+                type="password"
+                value={sshPassword}
+                onChange={(e) => setSSHPassword(e.target.value)}
+                placeholder={
+                  sshPasswordSet
+                    ? t("SSH Password Set Placeholder")
+                    : t("SSH Password Placeholder")
+                }
+                className={classNames("input input-bordered w-full", {
+                  "input-disabled": sshPasswordNotNeeded,
+                })}
+              />
+            </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">{t("SUDO Password")}</span>
+                <span className="label-text-alt flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={sudoPasswordNotNeeded}
+                    onChange={() =>
+                      setSudoPasswordNotNeeded(!sudoPasswordNotNeeded)
+                    }
+                    className="checkbox-primary checkbox checkbox-xs"
+                  />
+                  <span className="label-text pl-1">
+                    {t("SUDO password not needed")}
+                  </span>
+                </span>
+              </label>
+              <input
+                type="password"
+                value={sudoPassword}
+                onChange={(e) => setSudoPassword(e.target.value)}
+                placeholder={
+                  sudoPasswordSet
+                    ? t("SUDO Password Set Placeholder")
+                    : t("SUDO Password Placeholder")
+                }
+                className={classNames("input input-bordered w-full", {
+                  "input-disabled": sudoPasswordNotNeeded,
+                })}
+              />
+            </div>
+            <div className="flex flex-col items-center justify-center space-x-2 sm:flex-row">
+              <div className="form-control w-full sm:w-1/2">
+                <label className="label">
+                  <span className="label-text">{t("Upload SSH Key")}</span>
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setKeyFile(e.target.files[0])}
+                  className="file-input file-input-bordered file-input-md w-full max-w-xs"
+                />
+              </div>
+              <div className="form-control w-full sm:w-1/2">
+                <label className="label">
+                  <span className="label-text">{t("Select SSH Key")}</span>
+                </label>
+                <select
+                  className="select select-bordered select-md"
+                  value={keyFileId}
+                  onChange={(e) => setKeyFileId(e.target.value)}
+                >
+                  <option value={""}>{t("No SSH Key")}</option>
+                  {secretsData?.files.map((file) => (
+                    <option key={file.id} value={file.id}>
+                      {file.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
+            <label
+              className="btn btn-primary btn-outline"
+              onClick={handleCancel}
+            >
+              {t("Cancel")}
+            </label>
+            <button
+              className={classNames("btn btn-primary", {
+                loading:
+                  uploadFileLoading || updateServerLoading || addServerLoading,
+              })}
+              onClick={handleSubmit}
+            >
+              {serverId ? t("Edit") : t("Add")}
+            </button>
           </div>
         </div>
       )}
-      <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
-        <label className="btn btn-outline btn-primary" onClick={handleCancel}>
-          {t("Cancel")}
-        </label>
-        <button
-          className={classNames("btn btn-primary", {
-            loading:
-              uploadFileLoading || updateServerLoading || addServerLoading,
-          })}
-          onClick={handleSubmit}
-        >
-          {serverId ? t("Edit") : t("Add")}
-        </button>
-      </div>
     </>
   );
 };

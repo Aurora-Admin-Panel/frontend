@@ -1,25 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import gql from "graphql-tag";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import Icon from "../Icon";
 import { TwoDotIcon } from "../../icons";
 import { hideModal } from "../../store/reducers/modal";
 import { FileTypeEnum } from "../../store/apis/types.generated";
-import {
-  useGetSecretsQuery,
-  useGetServerQuery,
-} from "./ServerInfoModal.generated";
-import { useUploadFileMutation } from "../file/FileModal.generated";
 import DataLoading from "../DataLoading";
-import {
-  useUpdateServerMutation,
-  useAddServerMutation,
-} from "./ServerInfoModal.generated";
 import { showNotification } from "../../store/reducers/notification";
 
-const _ = gql`
+const GET_SECRETS_QUERY = gql`
   query GetSecrets {
     files(type: SECRET) {
       id
@@ -29,6 +20,8 @@ const _ = gql`
       updatedAt
     }
   }
+`;
+const GET_SERVER_QUERY = gql`
   query GetServer($id: Int!) {
     server(id: $id) {
       id
@@ -42,6 +35,32 @@ const _ = gql`
       keyFileId
     }
   }
+`;
+const UPLOAD_FILE_MUTATION = gql`
+  mutation UploadFile(
+    $file: Upload!
+    $name: String!
+    $type: FileTypeEnum!
+    $version: String
+    $notes: String
+  ) {
+    uploadFile(
+      file: $file
+      name: $name
+      type: $type
+      version: $version
+      notes: $notes
+    ) {
+      id
+      name
+      type
+      size
+      version
+      notes
+    }
+  }
+`;
+const ADD_SERVER_MUTATION = gql`
   mutation AddServer(
     $name: String!
     $address: String!
@@ -63,6 +82,8 @@ const _ = gql`
       keyFileId: $keyFileId
     )
   }
+`;
+const UPDATE_SERVER_MUTATION = gql`
   mutation UpdateServer(
     $id: Int!
     $name: String!
@@ -88,6 +109,7 @@ const _ = gql`
   }
 `;
 
+
 const ServerInfoModal = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
@@ -98,24 +120,48 @@ const ServerInfoModal = () => {
   } = useSelector((state) => state.modal);
   const {
     data: secretsData,
-    isLoading: secretsLoading,
+    loading: secretsLoading,
     error: secretsError,
-  } = useGetSecretsQuery();
+  } = useQuery(GET_SECRETS_QUERY);
   const {
     data: serverData,
-    isLoading: serverLoading,
+    loading: serverLoading,
     error: serverError,
   } = serverId
-    ? useGetServerQuery({ id: serverId }, { refetchOnMountOrArgChange: true })
+    ? useQuery(GET_SERVER_QUERY, {
+        variables: { id: serverId },
+      })
     : { data: null, isLoading: false, error: null };
-  const [uploadFile, { isLoading: uploadFileLoading, error: uploadFileError }] =
-    useUploadFileMutation();
+  const [uploadFile, { loading: uploadFileLoading, error: uploadFileError }] =
+    useMutation(UPLOAD_FILE_MUTATION);
   const [
     updateServer,
-    { isLoading: updateServerLoading, error: updateServerError },
-  ] = useUpdateServerMutation();
-  const [addServer, { isLoading: addServerLoading, error: addServerError }] =
-    useAddServerMutation();
+    { loading: updateServerLoading, error: updateServerError },
+  ] = useMutation(UPDATE_SERVER_MUTATION, {
+    onCompleted: () => {
+      dispatch(
+        showNotification({
+          type: "success",
+          body: t("Server saved successfully"),
+        })
+      );
+      if (onConfirm) onConfirm();
+      dispatch(hideModal());
+    },
+  });
+  const [addServer, { loading: addServerLoading, error: addServerError }] =
+    useMutation(ADD_SERVER_MUTATION, {
+      onCompleted: () => {
+        dispatch(
+          showNotification({
+            type: "success",
+            body: t("Server added successfully"),
+          })
+        );
+        if (onConfirm) onConfirm();
+        dispatch(hideModal());
+      },
+    });
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -174,17 +220,9 @@ const ServerInfoModal = () => {
     if (actualKeyFileId) {
       data.keyFileId = Number(actualKeyFileId);
     }
-    const ret = serverId ? await updateServer(data) : await addServer(data);
-    if (!ret.error) {
-      dispatch(
-        showNotification({
-          type: "success",
-          body: t("Server saved successfully"),
-        })
-      );
-    }
-    if (onConfirm) onConfirm();
-    dispatch(hideModal());
+    const _ = serverId
+      ? await updateServer({ variables: { ...data } })
+      : await addServer({ variables: { ...data } });
   };
 
   useEffect(() => {

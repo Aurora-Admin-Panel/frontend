@@ -2,11 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X, Minus } from "phosphor-react";
 import classNames from "classnames";
-import gql from "graphql-tag";
-import { useGetUsersByEmailQuery } from "./PortUsersCard.generated";
+import { gql, useQuery } from "@apollo/client";
 import DataLoading from "../DataLoading";
 
-const _ = gql`
+const GET_USERS_BY_EMAIL_QUERY = gql`
   query GetUsersByEmail($email: String!, $limit: Int) {
     paginatedUsers(email: $email, limit: $limit) {
       items {
@@ -21,10 +20,15 @@ const UserSearchSelect = ({ open, onSelect }) => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const inputRef = useRef();
-  const { data: usersData, isLoading: usersLoading } = useGetUsersByEmailQuery({
-    email,
-    limit: 5,
-  });
+  const { data: usersData, isLoading: usersLoading } = useQuery(
+    GET_USERS_BY_EMAIL_QUERY,
+    {
+      variables: {
+        email,
+        limit: 5,
+      },
+    }
+  );
   useEffect(() => {
     if (open) {
       inputRef.current.focus();
@@ -74,9 +78,9 @@ const PortUsersCard = ({ port, setSelected }) => {
   // const { data: usersData, isLoading: usersLoading } = useGetUsersByEmailQuery();
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center space-y-2 py-4 px-4">
-      <div className="absolute top-2 right-2" onClick={() => setSelected(null)}>
-        <div className="btn btn-outline btn-ghost btn-circle btn-xs">
+    <div className="relative flex w-full flex-col items-center justify-center space-y-2 px-4 py-4">
+      <div className="absolute right-2 top-2" onClick={() => setSelected(null)}>
+        <div className="btn btn-circle btn-ghost btn-outline btn-xs">
           <X size={20} />
         </div>
       </div>
@@ -85,7 +89,7 @@ const PortUsersCard = ({ port, setSelected }) => {
           {port.externalNum ? port.externalNum : port.num} {t("Users List")}
         </span>
         <div
-          className="btn btn-success btn-circle btn-xs"
+          className="btn btn-circle btn-success btn-xs"
           onClick={() => setAdd((prev) => !prev)}
         >
           <Plus size={16} className="text-success-content" />
@@ -101,7 +105,7 @@ const PortUsersCard = ({ port, setSelected }) => {
           <UserSearchSelect open={add} />
         </div>
       </div>
-      <div className="max-h-32 flex flex-row items-center justify-center overflow-y-auto w-full">
+      <div className="flex max-h-32 w-full flex-row items-center justify-center overflow-y-auto">
         {port.users &&
           port.users.map((user) => (
             <div
@@ -111,7 +115,7 @@ const PortUsersCard = ({ port, setSelected }) => {
               <span className="text-sm">{user.email}</span>
               <div className="flex flex-grow flex-row items-center justify-end">
                 <button
-                  className="btn btn-ghost btn-xs btn-error btn-circle"
+                  className="btn btn-circle btn-error btn-ghost btn-xs"
                   onClick={() => console.log("remove")}
                 >
                   <Minus size={16} />

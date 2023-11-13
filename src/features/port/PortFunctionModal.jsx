@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import gql from "graphql-tag";
+import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { hideModal } from "../../store/reducers/modal";
 import DataLoading from "../DataLoading";
-import { useGetRuleOptionsQuery } from "./PortFunctionModal.generated";
 
-const _ = gql`
+const GET_RULE_OPTIONS_QUERY = gql`
   query GetRuleOptions($portId: Int!) {
     ruleOptions(portId: $portId)
   }
@@ -21,8 +20,10 @@ const PortFunctionModal = () => {
     onCancel,
     onConfirm,
   } = useSelector((state) => state.modal);
-  const { data: ruleOptions, isLoading: ruleOptionsLoading } =
-    useGetRuleOptionsQuery({ portId: port.id });
+  const { data: ruleOptions, isLoading: ruleOptionsLoading } = useQuery(
+    GET_RULE_OPTIONS_QUERY,
+    { variables: { portId: port.id } }
+  );
 
   const [method, setMethod] = useState("iptables");
 
@@ -37,7 +38,7 @@ const PortFunctionModal = () => {
   return (
     <div className="modal-box relative">
       <label
-        className="btn btn-outline btn-circle btn-sm absolute right-2 top-2"
+        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
         onClick={() => dispatch(hideModal())}
       >
         ✕
@@ -63,7 +64,7 @@ const PortFunctionModal = () => {
       <div className="mt-4 flex w-full flex-col space-y-0 px-2"></div>
       <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
         <label
-          className="btn btn-outline btn-ghost btn-sm md:btn-md"
+          className="btn btn-ghost btn-outline btn-sm md:btn-md"
           onClick={handleCancel}
         >
           {t("Cancel")}

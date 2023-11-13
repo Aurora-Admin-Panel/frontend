@@ -12,16 +12,9 @@ import {
   List,
 } from "phosphor-react";
 import classNames from "classnames";
-import gql from "graphql-tag";
 import { getReadableSize } from "../../utils/formatter";
 import { showModal } from "../../store/reducers/modal";
-import DataLoading from "../DataLoading";
 
-const _ = gql`
-  mutation DeleteFile($id: Int!) {
-    deleteFile(id: $id)
-  }
-`;
 
 const methodToBadge = (method) => {
   switch (method) {

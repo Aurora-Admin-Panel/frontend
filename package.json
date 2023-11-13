@@ -7,13 +7,11 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "generate": "graphql-codegen",
     "generate-api": "npx @rtk-query/codegen-openapi openapi-config.cjs"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
     "@reduxjs/toolkit": "^1.9.5",
-    "@rtk-query/graphql-request-base-query": "^2.2.0",
     "@sentry/react": "^7.10.0",
     "@sentry/tracing": "^7.10.0",
     "@tailwindcss/typography": "^0.5.4",
@@ -48,7 +46,6 @@
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
     "@graphql-codegen/typescript": "^3.0.2",
     "@graphql-codegen/typescript-operations": "^3.0.2",
-    "@graphql-codegen/typescript-rtk-query": "^2.4.1",
     "@types/node": "^18.15.3",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",

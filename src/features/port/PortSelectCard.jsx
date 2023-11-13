@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Plus, X, Minus } from "phosphor-react";
 import classNames from "classnames";
-import gql from "graphql-tag";
-import { useGetUsersByEmailQuery } from "./PortUsersCard.generated";
 import DataLoading from "../DataLoading";
 import { showModal } from "../../store/reducers/modal";
 

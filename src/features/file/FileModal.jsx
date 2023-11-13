@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { gql, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { FileTypeEnum } from "../../store/apis/types.generated";
-import { useUploadFileMutation } from "./FileModal.generated";
 import { hideModal } from "../../store/reducers/modal";
 import Error from "../layout/Error"
 

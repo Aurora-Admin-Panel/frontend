@@ -2,13 +2,12 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
-import gql from "graphql-tag";
+import { gql, useQuery }  from "@apollo/client";
 import Icon from "../Icon";
 import Error from "../layout/Error";
 import { motion, AnimatePresence } from "framer-motion";
 import useQueryParams from "../../hooks/useQueryParams";
 import useWindowSize from "../../hooks/useWindowSize";
-import { useGetServerPortsQuery } from "./ServerPorts.generated";
 import Paginator from "../Paginator";
 import PortCard from "./PortCard";
 import DataLoading from "../DataLoading";
@@ -107,10 +106,13 @@ const ServerPorts = () => {
       replace: false,
     },
   ]);
-  const { data, isLoading, error, refetch } = useGetServerPortsQuery({
+  const { data, loading, error, refetch } = useQuery(GET_SERVER_PORTS_QUERY, {
+    variables: {
+      
     serverId: Number(serverId),
     limit,
     offset,
+    }
   });
   const [selected, setSelected] = useState(null);
 
@@ -157,7 +159,7 @@ const ServerPorts = () => {
             />
           )}
         </AnimatePresence>
-        {isLoading ? (
+        {loading ? (
           <DataLoading />
         ) : (
           <>
@@ -176,7 +178,7 @@ const ServerPorts = () => {
           </>
         )}
         <Paginator
-          isLoading={isLoading}
+          isLoading={loading}
           count={data?.paginatedPorts?.count}
           limit={limit}
           offset={offset}

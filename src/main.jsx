@@ -32,6 +32,7 @@ if (!!!import.meta.env.DEV) {
     tracesSampleRate: 1.0,
   });
 }
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: split(
@@ -44,17 +45,17 @@ const client = new ApolloClient({
     },
     new GraphQLWsLink(
       createWSClient({
-        // url: `ws://${window.location.host}/api/graphql`,
-        url: `ws://192.168.1.14:8888/api/graphql`,
+        url: `ws://${window.location.host}/api/graphql`,
+        // url: `ws://192.168.1.14:8888/api/graphql`,
         connectionParams: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
       })
     ),
     createUploadLink({
       uri: "/api/graphql",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
       },
     })
   ),

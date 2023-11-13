@@ -15,12 +15,39 @@ const SERVER_USAGE_SUBSCRIPTION = gql`
   }
 `;
 
-const ServerStat = ({ serverId }) => {
+const Stat = ({ title, color, value, loading, completed }) => {
   const { t } = useTranslation();
-  const [scope0, animate0] = useAnimate();
-  const [scope1, animate1] = useAnimate();
-  const [scope2, animate2] = useAnimate();
-  const [completed, setCompleted] = useState(false);
+  const [scope, animate] = useAnimate();
+
+  useEffect(() => {
+    if (scope.current) {
+      animate(scope.current, { opacity: [0, 1, 0.6] }, { duration: 5 });
+    }
+  }, [value]);
+
+  return (
+    <div className="stat place-items-center">
+      <div className="stat-title">{t(title)}</div>
+      {completed || value === null || value === undefined ? (
+        <Icon icon="Prohibit" className="text-netural opacity-60" />
+      ) : loading ? (
+        <div className="stat-value">
+          <ReactLoading
+            type="spinningBubbles"
+            className={`fill-${color}`}
+            style={{ height: 16, width: 16 }}
+          />
+        </div>
+      ) : (
+        <div className={`stat-desc text-${color}`} ref={scope}>
+          {value}%
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ServerStat = ({ serverId }) => {
   const { data, loading, error } = useSubscription(SERVER_USAGE_SUBSCRIPTION, {
     variables: {
       serverId,
@@ -29,77 +56,34 @@ const ServerStat = ({ serverId }) => {
       setCompleted(true);
     },
   });
-  useEffect(() => {
-    if (scope0.current) {
-      animate0(scope0.current, { opacity: [0, 1, 0.6] }, { duration: 5 });
-    }
-    if (scope1.current) {
-      animate1(scope1.current, { opacity: [0, 1, 0.6] }, { duration: 5 });
-    }
-    if (scope2.current) {
-      animate2(scope2.current, { opacity: [0, 1, 0.6] }, { duration: 5 });
-    }
-  }, [data]);
+  const [completed, setCompleted] = useState(false);
 
   if (error) return <Error error={error} />;
 
   return (
     <div className="flex flex-row items-center">
       <div className="stats shadow-none">
-        <div className="stat place-items-center">
-          <div className="stat-title">{t("CPU")}</div>
-          {completed ? (
-            <Icon icon="Prohibit" className="text-netural opacity-60" />
-          ) : loading ? (
-            <div className="stat-value">
-              <ReactLoading
-                type="spinningBubbles"
-                className="fill-success"
-                style={{ height: 16, width: 16 }}
-              />
-            </div>
-          ) : (
-            <div className="stat-desc text-success" ref={scope0}>
-              {data.serverUsage.cpu}%
-            </div>
-          )}
-        </div>
-        <div className="stat place-items-center">
-          <div className="stat-title">{t("Mem")}</div>
-          {completed ? (
-            <Icon icon="Prohibit" className="text-netural opacity-60" />
-          ) : loading ? (
-            <div className="stat-value">
-              <ReactLoading
-                type="spinningBubbles"
-                className="fill-warning"
-                style={{ height: 16, width: 16 }}
-              />
-            </div>
-          ) : (
-            <div className="stat-desc text-warning" ref={scope1}>
-              {data.serverUsage.memory}%
-            </div>
-          )}
-        </div>
-        <div className="stat place-items-center">
-          <div className="stat-title">{t("Disk")}</div>
-          {completed ? (
-            <Icon icon="Prohibit" className="text-netural opacity-60" />
-          ) : loading ? (
-            <div className="stat-value">
-              <ReactLoading
-                type="spinningBubbles"
-                className="fill-error"
-                style={{ height: 16, width: 16 }}
-              />
-            </div>
-          ) : (
-            <div className="stat-desc text-error" ref={scope2}>
-              {data.serverUsage.disk}%
-            </div>
-          )}
-        </div>
+        <Stat
+          title="CPU"
+          color="success"
+          value={data?.serverUsage?.cpu}
+          loading={loading}
+          completed={completed}
+        />
+        <Stat
+          title="Mem"
+          color="warning"
+          value={data?.serverUsage?.memory}
+          loading={loading}
+          completed={completed}
+        />
+        <Stat
+          title="Disk"
+          color="error"
+          value={data?.serverUsage?.disk}
+          loading={loading}
+          completed={completed}
+        />
       </div>
     </div>
   );

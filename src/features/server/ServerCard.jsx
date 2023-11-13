@@ -19,6 +19,12 @@ const ServerCard = ({ server, refetch }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [show, setShow] = useState(false);
+  const [sshRefetch, setSSHRefetch] = useState(null);
+  const [sshConnected, setSSHConnected] = useState(false);
+
+  const registerSSHRefetch = useCallback((func) => {
+    setSSHRefetch(func);
+  }, []);
 
   const handleClick = () => {
     dispatch(
@@ -29,10 +35,12 @@ const ServerCard = ({ server, refetch }) => {
         },
         onConfirm: () => {
           refetch();
+          if (sshRefetch) sshRefetch();
         },
       })
     );
   };
+
   return (
     <div
       className="mx-auto flex w-72 flex-col items-center justify-between space-y-4 rounded-2xl border border-base-200 bg-base-100 px-4 py-4 shadow-xl sm:w-80"
@@ -57,6 +65,8 @@ const ServerCard = ({ server, refetch }) => {
           <div className="flex flex-row items-center justify-center">
             <ServerSSHStat
               serverId={server.id}
+              setSSHConnected={setSSHConnected}
+              registerSSHRefetch={registerSSHRefetch}
             />
             <ServerPortsStat
               usedPorts={server.portUsed}
@@ -68,6 +78,7 @@ const ServerCard = ({ server, refetch }) => {
               <ServerTrafficStat
                 upstreamTraffic={getReadableSize(server.uploadTotal)}
                 downstreamTraffic={getReadableSize(server.downloadTotal)}
+                sshConnected={sshConnected}
               />
             </div>
           </div>

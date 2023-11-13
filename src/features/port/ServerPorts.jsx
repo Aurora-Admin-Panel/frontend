@@ -15,7 +15,7 @@ import DataLoading from "../DataLoading";
 import PortUsersCard from "./PortUsersCard";
 import PortSelectCard from "./PortSelectCard";
 
-const _ = gql`
+const GET_SERVER_PORTS_QUERY = gql`
   query GetServerPorts(
     $serverId: Int!
     $limit: Int

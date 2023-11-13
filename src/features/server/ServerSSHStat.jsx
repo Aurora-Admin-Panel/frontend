@@ -10,7 +10,7 @@ const CONNECT_SERVER_QUERY = gql`
   }
 `;
 
-const ServerSSHStat = ({ serverId }) => {
+const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
   const { t } = useTranslation();
   const { data, loading, error, refetch, networkStatus } = useQuery(
     CONNECT_SERVER_QUERY,
@@ -20,6 +20,18 @@ const ServerSSHStat = ({ serverId }) => {
       notifyOnNetworkStatusChange: true,
     }
   );
+  useEffect(() => {
+    if (data && data.connectServer.success) {
+      setSSHConnected(true);
+    } else {
+      setSSHConnected(false);
+    }
+  }, [data]);
+  useEffect(() => {
+    registerSSHRefetch(() => {
+      return refetch;
+    });
+  }, [registerSSHRefetch]);
 
   return (
     <div className="stats overflow-x-visible shadow-none">

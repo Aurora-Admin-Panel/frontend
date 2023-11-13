@@ -3,19 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import ServerCard from "./ServerCard";
 import Icon from "../Icon";
-import { gql } from "graphql-tag";
+import { gql, useQuery } from "@apollo/client";
 import { useLocation } from "react-router-dom";
-import { useGetServersQuery } from "./ServerList.generated";
-import { useWSQuery } from "../../store/baseApi";
 import { showModal } from "../../store/reducers/modal";
 import Error from "../layout/Error";
 import DataLoading from "../DataLoading";
 import Paginator from "../Paginator";
 import useQueryParams from "../../hooks/useQueryParams";
-import { useUserMeApiV1UsersMeGetQuery } from "../../store/apis/apis";
-import { showNotification } from "../../store/reducers/notification";
 
-const _ = gql`
+const GET_SERVERS_QUERY = gql`
   query GetServers($limit: Int, $offset: Int) {
     paginatedServers(limit: $limit, offset: $offset) {
       items {
@@ -48,10 +44,12 @@ const ServerList = () => {
       replace: false,
     },
   ]);
-  const { data, isLoading, isFetching, error, refetch } = useGetServersQuery({
-    limit,
-    offset,
-  });
+  const { data, loading, error, refetch } = useQuery(
+    GET_SERVERS_QUERY,
+    {
+      variables: { limit, offset },
+    }
+  );
 
   if (error) return <Error error={error} />;
   return (
@@ -78,7 +76,7 @@ const ServerList = () => {
         ))}
       </div>
       <Paginator
-        isLoading={isLoading || isFetching}
+        isLoading={loading}
         count={data?.paginatedServers?.count}
         limit={limit}
         offset={offset}

@@ -31,9 +31,9 @@ const App = () => {
       <ModalManager />
       <Notification />
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/create-account" element={<CreateAccount />} />
-        <Route path="/test" element={<ThemedSuspense />} />
+        <Route path="login" element={<Login />} />
+        <Route path="create-account" element={<CreateAccount />} />
+        <Route path="test" element={<ThemedSuspense />} />
         <Route path="app" element={<Layout />}>
           <Route index element={<Navigate to="/app/servers" replace />} />
           <Route path="servers" element={<ServerContainer />}>

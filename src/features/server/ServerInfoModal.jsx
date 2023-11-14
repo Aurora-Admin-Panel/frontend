@@ -259,7 +259,7 @@ const ServerInfoModal = () => {
           >
             ✕
           </label>
-          <h3 className="-mt-3 text-lg font-bold">{t("Add Server")}</h3>
+          <h3 className="-mt-3 text-lg font-bold">{serverId ? t("Edit Server") : t("Add Server")}</h3>
 
           <div className="mt-4 flex w-full flex-col space-y-0 px-2">
             <div className="form-control w-full">

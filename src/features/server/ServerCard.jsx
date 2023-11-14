@@ -26,7 +26,7 @@ const ServerCard = ({ server, refetch }) => {
     setSSHRefetch(func);
   }, []);
 
-  const handleClick = () => {
+  const handleEdit = () => {
     dispatch(
       showModal({
         modalType: "serverInfo",
@@ -54,7 +54,7 @@ const ServerCard = ({ server, refetch }) => {
           <h1 className="break-word card-title text-xl">{server.name}</h1>
           <button
             className={classNames("text-primary", show ? "block" : "invisible")}
-            onClick={handleClick}
+            onClick={handleEdit}
           >
             <Icon icon="Pencil" size={24} />
           </button>
@@ -85,7 +85,7 @@ const ServerCard = ({ server, refetch }) => {
           </div>
           <div className="flex grow flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center  ">
-              <ServerStat serverId={server.id} />
+              {/* <ServerStat serverId={server.id} /> */}
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@ const ServerCard = ({ server, refetch }) => {
       <div className="flex flex-row justify-center space-x-4">
         <button
           className="btn btn-secondary btn-outline btn-sm justify-self-end xl:btn-md"
-          onClick={() => navigate(`/app/servers/${server.id}/ports`)}
+          onClick={handleEdit}
         >
           {t("Edit")}
         </button>

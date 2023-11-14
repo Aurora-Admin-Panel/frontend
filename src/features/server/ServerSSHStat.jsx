@@ -1,25 +1,26 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
-import { gql, useQuery, NetworkStatus } from "@apollo/client";
+import { gql, useQuery, NetworkStatus, useApolloClient } from "@apollo/client";
+import useSubscripe from "../../hooks/useSubscripe";
 import Icon from "../Icon";
+import { use } from "i18next";
 
-const CONNECT_SERVER_QUERY = gql`
-  query ConnectServer($serverId: Int!) {
+const CONNECT_SERVER_SUBSCRIPTION = gql`
+  subscription ConnectServer($serverId: Int!) {
     connectServer(serverId: $serverId)
   }
 `;
 
 const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
   const { t } = useTranslation();
-  const { data, loading, error, refetch, networkStatus } = useQuery(
-    CONNECT_SERVER_QUERY,
-    // TODO: check https://www.apollographql.com/docs/react/data/queries#nextfetchpolicy
-    {
-      variables: { serverId },
-      notifyOnNetworkStatusChange: true,
-    }
+  const { data, loading, error, subscribe } = useSubscripe(
+    CONNECT_SERVER_SUBSCRIPTION,
+    { serverId }
   );
+  useEffect(() => {
+    subscribe();
+  }, []);
   useEffect(() => {
     if (data && data.connectServer.success) {
       setSSHConnected(true);
@@ -29,7 +30,7 @@ const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
   }, [data]);
   useEffect(() => {
     registerSSHRefetch(() => {
-      return refetch;
+      return subscribe;
     });
   }, [registerSSHRefetch]);
 
@@ -38,7 +39,7 @@ const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
       <div className="stat place-items-center">
         <div className="stat-title">{t("SSH")}</div>
         <div className="group relative">
-          {loading || networkStatus === NetworkStatus.refetch ? (
+          {loading ? (
             <button
               className="stat-value tooltip cursor-not-allowed"
               data-tip={t("Connecting")}
@@ -49,21 +50,21 @@ const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
                 style={{ height: 24, width: 24 }}
               />
             </button>
-          ) : error || data.connectServer.error ? (
+          ) : error || (data && data.connectServer.error) ? (
             <>
               <div className="alert absolute left-1/2 z-50 hidden w-96 max-w-screen-sm -translate-x-1/2 -translate-y-full transform rounded-xl shadow-2xl transition duration-200 group-hover:block">
                 <div>
                   <span>
-                    {JSON.stringify(error) || data.connectServer.error}
+                    {error ? JSON.stringify(error) : data.connectServer.error}
                   </span>
                 </div>
               </div>
-              <button className="stat-value" onClick={() => refetch()}>
+              <button className="stat-value" onClick={() => subscribe()}>
                 <Icon icon="WarningCircle" className="text-error" />
               </button>
             </>
-          ) : data.connectServer.success ? (
-            <button className="stat-value" onClick={() => refetch()}>
+          ) : data && data.connectServer.success ? (
+            <button className="stat-value" onClick={() => subscribe()}>
               <Icon icon="CheckCircle" className="text-success" />
             </button>
           ) : null}

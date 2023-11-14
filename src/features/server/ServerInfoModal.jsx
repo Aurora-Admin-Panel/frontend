@@ -130,6 +130,7 @@ const ServerInfoModal = () => {
   } = serverId
     ? useQuery(GET_SERVER_QUERY, {
         variables: { id: serverId },
+        fetchPolicy: 'network-only',
       })
     : { data: null, isLoading: false, error: null };
   const [uploadFile, { loading: uploadFileLoading, error: uploadFileError }] =
@@ -209,7 +210,7 @@ const ServerInfoModal = () => {
       data.host = address;
     }
     if (port) {
-      data.port = port;
+      data.port = Number(port);
     }
     if (sshPassword) {
       data.sshPassword = sshPassword;
@@ -308,7 +309,7 @@ const ServerInfoModal = () => {
                 />
                 <TwoDotIcon />
                 <input
-                  type="text"
+                  type="number"
                   value={port}
                   onChange={(e) => setPort(e.target.value)}
                   placeholder={t("Port")}

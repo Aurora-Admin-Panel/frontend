@@ -5,7 +5,6 @@ const useRefetch = (subscriptionName, variables) => {
   const client = useApolloClient();
 
   const refetch = useCallback(async () => {
-    console.log(subscriptionName, variables);
     await client.refetchQueries({
       include: [subscriptionName],
       active: true,

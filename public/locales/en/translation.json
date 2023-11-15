@@ -107,5 +107,9 @@
     "Settings": "Settings",
 
 
-    "About": "About"
+    "About": "About",
+
+    "GraphQL error": "GraphQL error",
+    "Network error": "Network error",
+    "User is not an admin": "User is not an admin"
 }

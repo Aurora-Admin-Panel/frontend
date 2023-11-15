@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { X } from "phosphor-react";
 import classNames from "classnames";
 import { removeNotification } from "../store/reducers/notification";
@@ -44,7 +45,7 @@ const ProgressBar = ({ duration, type, pausedState }) => {
   }, [duration, pausedState]);
 
   return (
-    <div className={`h-1 w-full bg-${type}/80 rounded`}>
+    <div className={`h-1 w-full bg-${type}/50 rounded`}>
       <div
         className={`h-1 bg-${type}-content rounded`}
         style={{ width: `${progress}%`, transition: "width 100ms linear" }}
@@ -56,13 +57,13 @@ const ProgressBar = ({ duration, type, pausedState }) => {
 const Notification = () => {
   const { notifications } = useSelector((state) => state.notification);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const timers = useRef(new Map());
   const startTimes = useRef(new Map());
   const remainingDurations = useRef(new Map());
   const [pausedState, setPausedState] = useState({ id: null, paused: false });
 
   const pauseTimer = (id) => {
-    console.log(id);
     clearTimeout(timers.current.get(id));
     remainingDurations.current.set(
       id,
@@ -74,7 +75,6 @@ const Notification = () => {
   };
 
   const resumeTimer = (id) => {
-    console.log(id);
     const timer = setTimeout(() => {
       dispatch(removeNotification(id));
       timers.current.delete(id);
@@ -109,7 +109,7 @@ const Notification = () => {
   }, []);
   return (
     <>
-      <div className="fixed top-8 right-8 z-50 flex flex-col items-end space-y-2">
+      <div className="fixed top-16 right-8 z-50 flex flex-col items-end space-y-2">
         {notifications.map((notification) => (
           <div
             className="inline-flex"
@@ -124,12 +124,12 @@ const Notification = () => {
               )}
             >
               <div className="flex-1">
-                <div className="flex flex-row items-center space-x-2">
-                  {notification.title && (
-                    <h3 className="font-bold">{notification.title}</h3>
-                  )}
+                <div className="flex flex-row items-center justify-center space-x-2">
                   {notification.body && (
-                    <div className="text-xs">{notification.body}</div>
+                    <div className="text-xs">
+                      {notification.title && (<span className="font-bold">[{t(notification.title)}]&nbsp;</span>)}
+                      {t(notification.body)}
+                    </div>
                   )}
                 </div>
               </div>

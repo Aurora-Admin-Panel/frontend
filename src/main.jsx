@@ -16,12 +16,14 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  gql,
+  from,
 } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient as createWSClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { showNotification } from "./store/reducers/notification";
 
 if (!!!import.meta.env.DEV) {
   Sentry.init({
@@ -32,10 +34,31 @@ if (!!!import.meta.env.DEV) {
     tracesSampleRate: 1.0,
   });
 }
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      store.dispatch(
+        showNotification({
+          title: "GraphQL error",
+          body: message,
+          type: "error",
+        })
+      )
+    );
+  if (networkError) {
+    store.dispatch(
+      showNotification({
+        title: "Network error",
+        body: networkError.message,
+        type: "error",
+      })
+    )
+  }
+});
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: split(
+  link: from([errorLink, split(
     ({ query }) => {
       const definition = getMainDefinition(query);
       return (
@@ -58,7 +81,7 @@ const client = new ApolloClient({
         Authorization: `Bearer ${window.localStorage.getItem("token")}`,
       },
     })
-  ),
+  )]),
 });
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -107,5 +107,9 @@
     "Settings": "设置",
 
 
-    "About": "关于"
+    "About": "关于",
+
+    "GraphQL error": "GraphQL 错误",
+    "Network error": "网络错误",
+    "User is not an admin": "用户不是管理员"
 }

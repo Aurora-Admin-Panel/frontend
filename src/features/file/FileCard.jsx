@@ -73,7 +73,7 @@ const FileCard = ({ file, onUpdate }) => {
   }, [called, error]);
 
   return (
-    <div className="card indicator h-32 w-48 justify-self-center bg-base-100 shadow-xl">
+    <div className="card indicator h-32 w-48 justify-self-center bg-base-100 shadow-md">
       {file.version && (
         <span className="badge indicator-item badge-sm border-base-300 bg-base-200 text-base-content">
           {file.version}

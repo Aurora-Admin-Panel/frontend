@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, X, Minus } from "phosphor-react";
 import classNames from "classnames";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import DataLoading from "../DataLoading";
 
 const GET_USERS_BY_EMAIL_QUERY = gql`
@@ -13,6 +13,11 @@ const GET_USERS_BY_EMAIL_QUERY = gql`
         email
       }
     }
+  }
+`;
+const ADD_PORT_USER_MUTATION = gql`
+  mutation AddPortUser($portId: Int!, $userId: Int!) {
+    addPortUser(portId: $portId, userId: $userId)
   }
 `;
 
@@ -27,6 +32,7 @@ const UserSearchSelect = ({ open, onSelect }) => {
         email,
         limit: 5,
       },
+      fetchPolicy: "network-only",
     }
   );
   useEffect(() => {
@@ -75,10 +81,19 @@ const UserSearchSelect = ({ open, onSelect }) => {
 const PortUsersCard = ({ port, setSelected }) => {
   const { t } = useTranslation();
   const [add, setAdd] = useState(port.allowedUsers.length === 0);
+  const [addPortUser, { data, loading, error }] = useMutation(ADD_PORT_USER_MUTATION);
   // const { data: usersData, isLoading: usersLoading } = useGetUsersByEmailQuery();
+  const handleUserSelect = (user) => {
+    addPortUser({
+      variables: {
+        portId: port.id,
+        userId: user.id,
+      },
+    })
+  };
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center space-y-2 px-4 py-4">
+    <div className="relative flex w-full flex-col items-center justify-start space-y-2 px-4 py-4 h-72">
       <div className="absolute right-2 top-2" onClick={() => setSelected(null)}>
         <div className="btn btn-circle btn-ghost btn-outline btn-xs">
           <X size={20} />
@@ -95,17 +110,18 @@ const PortUsersCard = ({ port, setSelected }) => {
           <Plus size={16} className="text-success-content" />
         </div>
       </div>
+      
       <div
         className={classNames(
           "collapse flex w-full flex-col items-center justify-center",
-          { "collapse-open": add }
+          { "collapse-open": add }, {"h-0": !add}
         )}
       >
         <div className="collapse-content flex w-full flex-col">
-          <UserSearchSelect open={add} />
+          <UserSearchSelect open={add} onSelect={handleUserSelect}/>
         </div>
       </div>
-      <div className="flex max-h-32 w-full flex-row items-center justify-center overflow-y-auto">
+      <div className="flex max-h-32 w-full flex-col items-center justify-center overflow-y-auto">
         {port.users &&
           port.users.map((user) => (
             <div

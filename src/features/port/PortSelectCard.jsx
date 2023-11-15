@@ -23,15 +23,15 @@ const PortSelectCard = ({ port, setSelected }) => {
         </span>
       </div>
       <div className="flex w-full flex-col space-y-4 py-4">
-        <button className="btn btn-sm">{t("Edit Port")}</button>
+        <button className="btn btn-primary btn-sm">{t("Edit Port")}</button>
         <button
-          className="btn btn-primary btn-sm"
+          className="btn btn-secondary btn-sm"
           onClick={() => setSelected({ id: port.id, type: "user", port: port })}
         >
           {t("Change Port Users")}
         </button>
         <button
-          className="btn btn-secondary btn-sm"
+          className="btn btn-accent btn-sm"
           onClick={() => {
             setSelected(null);
             dispatch(
@@ -48,7 +48,7 @@ const PortSelectCard = ({ port, setSelected }) => {
           {t("Change Port Function")}
         </button>
         <button
-          className="btn btn-accent btn-sm"
+          className="btn btn-outline btn-sm"
           onClick={() => {
             setSelected(null);
             dispatch(

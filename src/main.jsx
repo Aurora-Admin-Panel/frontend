@@ -4,9 +4,9 @@ import { Provider } from "react-redux";
 import * as Sentry from "@sentry/react";
 import { PersistGate } from "redux-persist/integration/react";
 
-import App from "./App";
 import "./index.css";
-import "./i18n";
+import App from "./App";
+import i18n from "./i18n";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { store, persistor } from "./store";
 import ThemedSuspense from "./features/ThemedSuspense";
@@ -39,7 +39,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     graphQLErrors.forEach(({ message, locations, path }) =>
       store.dispatch(
         showNotification({
-          title: "GraphQL error",
+          title: i18n.t("GraphQL error"),
           body: message,
           type: "error",
         })
@@ -48,7 +48,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) {
     store.dispatch(
       showNotification({
-        title: "Network error",
+        title: i18n.t("Network error"),
         body: networkError.message,
         type: "error",
       })

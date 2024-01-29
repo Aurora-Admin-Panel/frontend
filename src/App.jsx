@@ -9,7 +9,6 @@ import {
 import ThemedSuspense from "./features/ThemedSuspense";
 
 const ModalManager = lazy(() => import("./features/modal/ModalManager"));
-const Banner = lazy(() => import("./features/Banner"));
 const Notification = lazy(() => import("./features/Notification"));
 const Layout = lazy(() => import("./Layout"));
 const Login = lazy(() => import("./features/auth/Login"));
@@ -28,7 +27,6 @@ const NoMatch = lazy(() => import("./features/layout/NoMatch"));
 const App = () => {
   return (
     <Router>
-      <Banner />
       <ModalManager />
       <Notification />
       <Routes>

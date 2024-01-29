@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
-// import { Input, Label, Button } from '@windmill/react-ui'
 
 import { login, signUp } from "../../store/reducers/auth";
 import { validateEmail } from "../../utils/validators";
@@ -17,7 +16,7 @@ const EmailPasswordForm = ({ create = false }) => {
     return email === "" || validateEmail(email);
   };
   const validPassword = () => {
-    return password === "" || password.length >= 8;
+    return (email === "" && password === "") || password.length >= 8;
   };
   const validPassword2 = () => {
     return (
@@ -37,7 +36,6 @@ const EmailPasswordForm = ({ create = false }) => {
     else dispatch(login({ email, password }));
   };
 
-  // console.log(validEmail)
   return (
     <div className="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
       <div className="card-body">

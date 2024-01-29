@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import EmailPasswordForm from './EmailPasswordForm'
 
 const Login = () => {
-  const dispatch = useDispatch()
+  const { t } = useTranslation()
   const token = useSelector(state => state.auth.token)
 
   if (token.length > 0) {
@@ -20,8 +21,8 @@ const Login = () => {
       <div className="hero-overlay bg-opacity-20"></div>
       <div className="hero-content flex-col md:flex-row-reverse w-full">
         <article className="prose md:prose-xl text-center md:text-left min-w-max">
-          <h1 className="text-primary-content">极光面板</h1>
-          <p className="py-0 text-secondary-content">一键式多用户租用多应用部署面板</p>
+          <h1 className="text-primary-content">{t("Aurora Admin Panel")}</h1>
+          <p className="py-0 text-secondary-content">{t("One-click Multi-User Rental Multi-Application Deployment Panel")}</p>
         </article>
         <EmailPasswordForm />
       </div>

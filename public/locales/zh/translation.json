@@ -17,6 +17,15 @@
     "EN": "EN",
     "中文": "中文",
 
+    "Email": "邮箱",
+    "Email Placeholder": "邮箱",
+    "Password": "密码",
+    "Password Placeholder": "密码",
+    "Confirm Password": "确认密码",
+    "Login": "登录",
+    "Logout": "退出",
+    "Create Account": "创建账号",
+
     "User": "用户",
     "Users List": "用户列表",
     "Please enter an email address": "请输入邮箱地址",
@@ -31,7 +40,6 @@
     "Host": "主机",
     "Default as address": "默认为服务器地址",
     "Username": "用户名",
-    "Password": "密码",
     "SSH Connection Info": "SSH连接信息",
     "SSH Password": "SSH密码",
     "SSH password not needed": "不需要SSH密码",

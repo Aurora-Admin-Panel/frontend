@@ -2,7 +2,6 @@ import Icon from "../Icon";
 import { Navigate } from "react-router-dom";
 
 const Error = ({ error }) => {
-  console.log(error);
   if (error.message.startsWith("User is not authenticated"))
     return <Navigate to="/login" />;
   return (

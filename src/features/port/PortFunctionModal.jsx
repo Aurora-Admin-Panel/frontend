@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import { hideModal } from "../../store/reducers/modal";
 import DataLoading from "../DataLoading";
+import { useModalReducer } from "../../atoms/modal";
 
 const GET_RULE_OPTIONS_QUERY = gql`
   query GetRuleOptions($portId: Int!) {
@@ -15,6 +15,7 @@ const GET_RULE_OPTIONS_QUERY = gql`
 const PortFunctionModal = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const { hideModal } = useModalReducer();
   const {
     modalProps: { port, serverId },
     onCancel,
@@ -29,7 +30,7 @@ const PortFunctionModal = () => {
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    dispatch(hideModal());
+    hideModal();
   };
   const handleSubmit = async () => {};
 
@@ -39,7 +40,7 @@ const PortFunctionModal = () => {
     <div className="modal-box relative">
       <label
         className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={() => dispatch(hideModal())}
+        onClick={() => hideModal()}
       >
         ✕
       </label>

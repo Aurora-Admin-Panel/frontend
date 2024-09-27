@@ -1,123 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
 import classNames from "classnames";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, } from "react-redux";
 import Icon from "../Icon";
+import { GET_SERVER_QUERY, ADD_SERVER_MUTATION, UPDATE_SERVER_MUTATION, DELETE_SERVER_MUTATION } from "../../quries/server";
+import { GET_SECRETS_QUERY, UPLOAD_FILE_MUTATION } from "../../quries/file";
 import { TwoDotIcon } from "../../icons";
-import { hideModal } from "../../store/reducers/modal";
+import { useModalReducer } from "../../atoms/modal";
 import { FileTypeEnum } from "../../store/apis/types.generated";
 import DataLoading from "../DataLoading";
 import { showNotification } from "../../store/reducers/notification";
-
-const GET_SECRETS_QUERY = gql`
-  query GetSecrets {
-    files(type: SECRET) {
-      id
-      name
-      version
-      createdAt
-      updatedAt
-    }
-  }
-`;
-const GET_SERVER_QUERY = gql`
-  query GetServer($id: Int!) {
-    server(id: $id) {
-      id
-      name
-      address
-      user
-      host
-      port
-      sshPasswordSet
-      sudoPasswordSet
-      keyFileId
-    }
-  }
-`;
-const UPLOAD_FILE_MUTATION = gql`
-  mutation UploadFile(
-    $file: Upload!
-    $name: String!
-    $type: FileTypeEnum!
-    $version: String
-    $notes: String
-  ) {
-    uploadFile(
-      file: $file
-      name: $name
-      type: $type
-      version: $version
-      notes: $notes
-    ) {
-      id
-      name
-      type
-      size
-      version
-      notes
-    }
-  }
-`;
-const ADD_SERVER_MUTATION = gql`
-  mutation AddServer(
-    $name: String!
-    $address: String!
-    $user: String
-    $host: String
-    $port: Int
-    $sshPassword: String
-    $sudoPassword: String
-    $keyFileId: Int
-  ) {
-    addServer(
-      name: $name
-      address: $address
-      user: $user
-      host: $host
-      port: $port
-      sshPassword: $sshPassword
-      sudoPassword: $sudoPassword
-      keyFileId: $keyFileId
-    )
-  }
-`;
-const UPDATE_SERVER_MUTATION = gql`
-  mutation UpdateServer(
-    $id: Int!
-    $name: String!
-    $address: String!
-    $user: String
-    $host: String
-    $port: Int
-    $sshPassword: String
-    $sudoPassword: String
-    $keyFileId: Int
-  ) {
-    updateServer(
-      id: $id
-      name: $name
-      address: $address
-      user: $user
-      host: $host
-      port: $port
-      sshPassword: $sshPassword
-      sudoPassword: $sudoPassword
-      keyFileId: $keyFileId
-    )
-  }
-`;
 
 
 const ServerInfoModal = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const {
-    modalProps: { serverId },
-    onCancel,
-    onConfirm,
-  } = useSelector((state) => state.modal);
+    modal: {
+      modalProps: { serverId },
+      onCancel,
+      onConfirm,
+    },
+    showModal,
+    showConfirmationModal,
+    hideModal
+  } = useModalReducer();
   const {
     data: secretsData,
     loading: secretsLoading,
@@ -128,11 +36,11 @@ const ServerInfoModal = () => {
     loading: serverLoading,
     error: serverError,
   } = serverId
-    ? useQuery(GET_SERVER_QUERY, {
+      ? useQuery(GET_SERVER_QUERY, {
         variables: { id: serverId },
         fetchPolicy: 'network-only',
       })
-    : { data: null, isLoading: false, error: null };
+      : { data: null, isLoading: false, error: null };
   const [uploadFile, { loading: uploadFileLoading, error: uploadFileError }] =
     useMutation(UPLOAD_FILE_MUTATION);
   const [
@@ -143,11 +51,11 @@ const ServerInfoModal = () => {
       dispatch(
         showNotification({
           type: "success",
-          body: t("Server saved successfully"),
+          body: "Server saved successfully",
         })
       );
       if (onConfirm) onConfirm();
-      dispatch(hideModal());
+      hideModal();
     },
   });
   const [addServer, { loading: addServerLoading, error: addServerError }] =
@@ -156,11 +64,25 @@ const ServerInfoModal = () => {
         dispatch(
           showNotification({
             type: "success",
-            body: t("Server added successfully"),
+            body: "Server added successfully",
           })
         );
         if (onConfirm) onConfirm();
-        dispatch(hideModal());
+        hideModal();
+      },
+    });
+
+  const [deleteServer, { loading: deleteServerLoading, error: deleteServerError }] =
+    useMutation(DELETE_SERVER_MUTATION, {
+      onCompleted: () => {
+        dispatch(
+          showNotification({
+            type: "success",
+            body: "Server deleted successfully",
+          })
+        );
+        if (onConfirm) onConfirm();
+        hideModal();
       },
     });
 
@@ -178,9 +100,22 @@ const ServerInfoModal = () => {
   const [keyFile, setKeyFile] = useState(null);
   const [keyFileId, setKeyFileId] = useState("");
 
+  const handleDelete = () => {
+    showConfirmationModal({
+      modalProps: {
+        title: t("Delete Server"),
+        message: t("Are you sure you want to delete this server?"),
+      },
+      onConfirm: async () => {
+        if (serverId) {
+          await deleteServer({ variables: { id: serverId } });
+        }
+      },
+    })
+  }
   const handleCancel = () => {
     if (onCancel) onCancel();
-    dispatch(hideModal());
+    hideModal();
   };
   const handleSubmit = async () => {
     let actualKeyFileId = keyFileId;
@@ -256,7 +191,7 @@ const ServerInfoModal = () => {
         <div className="modal-box relative">
           <label
             className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-            onClick={() => dispatch(hideModal())}
+            onClick={() => hideModal()}
           >
             ✕
           </label>
@@ -410,6 +345,14 @@ const ServerInfoModal = () => {
             </div>
           </div>
           <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
+            {serverId && (
+              <label
+                className="btn  btn-ghost text-error"
+                onClick={handleDelete}
+              >
+                {t("Delete")}
+              </label>
+            )}
             <label
               className="btn btn-primary btn-outline"
               onClick={handleCancel}
@@ -419,7 +362,7 @@ const ServerInfoModal = () => {
             <button
               className={classNames("btn btn-primary", {
                 loading:
-                  uploadFileLoading || updateServerLoading || addServerLoading,
+                  uploadFileLoading || updateServerLoading || addServerLoading || deleteServerLoading,
               })}
               onClick={handleSubmit}
             >

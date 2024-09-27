@@ -13,7 +13,7 @@ import {
 } from "phosphor-react";
 import classNames from "classnames";
 import { getReadableSize } from "../../utils/formatter";
-import { showModal } from "../../store/reducers/modal";
+import { useModalReducer } from "../../atoms/modal";
 
 
 const methodToBadge = (method) => {
@@ -36,6 +36,7 @@ const methodToBadge = (method) => {
 const PortCard = ({ port, onUpdate, setSelected }) => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const { showModal } = useModalReducer();
 
   return (
     <div className="card relative h-44 w-40 justify-self-center bg-base-100 shadow-xl">

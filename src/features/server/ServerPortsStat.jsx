@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
+import classNames from "classnames";
 
-const ServerPortsStat = ({ usedPorts, totalPorts }) => {
+const ServerPortsStat = ({ usedPorts, totalPorts, sshConnected }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="shadow-none stats">
+    <div className={classNames("shadow-none stats", sshConnected === false ? "bg-base-200" : "")}>
       <div className="stat place-items-center">
         <div className="stat-title">{t("Ports")}</div>
         <div className="text-xl font-extrabold">

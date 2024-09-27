@@ -35,7 +35,6 @@ function Counter({ from, to }) {
 }
 
 const ServerTrafficStat = ({
-  serverId,
   uploadTotal,
   downloadTotal,
   sshConnected,
@@ -43,7 +42,7 @@ const ServerTrafficStat = ({
   const { t } = useTranslation();
 
   return (
-    <div className="stats shadow-none">
+    <div className={classNames("stats shadow-none", sshConnected === false ? "bg-base-200" : "")}>
       <div className="stat grid-cols-2 place-items-center">
         <div className="stat-title">{t("Traffic")}</div>
         <div className="flex flex-col items-center text-xl font-bold text-accent">

@@ -32,6 +32,7 @@ import { ReactComponent as PlusIcon } from './plus.svg'
 import { ReactComponent as MinusIcon } from './minus.svg'
 import { ReactComponent as InfinityIcon } from './infinity.svg'
 import { ReactComponent as TwoDotIcon } from './twoDot.svg'
+import { ReactComponent as TranslateIcon } from './translate.svg'
 
 
 export {
@@ -69,4 +70,5 @@ export {
   MinusIcon,
   InfinityIcon,
   TwoDotIcon,
+  TranslateIcon
 }

@@ -10,20 +10,8 @@ import i18n from "./i18n";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { store, persistor } from "./store";
 import ThemedSuspense from "./features/ThemedSuspense";
-// import { initializeWebSocket } from "./store/websocketManager";
-import {
-  split,
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  from,
-} from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
-import { createUploadLink } from "apollo-upload-client";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient as createWSClient } from "graphql-ws";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { showNotification } from "./store/reducers/notification";
+import { ApolloProvider } from "@apollo/client";
+import { client } from './grapgql'
 
 if (!!!import.meta.env.DEV) {
   Sentry.init({
@@ -34,55 +22,7 @@ if (!!!import.meta.env.DEV) {
     tracesSampleRate: 1.0,
   });
 }
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      store.dispatch(
-        showNotification({
-          title: i18n.t("GraphQL error"),
-          body: message,
-          type: "error",
-        })
-      )
-    );
-  if (networkError) {
-    store.dispatch(
-      showNotification({
-        title: i18n.t("Network error"),
-        body: networkError.message,
-        type: "error",
-      })
-    )
-  }
-});
 
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: from([errorLink, split(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "subscription"
-      );
-    },
-    new GraphQLWsLink(
-      createWSClient({
-        url: `ws://${window.location.host}/api/graphql`,
-        // url: `ws://192.168.1.14:8888/api/graphql`,
-        connectionParams: {
-          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-        },
-      })
-    ),
-    createUploadLink({
-      uri: "/api/graphql",
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-      },
-    })
-  )]),
-});
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ApolloProvider client={client}>

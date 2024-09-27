@@ -13,6 +13,7 @@ import PortCard from "./PortCard";
 import DataLoading from "../DataLoading";
 import PortUsersCard from "./PortUsersCard";
 import PortSelectCard from "./PortSelectCard";
+import { useModalReducer } from "../../atoms/modal"
 
 const GET_SERVER_PORTS_QUERY = gql`
   query GetServerPorts(
@@ -92,6 +93,7 @@ const SelectCard = ({ selected, setSelected }) => {
 const ServerPorts = () => {
   const { serverId } = useParams();
   const { t } = useTranslation();
+  const { showModal } = useModalReducer();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
       name: "limit",

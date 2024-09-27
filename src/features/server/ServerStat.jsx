@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
 import { useSubscription, gql } from "@apollo/client";
+import classNames from "classnames";
 import { motion, useAnimate } from "framer-motion";
 import Icon from "../Icon";
+import { shallowEqual } from "react-redux";
 
 const SERVER_USAGE_SUBSCRIPTION = gql`
   subscription ServerUsage($serverId: Int!) {
@@ -47,7 +49,7 @@ const Stat = ({ title, color, value, loading, completed }) => {
   );
 };
 
-const ServerStat = ({ serverId }) => {
+const ServerStat = ({ serverId, sshConnected }) => {
   const { data, loading, error } = useSubscription(SERVER_USAGE_SUBSCRIPTION, {
     variables: {
       serverId,
@@ -62,7 +64,7 @@ const ServerStat = ({ serverId }) => {
 
   return (
     <div className="flex flex-row items-center">
-      <div className="stats shadow-none">
+      <div className={(classNames("stats shadow-none", sshConnected === false ? "bg-base-200" : ""))}>
         <Stat
           title="CPU"
           color="success"

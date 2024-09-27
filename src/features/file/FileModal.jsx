@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { gql, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { FileTypeEnum } from "../../store/apis/types.generated";
-import { hideModal } from "../../store/reducers/modal";
+import { useModalReducer } from "../../atoms/modal";
 import Error from "../layout/Error"
 
 
@@ -24,6 +24,7 @@ const UPLOAD_FILE = gql`
 const FileModal = ({ ...props }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { hideModal } = useModalReducer();
   const { onCancel, onConfirm } = useSelector((state) => state.modal);
   const [name, setName] = useState(null);
   const [fileType, setFileType] = useState(FileTypeEnum.Secret);
@@ -55,11 +56,11 @@ const FileModal = ({ ...props }) => {
     }
     await uploadFile({ variables: { ...data }});
     if (onConfirm) onConfirm();
-    dispatch(hideModal());
+    hideModal();
   };
   const handleCancel = () => {
     if (onCancel) onCancel();
-    dispatch(hideModal());
+    hideModal();
   };
 
   if (error) return <Error error={error} />;

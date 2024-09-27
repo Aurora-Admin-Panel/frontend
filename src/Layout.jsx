@@ -1,18 +1,32 @@
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBar from "./features/layout/NavBar";
 import SideBar from "./features/layout/SideBar";
 import ThemedSuspense from "./features/ThemedSuspense";
 import { initializeWebSocket, closeWebSocket } from "./store/websocketManager";
-import { useSelector } from "react-redux";
+import { useAuthReducer } from "./atoms/auth";
+import { getToken } from "./apis/auth";
 
 
 const Layout = () => {
-  const token = useSelector((state) => state.auth.token);
+  const { auth: { token } } = useAuthReducer();
+  const { login, logout } = useAuthReducer()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
       initializeWebSocket(token);
+      getToken(token).then((response) => {
+        login(response.data)
+      }).catch((error) => {
+        if (error.response.status === 401) {
+          logout();
+          navigate("/login");
+        } else {
+          console.log(error)
+        }
+      });
     }
     return () => {
       closeWebSocket();

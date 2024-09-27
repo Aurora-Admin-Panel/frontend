@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 import ServerInfoModal from "../server/ServerInfoModal";
 import PortFunctionModal from "../port/PortFunctionModal";
@@ -6,10 +5,10 @@ import PortRestrictionModal from "../port/PortRestrictionModal";
 import FileModal from "../file/FileModal";
 import ConfirmationModal from "./ConfirmationModal";
 import DataLoading from "../DataLoading";
+import { useModalReducer } from "../../atoms/modal";
 
 const ModalManager = () => {
-  const dispatch = useDispatch();
-  const { isOpen, modalType, modalProps } = useSelector((state) => state.modal);
+  const { isOpen, modalType, modalProps } = useModalReducer().modal;
 
   const renderModal = () => {
     switch (modalType) {
@@ -22,7 +21,7 @@ const ModalManager = () => {
       case "portRestriction":
         return <PortRestrictionModal {...modalProps} />;
       case "confirmation":
-        return <ConfirmationModal {...modalProps} />;
+        return <ConfirmationModal />;
       case "loading":
         return <DataLoading />;
       default:

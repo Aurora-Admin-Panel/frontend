@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
 import { gql, useQuery, NetworkStatus, useApolloClient } from "@apollo/client";
+import classNames from "classnames";
 import useSubscripe from "../../hooks/useSubscripe";
 import Icon from "../Icon";
 import { use } from "i18next";
@@ -12,7 +13,7 @@ const CONNECT_SERVER_SUBSCRIPTION = gql`
   }
 `;
 
-const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
+const ServerSSHStat = ({ serverId, sshConnected, setSSHConnected, registerSSHRefetch }) => {
   const { t } = useTranslation();
   const { data, loading, error, subscribe } = useSubscripe(
     CONNECT_SERVER_SUBSCRIPTION,
@@ -22,12 +23,13 @@ const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
     subscribe();
   }, []);
   useEffect(() => {
-    if (data && data.connectServer.success) {
+    if (loading) setSSHConnected(null);
+    else if (data && data.connectServer.success) {
       setSSHConnected(true);
     } else {
       setSSHConnected(false);
     }
-  }, [data]);
+  }, [data, loading]);
   useEffect(() => {
     registerSSHRefetch(() => {
       return subscribe;
@@ -35,7 +37,7 @@ const ServerSSHStat = ({ serverId, setSSHConnected, registerSSHRefetch }) => {
   }, [registerSSHRefetch]);
 
   return (
-    <div className="stats overflow-x-visible shadow-none">
+    <div className={classNames("stats overflow-x-visible shadow-none", sshConnected === false ? "bg-base-200" : "")}>
       <div className="stat place-items-center">
         <div className="stat-title">{t("SSH")}</div>
         <div className="group relative">

@@ -4,11 +4,12 @@ import { useDispatch } from "react-redux";
 import { Plus, X, Minus } from "phosphor-react";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
-import { showModal } from "../../store/reducers/modal";
+import { useModalReducer } from "../../atoms/modal";
 
 const PortSelectCard = ({ port, setSelected }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { showModal } = useModalReducer();
 
   return (
     <div className="relative flex w-72  flex-col items-center justify-center space-y-2 py-4 px-4">

@@ -26,5 +26,9 @@ export const authAtom = atomWithStorage('auth', {
 
 export const useAuthReducer = () => {
     const [auth, dispatch] = useReducerAtom(authAtom, authReducer)
-    return [auth, dispatch]   
+    return {
+        auth,
+        login: (response) => dispatch({ type: 'login', payload: response }),
+        logout: () => dispatch({ type: 'logout' }),
+    }
 }

@@ -9,6 +9,15 @@ export const logIn = data => apiRequest({
   }
 });
 
+export const getToken = (token) => apiRequest({
+  method: "get",
+  url: '/token',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Authorization: `Bearer ${token}`
+  }
+});
+
 export const register = data => apiRequest({
   method: "post",
   url: '/signup',

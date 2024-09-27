@@ -3,33 +3,18 @@ import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import Icon from "../Icon";
 import Paginator from "../Paginator";
-import { showModal } from "../../store/reducers/modal";
 import FileCard from "./FileCard";
 import useQueryParams from "../../hooks/useQueryParams";
 import Error from "../layout/Error";
 import DataLoading from "../DataLoading";
+import { useModalReducer } from "../../atoms/modal"
+import { GET_FILES_QUERY } from "../../quries/file";
 
-const GET_FILES = gql`
-  query GetFiles($limit: Int, $offset: Int) {
-    paginatedFiles(limit: $limit, offset: $offset) {
-      items {
-        id
-        name
-        type
-        size
-        version
-        notes
-        createdAt
-        updatedAt
-      }
-      count
-    }
-  }
-`;
 
 const FileCenter = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { showModal } = useModalReducer();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
       name: "limit",
@@ -44,11 +29,7 @@ const FileCenter = () => {
       replace: false,
     },
   ]);
-  // const { data, isLoading, error, refetch } = useGetFilesQuery({
-  //   limit,
-  //   offset,
-  // });
-  const { loading, error, data, refetch } = useQuery(GET_FILES, {
+  const { loading, error, data, refetch } = useQuery(GET_FILES_QUERY, {
     variables: { limit, offset },
   });
 

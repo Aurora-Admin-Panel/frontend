@@ -3,15 +3,11 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { gql, useMutation } from "@apollo/client";
 import { getReadableSize } from "../../utils/formatter";
-import { showModal } from "../../store/reducers/modal";
+import { useModalReducer } from "../../atoms/modal"
+import { DELETE_FILE_MUTATION } from "../../quries/file";
 import { useEffect } from "react";
 import Icon from "../Icon";
 
-const DELETE_FILE = gql`
-  mutation DeleteFile($id: Int!) {
-    deleteFile(id: $id)
-  }
-`;
 
 const fileTypeToBadge = (type) => {
   switch (type) {
@@ -49,10 +45,9 @@ const fileTypeToIcon = (type) => {
 
 const FileCard = ({ file, onUpdate }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const [deleteFile, { called, error }] = useMutation(DELETE_FILE);
+  const [deleteFile, { called, error }] = useMutation(DELETE_FILE_MUTATION);
+  const { showModal } = useModalReducer();
   const handleClickCancel = () => {
-    dispatch(
       showModal({
         modalType: "confirmation",
         modalProps: {
@@ -63,7 +58,6 @@ const FileCard = ({ file, onUpdate }) => {
         },
         onConfirm: () => deleteFile({ variables: { id: file.id } }),
       })
-    );
   };
 
   useEffect(() => {

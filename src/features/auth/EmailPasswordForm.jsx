@@ -3,14 +3,14 @@ import { Link, Navigate } from "react-router-dom";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
 
+import { resetGraphQLLink } from "../../grapgql"
 import { logIn, register } from "../../apis/auth";
 import { useAuthReducer } from "../../atoms/auth";
 import { validateEmail } from "../../utils/validators";
 
 const EmailPasswordForm = ({ create = false }) => {
   const { t } = useTranslation();
-
-  const [auth, dispatch] = useAuthReducer()
+  const { login } = useAuthReducer()
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +42,8 @@ const EmailPasswordForm = ({ create = false }) => {
       } else {
         response = await logIn({ username: email, password: password });
       }
-      dispatch({ type: "login", payload: response.data })
+      login(response.data)
+      resetGraphQLLink()
     } catch (error) {
       console.log(error)
     }
@@ -116,7 +117,7 @@ const EmailPasswordForm = ({ create = false }) => {
             <label className="label">
               <Link
                 to="/create-account"
-                className="link link-hover label-text-alt link-secondary text-info"
+                className="link link-accent link-hover"
               >
                 Create Account
               </Link>

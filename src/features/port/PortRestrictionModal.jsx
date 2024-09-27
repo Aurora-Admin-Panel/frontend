@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
-import { useDispatch, useSelector } from "react-redux";
-import { hideModal } from "../../store/reducers/modal";
-import DataLoading from "../DataLoading";
+import { useSelector } from "react-redux";
+import { useModalReducer } from "../../atoms/modal";
 
 const GET_PORT_QUERY = gql`
   query GetPort($portId: Int!) {
@@ -17,12 +16,12 @@ const GET_PORT_QUERY = gql`
 
 const PortRestrictionModal = () => {
   const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
   const {
-    modalProps: { port },
-    onCancel,
-    onConfirm,
-  } = useSelector((state) => state.modal);
+    modal: {
+      modalProps: { port },
+      onCancel,
+    },
+    hideModal } = useModalReducer();
   const { data: portData, isLoading: portLoading } = useQuery(GET_PORT_QUERY, {
     variables: {
       portId: port.id,
@@ -32,17 +31,17 @@ const PortRestrictionModal = () => {
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    dispatch(hideModal());
+    hideModal();
   };
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => { };
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   return (
     <div className="modal-box relative">
       <label
         className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={() => dispatch(hideModal())}
+        onClick={() => hideModal()}
       >
         ✕
       </label>

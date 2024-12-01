@@ -2977,7 +2977,12 @@ jose@^4.11.4:
   resolved "https://registry.npmjs.org/jose/-/jose-4.14.6.tgz"
   integrity sha512-EqJPEUlZD0/CSUMubKtMaYUOtWe91tZXTWMJZoKSbLk+KtdhNdcvppH8lA9XwVu2V4Ailvsj0GBZJ2ZwDjfesQ==
 
-jotai@^2.6.3:
+jotai-location@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.npmjs.org/jotai-location/-/jotai-location-0.5.5.tgz"
+  integrity sha512-6QW/7W9IJHjhbn7gRgAw4sC30k0/G6JiC4uPlKi8ZPZGYk7R7r9PyMD2eVhL4XSxxag89JxS1iSyr6BIXsB4Sw==
+
+jotai@^2.6.3, jotai@>=1.11.0:
   version "2.6.3"
   resolved "https://registry.npmjs.org/jotai/-/jotai-2.6.3.tgz"
   integrity sha512-0htSJ2d6426ZdSEYHncJHXY6Lkgde1Hc2HE/ADIRi9d2L3hQL+jLKY1LkWBMeCNyOSlKH8+1u/Gc33Ox0uq21Q==

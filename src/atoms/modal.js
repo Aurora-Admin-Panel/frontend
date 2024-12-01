@@ -1,8 +1,10 @@
-import { useReducerAtom, atomWithStorage } from "jotai/utils";
+import { atom } from "jotai";
+import { useReducerAtom } from "jotai/utils";
 
-export const modalAtom = atomWithStorage('modal', {
+export const modalAtom = atom({
     isOpen: false,
     modalType: null,
+    hasBackdrop: false,
     modalProps: {},
     onConfirm: null,
     onCancel: null,
@@ -12,6 +14,7 @@ const modalReducer = (prev, action) => {
     if (action.type === 'showModal') {
         return {
             isOpen: true,
+            hasBackdrop: action.payload.hasBackdrop || false,
             modalType: action.payload.modalType,
             modalProps: action.payload.modalProps || {},
             onConfirm: action.payload.onConfirm || null,
@@ -20,6 +23,7 @@ const modalReducer = (prev, action) => {
     } else if (action.type === 'hideModal') {
         return {
             isOpen: false,
+            hasBackdrop: false,
             modalType: null,
             modalProps: {},
             onConfirm: null,
@@ -30,6 +34,7 @@ const modalReducer = (prev, action) => {
         const { dispatch } = action.payload
         return {
             isOpen: true,
+            hasBackdrop: false,
             modalType: 'confirmation',
             modalProps: action.payload.modalProps || {},
             onConfirm: action.payload.onConfirm || null,

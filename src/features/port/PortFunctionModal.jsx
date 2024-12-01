@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
-import { useDispatch, useSelector } from "react-redux";
 import DataLoading from "../DataLoading";
 import { useModalReducer } from "../../atoms/modal";
 
@@ -14,14 +13,14 @@ const GET_RULE_OPTIONS_QUERY = gql`
 
 const PortFunctionModal = () => {
   const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
-  const { hideModal } = useModalReducer();
   const {
-    modalProps: { port, serverId },
-    onCancel,
-    onConfirm,
-  } = useSelector((state) => state.modal);
-  const { data: ruleOptions, isLoading: ruleOptionsLoading } = useQuery(
+    modal: {
+      modalProps: { port, serverId },
+      onCancel,
+    },
+    hideModal,
+  } = useModalReducer();
+  const { data: ruleOptions, loading: ruleOptionsLoading } = useQuery(
     GET_RULE_OPTIONS_QUERY,
     { variables: { portId: port.id } }
   );
@@ -32,9 +31,10 @@ const PortFunctionModal = () => {
     if (onCancel) onCancel();
     hideModal();
   };
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => { };
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
+  console.log(ruleOptions, ruleOptionsLoading);
 
   return (
     <div className="modal-box relative">

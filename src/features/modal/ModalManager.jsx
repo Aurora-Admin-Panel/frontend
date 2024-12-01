@@ -8,7 +8,8 @@ import DataLoading from "../DataLoading";
 import { useModalReducer } from "../../atoms/modal";
 
 const ModalManager = () => {
-  const { isOpen, modalType, modalProps } = useModalReducer().modal;
+  const { isOpen, hasBackdrop, modalType, modalProps } = useModalReducer().modal;
+  const { hideModal } = useModalReducer();
 
   const renderModal = () => {
     switch (modalType) {
@@ -36,6 +37,7 @@ const ModalManager = () => {
       })}
     >
       {renderModal()}
+      {hasBackdrop && <div className="modal-backdrop" onClick={hideModal} />}
     </div>
   );
 };

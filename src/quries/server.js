@@ -6,6 +6,7 @@ export const GET_SERVERS_QUERY = gql`
       items {
         id
         name
+        address
         portUsed
         portTotal
         downloadTotal

@@ -1,21 +1,25 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ServerCard from "./ServerCard";
+import ServerRow from "./ServerRow";
 import Icon from "../Icon";
 import { gql, useQuery } from "@apollo/client";
 import { GET_SERVERS_QUERY } from "../../quries/server";
 import Error from "../layout/Error";
 import Paginator from "../Paginator";
 import useQueryParams from "../../hooks/useQueryParams";
+import { useAtom } from "jotai";
+import serverLimitAtom from "../../atoms/server/limit";
 import { useModalReducer } from "../../atoms/modal";
 
 const ServerList = () => {
   const { t } = useTranslation();
   const { showModal } = useModalReducer();
-  const [limit, offset, setLimit, setOffset] = useQueryParams([
+  const [atomLimit, setAtomLimit] = useAtom(serverLimitAtom);
+  const [limit, offset, setQueryLimit, setOffset] = useQueryParams([
     {
       name: "limit",
-      defaultValue: 10,
+      defaultValue: atomLimit,
       isNumeric: true,
       replace: false,
     },
@@ -30,7 +34,12 @@ const ServerList = () => {
     GET_SERVERS_QUERY,
     { variables: { limit, offset } }
   );
-  const [listStyle, setListStyle] = useState("Cards view");
+  const [listStyle, setListStyle] = useState("List view");
+
+  const setLimit = useCallback((value) => {
+    setAtomLimit(value);
+    setQueryLimit(value);
+  }, [setAtomLimit, setQueryLimit]);
 
   if (error) return <Error error={error} />;
   return (
@@ -81,7 +90,49 @@ const ServerList = () => {
           ></Paginator>
         </>
       ) : (
-        <span>list</span>
+        <>
+          <div className="overflow-x-auto">
+            <table className="table border-separate border-spacing-y-2.5 table-fixed max-w-screen-lg mx-auto">
+              <thead className="text-center">
+                <tr>
+                  <th className="w-32 sticky left-0 z-10 bg-base-100">
+                    {t("Name")}
+                  </th>
+                  <th className="w-16">{t("SSH")}</th>
+                  <th className="w-16">{t("Ports")}</th>
+                  <th className="w-16">{t("Traffic")}</th>
+                  <th className="w-24">{t("Address")}</th>
+                  <th className="w-12">{t("CPU")}</th>
+                  <th className="w-12">{t("Mem")}</th>
+                  <th className="w-12">{t("Disk")}</th>
+                  <th className="w-16 sticky right-0 z-10 bg-base-100">{t("Actions")}</th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                { loading ? (
+                  Array.from(Array(limit)).map((_, i) => (
+                    <tr key={i} className="h-16 w-full skeleton" />
+                  ))
+                ) : (
+                  (data?.paginatedServers?.items ?? []).map((server) => (
+                    <ServerRow key={server.id} server={server} refetch={refetch} />
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex w-full flex-row justify-end mx-auto max-w-screen-lg mx-auto">
+            <Paginator
+              isLoading={loading}
+              count={data?.paginatedServers?.count}
+              limit={limit}
+              offset={offset}
+              setLimit={setLimit}
+              setOffset={setOffset}
+            ></Paginator>
+
+          </div>
+        </>
       )}
     </>
   );

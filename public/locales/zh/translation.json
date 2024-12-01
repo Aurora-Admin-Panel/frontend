@@ -66,6 +66,7 @@
     "Mem": "内存",
     "Disk": "硬盘",
     "Connecting": "连接中",
+    "Actions": "操作",
     "total": "共{{count}}项",
     "items per page": "每页{{limit}}项",
     "page": "第{{page}}页",

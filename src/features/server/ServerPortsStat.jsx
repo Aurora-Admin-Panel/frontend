@@ -6,9 +6,8 @@ const ServerPortsStat = ({ usedPorts, totalPorts, sshConnected }) => {
 
   return (
     <div className={classNames("shadow-none stats", sshConnected === false ? "bg-base-200" : "")}>
-      <div className="stat place-items-center">
-        <div className="stat-title">{t("Ports")}</div>
-        <div className="text-xl font-extrabold">
+      <div className="place-items-center">
+        <div className="text-md font-extrabold flex flex-row items-center space-x-1">
           <span className="text-secondary-focus">{usedPorts}</span>
           <span className="text-neutral">/</span>
           <span className="text-secondary">{totalPorts}</span>

@@ -67,6 +67,7 @@
     "Mem": "Mem",
     "Disk": "Disk",
     "Connecting": "Connecting",
+    "Actions": "Actions",
     "total": "{{count}} total",
     "items per page": "{{limit}} per page",
     "page": "page {{page}}",

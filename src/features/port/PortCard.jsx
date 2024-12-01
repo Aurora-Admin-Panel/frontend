@@ -35,7 +35,6 @@ const methodToBadge = (method) => {
 
 const PortCard = ({ port, onUpdate, setSelected }) => {
   const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
   const { showModal } = useModalReducer();
 
   return (
@@ -83,15 +82,13 @@ const PortCard = ({ port, onUpdate, setSelected }) => {
             )}
             {port.forwardRule ? (
               <div
-                className="max-w-16 badge badge-secondary tooltip cursor-pointer items-center justify-start truncate px-1 text-xs"
+                className="flex flex-row max-w-16 badge badge-secondary tooltip cursor-pointer items-center justify-center truncate px-1 text-xs"
                 data-tip={port.forwardRule.method}
                 onClick={() =>
-                  dispatch(
                     showModal({
                       modalType: "portFunction",
                       modalProps: { port, serverId: 44 },
-                    })
-                  )
+                  })
                 }
               >
                 {port.forwardRule.method}
@@ -100,12 +97,11 @@ const PortCard = ({ port, onUpdate, setSelected }) => {
               <div
                 className="badge badge-outline w-8 cursor-pointer px-1 text-xs"
                 onClick={() =>
-                  dispatch(
                     showModal({
                       modalType: "portFunction",
                       modalProps: { port, serverId: 44 },
                     })
-                  )
+                  
                 }
               >
                 <Plus size={12} />

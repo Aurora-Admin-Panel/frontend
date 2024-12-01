@@ -17,7 +17,7 @@ const SERVER_USAGE_SUBSCRIPTION = gql`
   }
 `;
 
-const Stat = ({ title, color, value, loading, completed }) => {
+const Stat = ({ color, value, loading, completed }) => {
   const { t } = useTranslation();
   const [scope, animate] = useAnimate();
 
@@ -28,8 +28,7 @@ const Stat = ({ title, color, value, loading, completed }) => {
   }, [value]);
 
   return (
-    <div className="stat place-items-center">
-      <div className="stat-title">{t(title)}</div>
+    <div className="place-items-center">
       {completed || value === null || value === undefined ? (
         <Icon icon="Prohibit" className="text-netural opacity-60" />
       ) : loading ? (
@@ -41,7 +40,7 @@ const Stat = ({ title, color, value, loading, completed }) => {
           />
         </div>
       ) : (
-        <div className={`stat-desc text-${color}`} ref={scope}>
+        <div className={`text-${color} text-sm`} ref={scope}>
           {value}%
         </div>
       )}
@@ -63,31 +62,32 @@ const ServerStat = ({ serverId, sshConnected }) => {
   if (error) return <Error error={error} />;
 
   return (
-    <div className="flex flex-row items-center">
-      <div className={(classNames("stats shadow-none", sshConnected === false ? "bg-base-200" : ""))}>
+    <>
+      <td className="text-center p-2">
         <Stat
-          title="CPU"
           color="success"
           value={data?.serverUsage?.cpu}
           loading={loading}
           completed={completed}
         />
+      </td>
+      <td className="text-center p-2">
         <Stat
-          title="Mem"
           color="warning"
           value={data?.serverUsage?.memory}
           loading={loading}
           completed={completed}
         />
+      </td>
+      <td className="text-center p-2">
         <Stat
-          title="Disk"
           color="error"
           value={data?.serverUsage?.disk}
           loading={loading}
           completed={completed}
         />
-      </div>
-    </div>
+      </td>
+    </>
   );
 };
 

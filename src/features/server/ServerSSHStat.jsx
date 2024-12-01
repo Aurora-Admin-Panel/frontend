@@ -37,9 +37,8 @@ const ServerSSHStat = ({ serverId, sshConnected, setSSHConnected, registerSSHRef
   }, [registerSSHRefetch]);
 
   return (
-    <div className={classNames("stats overflow-x-visible shadow-none", sshConnected === false ? "bg-base-200" : "")}>
-      <div className="stat place-items-center">
-        <div className="stat-title">{t("SSH")}</div>
+    <div className={classNames("overflow-x-visible shadow-none", sshConnected === false ? "bg-base-200" : "")}>
+      <div className="place-items-center">
         <div className="group relative">
           {loading ? (
             <button

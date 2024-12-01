@@ -42,10 +42,9 @@ const ServerTrafficStat = ({
   const { t } = useTranslation();
 
   return (
-    <div className={classNames("stats shadow-none", sshConnected === false ? "bg-base-200" : "")}>
-      <div className="stat grid-cols-2 place-items-center">
-        <div className="stat-title">{t("Traffic")}</div>
-        <div className="flex flex-col items-center text-xl font-bold text-accent">
+    <div className={classNames("shadow-none", sshConnected === false ? "bg-base-200" : "")}>
+      <div className="grid-cols-2 place-items-center">
+        <div className="flex flex-col items-center text-md font-bold text-accent">
           <span
             className={classNames(
               "flex flex-row items-center",

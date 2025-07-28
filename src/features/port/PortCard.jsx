@@ -38,7 +38,7 @@ const PortCard = ({ port, onUpdate, setSelected }) => {
   const { showModal } = useModalReducer();
 
   return (
-    <div className="card relative h-44 w-40 justify-self-center bg-base-100 shadow-xl">
+    <div className="card relative h-44 w-40 justify-self-center bg-base-200 border-primary border-1 shadow-xl rounded-box">
       <div className="card-body px-4 py-4">
         <h2 className="card-title h-6 truncate">
           <span className="toopltip tooltip-bottom" data-tip={port.num}>

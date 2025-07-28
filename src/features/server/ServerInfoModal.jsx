@@ -14,7 +14,7 @@ import { showNotification } from "../../store/reducers/notification";
 
 
 const ServerInfoModal = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const {
     modal: {
@@ -99,6 +99,7 @@ const ServerInfoModal = () => {
   const [sudoPasswordNotNeeded, setSudoPasswordNotNeeded] = useState(true);
   const [keyFile, setKeyFile] = useState(null);
   const [keyFileId, setKeyFileId] = useState("");
+  console.log(sshPassword)
 
   const handleDelete = () => {
     showConfirmationModal({

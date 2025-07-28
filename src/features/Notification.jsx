@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { X } from "phosphor-react";
 import classNames from "classnames";
-import { removeNotification } from "../store/reducers/notification";
+import { useNotificationsReducer } from "../atoms/notification";
 
 const typeToClass = (type) => {
   switch (type) {
@@ -55,9 +55,7 @@ const ProgressBar = ({ duration, type, pausedState }) => {
 };
 
 const Notification = () => {
-  const { notifications } = useSelector((state) => state.notification);
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { notifications, removeNotification } = useNotificationsReducer();
   const timers = useRef(new Map());
   const startTimes = useRef(new Map());
   const remainingDurations = useRef(new Map());
@@ -68,15 +66,15 @@ const Notification = () => {
     remainingDurations.current.set(
       id,
       startTimes.current.get(id) +
-        remainingDurations.current.get(id) -
-        Date.now()
+      remainingDurations.current.get(id) -
+      Date.now()
     );
     setPausedState({ id, paused: true });
   };
 
   const resumeTimer = (id) => {
     const timer = setTimeout(() => {
-      dispatch(removeNotification(id));
+      removeNotification(id);
       timers.current.delete(id);
       startTimes.current.delete(id);
       remainingDurations.current.delete(id);
@@ -90,7 +88,7 @@ const Notification = () => {
     notifications.forEach((notification) => {
       if (!timers.current.has(notification.id)) {
         const timer = setTimeout(() => {
-          dispatch(removeNotification(notification.id));
+          removeNotification(notification.id);
           timers.current.delete(notification.id);
           startTimes.current.delete(notification.id);
           remainingDurations.current.delete(notification.id);
@@ -100,7 +98,7 @@ const Notification = () => {
         remainingDurations.current.set(notification.id, notification.duration);
       }
     });
-  }, [notifications, dispatch]);
+  }, [notifications]);
 
   useEffect(() => {
     return () => {
@@ -109,49 +107,53 @@ const Notification = () => {
   }, []);
   return (
     <>
-      <div className="fixed top-16 right-8 z-50 flex flex-col items-end space-y-2">
-        {notifications.map((notification) => (
-          <div
-            className="inline-flex"
-            key={notification.id}
-            onMouseEnter={() => pauseTimer(notification.id)}
-            onMouseLeave={() => resumeTimer(notification.id)}
-          >
-            <div
-              className={classNames(
-                "alert relative flex max-w-xs items-center overflow-hidden shadow-lg",
-                typeToClass(notification.type)
-              )}
+      <ul className="fixed top-16 right-8 z-50 flex flex-col items-end space-y-2">
+        <AnimatePresence initial={false} mode="popLayout">
+          {notifications.map((notification) => (
+            <motion.li
+              key={notification.id}
+              layout
+              initial={{ opacity: 0, y: 50, scale: 0.3 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             >
-              <div className="flex-1">
-                <div className="flex flex-row items-center justify-center space-x-2">
-                  {notification.body && (
-                    <div className="text-xs">
-                      {notification.title && (<span className="font-bold">[{t(notification.title)}]&nbsp;</span>)}
-                      {t(notification.body)}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="btn btn-circle btn-outline btn-xs"
-                onClick={() => dispatch(removeNotification(notification.id))}
+              <div
+                className={classNames(
+                  "alert relative flex max-w-xs items-center overflow-hidden shadow-lg",
+                  typeToClass(notification.type)
+                )}
               >
-                <X />
-              </button>
-              <div className="absolute inset-x-0 bottom-0 z-40 w-full">
-                <ProgressBar
-                  duration={notification.duration}
-                  type={notification.type}
-                  pausedState={
-                    pausedState.id === notification.id ? pausedState : null
-                  }
-                />
+                <div className="flex-1">
+                  <div className="flex flex-row items-center justify-center space-x-2">
+                    {notification.body && (
+                      <div className={`text-xs text-${notification.type}-content`}>
+                        {notification.title && (<span className="font-bold">[{notification.title}]&nbsp;</span>)}
+                        {notification.body}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  className={`btn btn-circle btn-outline btn-xs text-${notification.type}-content`}
+                  onClick={() => removeNotification(notification.id)}
+                >
+                  <X />
+                </button>
+                <div className="absolute inset-x-0 bottom-0 z-40 w-full">
+                  <ProgressBar
+                    duration={notification.duration}
+                    type={notification.type}
+                    pausedState={
+                      pausedState.id === notification.id ? pausedState : null
+                    }
+                  />
+                </div>
+
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
     </>
   );
 };

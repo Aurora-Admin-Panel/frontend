@@ -2200,10 +2200,10 @@ culori@^3:
   resolved "https://registry.npmjs.org/culori/-/culori-3.2.0.tgz"
   integrity sha512-HIEbTSP7vs1mPq/2P9In6QyFE0Tkpevh0k9a+FkjhD+cwsYm9WRSbn4uMdW9O0yXlNYC3ppxL3gWWPOcvEl57w==
 
-daisyui@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.npmjs.org/daisyui/-/daisyui-4.0.5.tgz"
-  integrity sha512-UNHgz5puB9YHlTM6/BsjHmc1G08i0YP/5Qth9zoeP3pdFrIJ5WOkHeDBx8jmmz29rqoG4Q1PCRbsGo4WyiVlKg==
+daisyui@^4.12.23:
+  version "4.12.24"
+  resolved "https://registry.npmjs.org/daisyui/-/daisyui-4.12.24.tgz"
+  integrity sha512-JYg9fhQHOfXyLadrBrEqCDM6D5dWCSSiM6eTNCRrBRzx/VlOCrLS8eDfIw9RVvs64v2mJdLooKXY8EwQzoszAA==
   dependencies:
     css-selector-tokenizer "^0.8"
     culori "^3"

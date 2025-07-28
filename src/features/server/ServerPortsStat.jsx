@@ -5,7 +5,7 @@ const ServerPortsStat = ({ usedPorts, totalPorts, sshConnected }) => {
   const { t } = useTranslation();
 
   return (
-    <div className={classNames("shadow-none stats", sshConnected === false ? "bg-base-200" : "")}>
+    <div className={classNames("shadow-none stats bg-base-200")}>
       <div className="place-items-center">
         <div className="text-md font-extrabold flex flex-row items-center space-x-1">
           <span className="text-secondary-focus">{usedPorts}</span>

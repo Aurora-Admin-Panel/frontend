@@ -57,6 +57,7 @@
     "Server saved successfully": "服务器保存成功",
     "Server added successfully": "服务器添加成功",
     "Server deleted successfully": "服务器删除成功",
+    "Server address copied to clipboard": "服务器地址已复制",
     "Servers": "服务器",
     "Delete Server": "删除服务器",
     "Are you sure you want to delete this server?": "确定删除该服务器?",

@@ -13,29 +13,24 @@ import { createUploadLink } from "apollo-upload-client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient as createWSClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { showNotification } from "./store/reducers/notification";
+import { useNotificationsReducer } from "./atoms/notification";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  // console.log(graphQLErrors, networkError);
+  console.log(graphQLErrors, networkError);
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) =>
-      store.dispatch(
-        showNotification({
-          title: i18n.t("GraphQL error"),
-          body: message,
-          type: "error",
-        })
-      )
-    );
-  if (networkError) {
-    store.dispatch(
-      showNotification({
-        title: i18n.t("Network error"),
-        body: networkError.message,
+      useNotificationsReducer().addNotification({
+        title: i18n.t("GraphQL error"),
+        body: message,
         type: "error",
       })
-    )
-  }
+    );
+  if (networkError)
+    useNotificationsReducer().addNotification({
+      title: i18n.t("Network error"),
+      body: networkError.message,
+      type: "error",
+    })
 });
 
 const getTokenFromStorage = () => {

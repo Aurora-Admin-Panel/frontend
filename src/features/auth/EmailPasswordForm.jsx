@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
+import { useNotificationsReducer } from "../../atoms/notification";
 
 import { resetGraphQLLink } from "../../grapgql"
 import { logIn, register } from "../../apis/auth";
@@ -11,7 +12,7 @@ import { validateEmail } from "../../utils/validators";
 const EmailPasswordForm = ({ create = false }) => {
   const { t } = useTranslation();
   const { login } = useAuthReducer()
-
+  const { addNotification } = useNotificationsReducer()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -46,6 +47,11 @@ const EmailPasswordForm = ({ create = false }) => {
       resetGraphQLLink()
     } catch (error) {
       console.log(error)
+      addNotification({
+        title: t("Error"),
+        body: error.message,
+        type: "error",
+      })
     }
   };
 

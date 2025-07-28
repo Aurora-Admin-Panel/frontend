@@ -101,7 +101,7 @@ const ServerList = () => {
                   <th className="w-16">{t("SSH")}</th>
                   <th className="w-16">{t("Ports")}</th>
                   <th className="w-16">{t("Traffic")}</th>
-                  <th className="w-24">{t("Address")}</th>
+                  <th className="w-28">{t("Address")}</th>
                   <th className="w-12">{t("CPU")}</th>
                   <th className="w-12">{t("Mem")}</th>
                   <th className="w-12">{t("Disk")}</th>
@@ -111,7 +111,9 @@ const ServerList = () => {
               <tbody className="text-center">
                 { loading ? (
                   Array.from(Array(limit)).map((_, i) => (
-                    <tr key={i} className="h-16 w-full skeleton" />
+                    <tr key={i} className="w-full">
+                      <td className="h-20 w-full skeleton" colSpan={9}></td>
+                    </tr>
                   ))
                 ) : (
                   (data?.paginatedServers?.items ?? []).map((server) => (

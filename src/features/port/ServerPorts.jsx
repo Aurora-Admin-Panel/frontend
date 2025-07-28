@@ -165,7 +165,7 @@ const ServerPorts = () => {
           <DataLoading />
         ) : (
           <>
-            <div className="grid w-full grid-cols-1 gap-4 px-2 pb-4 pt-2 place-content-evenly place-items-center xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4  lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+            <div className="grid w-full grid-cols-1 gap-2 gap-y-6 px-2 pb-4 pt-2 place-content-evenly place-items-center xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4  lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
               {(data?.paginatedPorts?.items ?? []).map((port) => (
                 <motion.div key={port.id} layoutId={port.id}>
                   <PortCard

@@ -1,3 +1,4 @@
+import "./polyfills/symbolObservable"
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";

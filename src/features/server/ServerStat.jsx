@@ -154,6 +154,7 @@ const ServerStat = ({ serverId, sshConnected, metric }) => {
             value={Math.round(cpuSeries[cpuSeries.length - 1] ?? 0)}
             unit={"%"}
             data={cpuSeries}
+            labelA={t("CPU")}
             accent={cpuAccent}
           />
         )}
@@ -177,6 +178,7 @@ const ServerStat = ({ serverId, sshConnected, metric }) => {
           <Chart
             value={Math.round(memSeries[memSeries.length - 1] ?? 0)}
             unit={"%"}
+            labelA={t("Mem")}
             data={memSeries}
             accent={memAccent}
           />

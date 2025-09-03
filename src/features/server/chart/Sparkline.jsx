@@ -7,6 +7,7 @@ import {
   Line,
   ResponsiveContainer,
   Tooltip,
+  YAxis,
 } from "recharts";
 
 // Build data points for one or two series.
@@ -36,6 +37,7 @@ const Sparkline = ({
   labelB = "Down",
   colorA = "currentColor", // respects parent text color
   colorB = "hsl(var(--su))", // DaisyUI success by default for clarity
+  unit = null, // "%" to normalize area to 0–100
 }) => {
   const uid = useId().replace(/:/g, "");
   const containerRef = useRef(null);
@@ -112,6 +114,9 @@ const Sparkline = ({
         <ResponsiveContainer width="100%" height="100%">
           {area ? (
             <AreaChart data={series} margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
+              {unit === "%" && (
+                <YAxis hide domain={[0, 100]} />
+              )}
               <defs>
                 <linearGradient id={`grad-a-${uid}`} x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0%" stopColor={colorA} stopOpacity={0.35} />
@@ -156,6 +161,9 @@ const Sparkline = ({
             </AreaChart>
           ) : (
             <LineChart data={series} margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
+              {unit === "%" && (
+                <YAxis hide domain={[0, 100]} />
+              )}
               <Tooltip
                 cursor={{ stroke: "currentColor", strokeDasharray: "3 3", opacity: 0.2 }}
                 isAnimationActive={false}

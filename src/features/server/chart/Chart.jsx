@@ -31,6 +31,7 @@ export const Chart = ({
           data2={data2}
           className={`w-full h-full ${accent}`}
           formatValue={fmt}
+          unit={unit}
           area={area}
           labelA={labelA}
           labelB={labelB}

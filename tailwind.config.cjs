@@ -11,7 +11,10 @@ function withOpacityValue(variable) {
 }
 
 module.exports = {
-  content: ["./src/**/*.{js,jsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     screens: {
       "ssm": "320px",

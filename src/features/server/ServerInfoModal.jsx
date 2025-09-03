@@ -197,11 +197,9 @@ const ServerInfoModal = () => {
           </label>
           <h3 className="-mt-3 text-lg font-bold">{serverId ? t("Edit Server") : t("Add Server")}</h3>
 
-          <div className="mt-4 flex w-full flex-col space-y-2 md:space-y-3 px-2">
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">{t("Name")}</span>
-              </label>
+          <div className="mt-4 flex w-full flex-col space-y-0 px-2">
+            <fieldset className="fieldset w-full">
+              <legend className="fieldset-legend">{t("Name")}</legend>
               <input
                 type="text"
                 value={name}
@@ -209,11 +207,9 @@ const ServerInfoModal = () => {
                 placeholder={t("Server Name Placeholder")}
                 className="input input-bordered w-full"
               />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">{t("Address")}</span>
-              </label>
+            </fieldset>
+            <fieldset className="fieldset w-full">
+              <legend className="fieldset-legend">{t("Address")}</legend>
               <input
                 type="text"
                 value={address}
@@ -221,11 +217,9 @@ const ServerInfoModal = () => {
                 placeholder="www.example.com"
                 className="input input-bordered w-full"
               />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">{t("SSH Connection Info")}</span>
-              </label>
+            </fieldset>
+            <fieldset className="fieldset w-full">
+              <legend className="fieldset-legend">{t("SSH Connection Info")}</legend>
               <div className="flex flex-row items-center">
                 <input
                   type="text"
@@ -251,24 +245,20 @@ const ServerInfoModal = () => {
                   className="input input-bordered w-1/4 text-xs"
                 />
               </div>
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">{t("SSH Password")}</span>
-                <span className="label-text-alt flex items-center">
+            </fieldset>
+            <fieldset className="fieldset w-full">
+              <legend className="fieldset-legend flex items-center justify-between">
+                <span>{t("SSH Password")}</span>
+                <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={sshPasswordNotNeeded}
-                    onChange={() =>
-                      setSSHPasswordNotNeeded(!sshPasswordNotNeeded)
-                    }
-                    className="checkbox-primary checkbox checkbox-xs"
+                    onChange={() => setSSHPasswordNotNeeded(!sshPasswordNotNeeded)}
+                    className="checkbox checkbox-primary checkbox-xs"
                   />
-                  <span className="label-text pl-1">
-                    {t("SSH password not needed")}
-                  </span>
-                </span>
-              </label>
+                  <span className="pl-2 text-sm">{t("SSH password not needed")}</span>
+                </label>
+              </legend>
               <input
                 type="password"
                 value={sshPassword}
@@ -278,28 +268,23 @@ const ServerInfoModal = () => {
                     ? t("SSH Password Set Placeholder")
                     : t("SSH Password Placeholder")
                 }
-                className={classNames("input input-bordered w-full", {
-                  "input-disabled": sshPasswordNotNeeded,
-                })}
+                className="input input-bordered w-full"
+                disabled={sshPasswordNotNeeded}
               />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">{t("SUDO Password")}</span>
-                <span className="label-text-alt flex items-center">
+            </fieldset>
+            <fieldset className="fieldset w-full">
+              <legend className="fieldset-legend flex items-center justify-between">
+                <span>{t("SUDO Password")}</span>
+                <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={sudoPasswordNotNeeded}
-                    onChange={() =>
-                      setSudoPasswordNotNeeded(!sudoPasswordNotNeeded)
-                    }
-                    className="checkbox-primary checkbox checkbox-xs"
+                    onChange={() => setSudoPasswordNotNeeded(!sudoPasswordNotNeeded)}
+                    className="checkbox checkbox-primary checkbox-xs"
                   />
-                  <span className="label-text pl-1">
-                    {t("SUDO password not needed")}
-                  </span>
-                </span>
-              </label>
+                  <span className="pl-2 text-sm">{t("SUDO password not needed")}</span>
+                </label>
+              </legend>
               <input
                 type="password"
                 value={sudoPassword}
@@ -309,26 +294,21 @@ const ServerInfoModal = () => {
                     ? t("SUDO Password Set Placeholder")
                     : t("SUDO Password Placeholder")
                 }
-                className={classNames("input input-bordered w-full", {
-                  "input-disabled": sudoPasswordNotNeeded,
-                })}
+                className="input input-bordered w-full"
+                disabled={sudoPasswordNotNeeded}
               />
-            </div>
-            <div className="flex flex-col items-center justify-center space-x-2 sm:flex-row">
-              <div className="form-control w-full sm:w-1/2">
-                <label className="label">
-                  <span className="label-text">{t("Upload SSH Key")}</span>
-                </label>
+            </fieldset>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">{t("Upload SSH Key")}</legend>
                 <input
                   type="file"
                   onChange={(e) => setKeyFile(e.target.files[0])}
                   className="file-input file-input-bordered file-input-md w-full max-w-xs"
                 />
-              </div>
-              <div className="form-control w-full sm:w-1/2">
-                <label className="label">
-                  <span className="label-text">{t("Select SSH Key")}</span>
-                </label>
+              </fieldset>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">{t("Select SSH Key")}</legend>
                 <select
                   className="select select-bordered select-md"
                   value={keyFileId}
@@ -341,7 +321,7 @@ const ServerInfoModal = () => {
                     </option>
                   ))}
                 </select>
-              </div>
+              </fieldset>
             </div>
           </div>
           <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">

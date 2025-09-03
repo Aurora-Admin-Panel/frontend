@@ -15,6 +15,7 @@
     "@sentry/react": "^7.10.0",
     "@sentry/tracing": "^7.10.0",
     "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/vite": "^4.1.12",
     "apollo-upload-client": "^17.0.0",
     "axios": "^0.27.2",
     "classnames": "^2.3.1",
@@ -54,7 +55,7 @@
     "@types/node": "^18.15.3",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "@vitejs/plugin-react-swc": "^3.3.2",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "autoprefixer": "^10.4.8",
     "cross-env": "^7.0.3",
     "esbuild-runner": "^2.2.2",
@@ -63,8 +64,8 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "ts-node": "^10.9.1",
-    "vite": "^4.4.5",
-    "vite-plugin-svgr": "^3.2.0",
-    "vite-tsconfig-paths": "^4.2.1"
+    "vite": "^5.4.0",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^5.1.2"
   }
 }

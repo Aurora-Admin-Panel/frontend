@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
 import svgr from 'vite-plugin-svgr'
 import path from 'node:path'
@@ -13,7 +14,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
 },
-  plugins: [svgr(), react()],
+  plugins: [tailwindcss(), svgr(), react()],
   server: {
     proxy: {
       '/api': 'http://localhost:8000',

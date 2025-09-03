@@ -1,4 +1,6 @@
 import React, { lazy, Suspense } from "react";
+import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
 import {
   BrowserRouter as Router,
@@ -25,8 +27,13 @@ const Themes = lazy(() => import("./features/layout/Themes"));
 const NoMatch = lazy(() => import("./features/layout/NoMatch"));
 
 const App = () => {
+  const { t } = useTranslation();
+
   return (
     <Router>
+      <Helmet>
+        <title>{t("Aurora Admin Panel")}</title>
+      </Helmet>
       <ModalManager />
       <Notification />
       <Routes>

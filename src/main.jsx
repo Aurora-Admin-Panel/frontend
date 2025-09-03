@@ -17,7 +17,7 @@ import { client } from './grapgql'
 if (!!!import.meta.env.DEV) {
   Sentry.init({
     // TODO: change Dockerfile
-    release: import.meta.env.VITE_REACT_APP_VERSION,
+    release: import.meta.env.VITE_APP_VERSION,
     dsn: "https://c02ba70afca842c5ac7997aca99c85b8@sentry.leishi.io/4",
     integrations: [new BrowserTracing()],
     tracesSampleRate: 1.0,

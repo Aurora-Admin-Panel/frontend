@@ -8,6 +8,7 @@ const DynamicForm = ({ schema: schemaProp, onSubmit }) => {
   const { form } = useDynamicForm({
     schema: schemaProp || schema,
     onSubmit: onSubmit || ((data) => console.log(data)),
+    onCancel: () => console.log("cancel"),
   });
   return <div className="mx-auto px-10">{form}</div>;
 };

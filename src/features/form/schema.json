@@ -1,8 +1,13 @@
 {
+  "$grid": {
+    "cols": { "base": 2, "md": 12 },
+    "gap": 4
+  },
   "firstName": {
     "label": "First Name",
     "type": "text",
     "defaultValue": "John",
+    "grid": { "colSpan": { "base": 12, "md": 6, "lg": 4 } },
     "validation": {
       "required": "First Name is required",
       "minLength": {
@@ -14,6 +19,7 @@
   "lastName": {
     "label": "Last Name",
     "type": "text",
+    "grid": { "colSpan": { "base": 12, "md": 6, "lg": 4 } },
     "validation": {
       "required": "Last Name is required"
     }
@@ -21,6 +27,7 @@
   "email": {
     "label": "Email",
     "type": "email",
+    "grid": { "colSpan": { "base": 12, "md": 12, "lg": 4 } },
     "validation": {
       "required": "Email is required",
       "pattern": {
@@ -33,6 +40,7 @@
   "isOK": {
     "label": "I agree to the terms and conditions",
     "type": "checkbox",
+    "grid": { "colSpan": { "base": 12, "md": 12 } },
     "validation": {
       "required": "You must agree to the terms and conditions"
     }
@@ -45,6 +53,7 @@
       { "label": "Option 3", "value": "option3" }
     ],
     "type": "select",
+    "grid": { "colSpan": { "base": 12, "md": 6, "lg": 4 } },
     "validation": {
       "required": "Options is required"
     }
@@ -52,6 +61,7 @@
   "friends": {
     "label": "Friends",
     "type": "list",
+    "grid": { "colSpan": { "base": 12, "md": 12 } },
     "values": {
       "label": "Friend",
       "type": "text",
@@ -64,10 +74,13 @@
   "house": {
     "label": "House",
     "type": "object",
+    "grid": { "colSpan": { "base": 12, "md": 12 } },
     "of": {
+      "$grid": { "cols": { "base": 1, "md": 12 }, "gap": 2 },
       "friends": {
         "label": "Friends",
         "type": "list",
+        "grid": { "colSpan": { "base": 12, "md": 12 } },
         "values": {
           "label": "Friend",
           "type": "text",
@@ -80,6 +93,7 @@
       "lastName": {
         "label": "Last Name",
         "type": "text",
+        "grid": { "colSpan": { "base": 12, "md": 6 } },
         "validation": {
           "required": "Last Name is required"
         }
@@ -87,11 +101,8 @@
       "isOK": {
         "label": "I agree to the terms and conditions",
         "type": "checkbox",
-        "validation": {
-          "required": "You must agree to the terms and conditions"
-        }
+        "grid": { "colSpan": { "base": 12, "md": 6 } }
       }
     }
   }
 }
-

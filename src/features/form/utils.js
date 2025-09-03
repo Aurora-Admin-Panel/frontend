@@ -21,7 +21,7 @@ export function normalizeValidation(rules) {
 export function deriveDefaultValues(schema) {
   const out = {};
   if (!schema) return out;
-  for (const [key, field] of Object.entries(schema)) {
+  for (const [key, field] of Object.entries(schema).filter(([key]) => !key.startsWith("$"))) {
     switch (field.type) {
       case "text":
       case "email":

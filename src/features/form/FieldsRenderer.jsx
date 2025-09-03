@@ -5,11 +5,32 @@ import ObjectField from "./ObjectField";
 import ListField from "./ListField";
 import { normalizeValidation } from "./utils";
 
+function buildColSpanClasses(gridCfg) {
+  if (!gridCfg) return "col-span-12"; // default full row on small screens
+  const span = gridCfg.colSpan || {};
+  const parts = [];
+  const add = (bp, n) => {
+    if (!n) return;
+    const pref = bp === "base" ? "" : `${bp}:`;
+    parts.push(`${pref}col-span-${n}`);
+  };
+  add("base", span.base || 12);
+  add("sm", span.sm);
+  add("md", span.md);
+  add("lg", span.lg);
+  add("xl", span.xl);
+  add("2xl", span["2xl"]);
+  return parts.join(" ");
+}
+
 const FieldsRenderer = ({ schema, parent = null, register, control, errors, setValue }) => {
   return (
     <>
-      {Object.entries(schema).map(([key, field]) => {
+      {Object.entries(schema)
+        .filter(([key]) => !key.startsWith("$"))
+        .map(([key, field]) => {
         const name = parent ? `${parent}.${key}` : key;
+        const wrapperClass = buildColSpanClasses(field.grid);
         switch (field.type) {
           case "text":
           case "email":
@@ -24,6 +45,7 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
                 label={field.label}
                 type={field.type}
                 rules={normalizeValidation(field.validation)}
+                className={wrapperClass}
               />
             );
           case "select":
@@ -36,6 +58,7 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
                 label={field.label}
                 options={field.options || []}
                 rules={normalizeValidation(field.validation)}
+                className={wrapperClass}
               />
             );
           case "checkbox":
@@ -47,6 +70,7 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
                 name={name}
                 label={field.label}
                 rules={normalizeValidation(field.validation)}
+                className={wrapperClass}
               />
             );
           case "object":
@@ -61,6 +85,7 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
                 setValue={setValue}
                 name={key}
                 label={field.label}
+                className={wrapperClass}
               />
             );
           case "list":
@@ -75,6 +100,7 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
                 control={control}
                 errors={errors}
                 setValue={setValue}
+                className={wrapperClass}
               />
             );
           default:

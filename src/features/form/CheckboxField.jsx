@@ -1,10 +1,11 @@
 import FieldError from "./FieldError";
 import useMaybeT from "../../hooks/useMaybeT";
+import classNames from "classnames";
 
-const CheckboxField = ({ register, errors, name, label, rules }) => {
+const CheckboxField = ({ register, errors, name, label, rules, className }) => {
   const maybeT = useMaybeT();
   return (
-    <fieldset className="fieldset w-full max-w-xs px-2" key={name}>
+    <fieldset className={classNames("fieldset w-full px-2", className)} key={name}>
       <legend className="fieldset-legend flex items-center justify-between">
         <span>{maybeT(label)}</span>
         <input type="checkbox" className="checkbox" {...register(name, rules)} />

@@ -4,13 +4,11 @@ import FieldError from "./FieldError";
 import { get } from "../../utils/object";
 import useMaybeT from "../../hooks/useMaybeT";
 
-const TextField = ({ control, errors, name, label, type = "text", rules }) => {
+const TextField = ({ control, errors, name, label, type = "text", rules, className }) => {
   const maybeT = useMaybeT();
   return (
-    <fieldset className="fieldset w-full max-w-xs px-2" key={name}>
+    <fieldset className={classNames("fieldset w-full px-2", className)} key={name}>
       <legend className="fieldset-legend">{maybeT(label)}</legend>
-      {/* <label className="input"> */}
-        {/* <span className="label">https://</span> */}
         <Controller
           name={name}
           control={control}
@@ -26,7 +24,6 @@ const TextField = ({ control, errors, name, label, type = "text", rules }) => {
           )}
         />
         <FieldError errors={errors} name={name} />
-      {/* </label> */}
     </fieldset>
   );
 };

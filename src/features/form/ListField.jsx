@@ -2,14 +2,15 @@ import { useFieldArray } from "react-hook-form";
 import { Plus, Trash } from "lucide-react";
 import FieldsRenderer from "./FieldsRenderer";
 import useMaybeT from "../../hooks/useMaybeT";
+import classNames from "classnames";
 
-const ListField = ({ name, label, itemSchema, parent, register, control, errors, setValue }) => {
+const ListField = ({ name, label, itemSchema, parent, register, control, errors, setValue, className }) => {
   const fullName = parent ? `${parent}.${name}` : name;
   const fieldArray = useFieldArray({ control, name: fullName });
   const maybeT = useMaybeT();
 
   return (
-    <fieldset className="fieldset w-full max-w-xs px-2" key={fullName}>
+    <fieldset className={classNames("fieldset w-full px-2", className)} key={fullName}>
       <legend className="fieldset-legend flex items-center justify-between">
         <span>{maybeT(label)}</span>
         <button

@@ -1,5 +1,9 @@
 import { useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  ChevronsLeft,
+  ChevronsRight
+} from "lucide-react"
 import classNames from "classnames";
 import DataLoading from "./DataLoading";
 import Icon from "./Icon";
@@ -21,9 +25,9 @@ const Paginator = ({ isLoading, count, limit, offset, setLimit, setOffset, limit
   return (
     <div className="flex w-full flex-row justify-end mx-auto space-x-2 mt-2 mb-8 px-4">
       <div className="flex flex-row items-center justify-center space-x-2">
-        <span className="text-xs md:text-sm">{t("total", { count: countRef.current })}</span>
+        <span className="text-xs md:text-sm text-nowrap">{t("total", { count: countRef.current })}</span>
         <select
-          className={classNames("select select-xs md:select-sm")}
+          className={classNames("select select-xs select-ghost md:select-sm cursor-pointer bg-base-100")}
           value={limit}
           onChange={(e) => {
             setLimit(Number(e.target.value));
@@ -44,10 +48,10 @@ const Paginator = ({ isLoading, count, limit, offset, setLimit, setOffset, limit
           )}
           onClick={() => currentPage > 0 && setOffset(offset - limit >= 0 ? offset - limit : 0)}
         >
-          <Icon icon="CaretDoubleLeft" />
+          <ChevronsLeft />
         </button>
         <select
-          className="select select-xs md:select-sm bg-base-100"
+          className="select select-xs select-ghost cursor-pointer md:select-sm bg-base-100"
           value={currentPage}
           onChange={(e) => setOffset(Number(e.target.value) * limit)}
         >
@@ -68,7 +72,7 @@ const Paginator = ({ isLoading, count, limit, offset, setLimit, setOffset, limit
             currentPage < Math.ceil(countRef.current / limit) - 1 && setOffset(offset + limit)
           }
         >
-          <Icon icon="CaretDoubleRight" />
+          <ChevronsRight />
         </button>
       </div>
     </div>

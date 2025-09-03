@@ -1,6 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@plugin 'daisyui' {
+  themes: all;
+}
+
+/* Custom breakpoints matching previous config */
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-ssm: 320px;
+  --breakpoint-xs: 475px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 .menu {
     :where(li:not(.menu-title):not(:empty)) > :where(:not(ul).active),
@@ -10,7 +34,7 @@
 }
 
 .stat {
-  @apply gap-x-4 border-base-content border-opacity-10 px-4 sm:px-6 py-2 sm:py-4;
+  @apply gap-x-4 border-base-content/10 px-4 sm:px-6 py-2 sm:py-4;
 
   &-value {
     @apply text-2xl font-extrabold;

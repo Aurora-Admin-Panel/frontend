@@ -68,7 +68,7 @@ const ServerList = () => {
       <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
         <div className="flex flex-row items-center justify-between w-full">
           <div className="flex flex-row items-center justify-start">
-            <h1 className="text-2xl font-extrabold">{t("Servers")}</h1>
+            <h2 className="not-prose text-2xl font-extrabold">{t("Servers")}</h2>
             <label
               className="modal-button btn btn-circle btn-primary btn-xs ml-2"
               onClick={() => showModal({ modalType: "serverInfo", onConfirm: refetch })}

@@ -59,8 +59,8 @@ const ServerRow = ({ server, refetch, metric }) => {
   }, [server]);
 
   return (
-    <tr className="h-20 w-full shadow-lg rounded-2xl ring-1 ring-base-300">
-      <td className="md:rounded-l-box text-center p-4 sticky top-0 left-0 z-10 bg-base-100">
+    <tr className="h-20 w-full shadow-lg rounded-box ring-1 ring-base-300">
+      <td className="rounded-l-box text-center p-4 sticky top-0 left-0 z-10 bg-base-100">
         <h1 className="break-word text-md text-center sm:text-md">{server.name}</h1>
       </td>
       <td className="text-center p-2">
@@ -98,7 +98,7 @@ const ServerRow = ({ server, refetch, metric }) => {
         sshConnected={sshConnected}
         metric={metric}
       />
-      <td className="sticky right-0 z-10 md:rounded-r-box bg-base-100">
+      <td className="sticky right-0 z-10 rounded-r-box bg-base-100">
         <div className="flex flex-col justify-center items-center space-y-2">
           <button
             className="btn btn-secondary btn-outline btn-xs text-xs w-12"

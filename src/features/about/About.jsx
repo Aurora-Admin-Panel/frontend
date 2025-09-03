@@ -13,7 +13,7 @@ function About() {
           />
           <div>
             <h1 className="text-5xl font-bold">
-              极光面板 {import.meta.env.VITE_REACT_APP_VERSION}
+              极光面板 {import.meta.env.VITE_APP_VERSION}
             </h1>
             <p className="py-2">
               觉得不错的话，欢迎

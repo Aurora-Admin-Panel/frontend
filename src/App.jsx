@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import ThemedSuspense from "./features/ThemedSuspense";
 
+
 const ModalManager = lazy(() => import("./features/modal/ModalManager"));
 const Notification = lazy(() => import("./features/Notification"));
 const Layout = lazy(() => import("./Layout"));

@@ -4,7 +4,7 @@
   themes: all;
 }
 
-/* Custom breakpoints matching previous config */
+/* Custom breakpoints matching previous config
 @theme {
   --breakpoint-*: initial;
   --breakpoint-ssm: 320px;
@@ -14,7 +14,7 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
-}
+} */
 
 @layer base {
   *,

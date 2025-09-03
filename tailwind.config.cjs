@@ -11,13 +11,9 @@ function withOpacityValue(variable) {
 }
 
 module.exports = {
-  // In Tailwind v4, content is detected automatically. Keep config for theme extensions.
+  // In Tailwind v4, define breakpoints in CSS via `@theme`.
+  // Remove `theme.screens` here to avoid conflicts with @theme tokens in index.css.
   theme: {
-    screens: {
-      ssm: '320px',
-      xs: '475px',
-      ...defaultTheme.screens,
-    },
     extend: {
       colors: {
         'primary-light': withOpacityValue('--primary-light'),

@@ -115,17 +115,17 @@ const ServerStat = ({ serverId, sshConnected, metric }) => {
   const isEmptyNET = !loading && !error && rxSeries.length === 0 && txSeries.length === 0;
   // Dynamic accent by usage for CPU
   const colorByPct = (pct) => {
-    if (pct == null || Number.isNaN(pct)) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-netural)_70%,_var(--color-primary)_30%)]";
-    if (pct >= 80) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-error)_70%,_var(--color-primary)_30%)]";
-    if (pct >= 35) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-warning)_70%,_var(--color-primary)_30%)]";
-    return "text-[color-mix(in_oklch_shorter_hue,_var(--color-success)_70%,_var(--color-primary)_30%)]";
+    if (pct == null || Number.isNaN(pct)) return "text-mix-[neutral,70,primary,30]";
+    if (pct >= 80) return "text-mix-[error,70,primary,30]";
+    if (pct >= 35) return "text-mix-[warning,70,primary,30]";
+    return "text-mix-[success,70,primary,30]";
   };
   // Distinct palette for Memory so it doesn't match CPU under threshold
   const memColorByPct = (pct) => {
-    if (pct == null || Number.isNaN(pct)) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-netural)_70%,_var(--color-secondary)_65%)]";
-    if (pct >= 85) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-error)_70%,_var(--color-secondary)_65%)]";
-    if (pct >= 65) return "text-[color-mix(in_oklch_shorter_hue,_var(--color-warning)_70%,_var(--color-secondary)_65%)]";
-    return "text-[color-mix(in_oklch_shorter_hue,_var(--color-info)_70%,_var(--color-secondary)_30%)]";
+    if (pct == null || Number.isNaN(pct)) return "text-mix-[neutral,70,secondary,30]";
+    if (pct >= 85) return "text-mix-[error,70,secondary,30]";
+    if (pct >= 65) return "text-mix-[warning,70,secondary,30]";
+    return "text-mix-[info,70,secondary,30]";
   };
   const cpuLatest = cpuSeries.length ? cpuSeries[cpuSeries.length - 1] : null;
   const memLatest = memSeries.length ? memSeries[memSeries.length - 1] : null;

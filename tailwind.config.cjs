@@ -20,5 +20,6 @@ module.exports = {
         'primary-dark': withOpacityValue('--primary-dark'),
       },
     },
-  }
+  },
+}
 }

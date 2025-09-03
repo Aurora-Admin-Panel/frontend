@@ -5,7 +5,6 @@ import { useSubscription, gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { motion, useAnimate } from "framer-motion";
 import { Chart } from "./chart/Chart";
-import Icon from "../Icon";
 import {
   Cpu,
   Gauge,

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom'
 import themes from "../../utils/themes";
-import Icon from "../Icon";
+import { List } from "lucide-react";
 import LanguageSwitch from "../i18n/LanguageSwitch"
 import ThemeSwitch from "../theme/ThemeSwitch";
 import { ThemeContext } from "../../contexts/ThemeContext";
@@ -26,7 +26,7 @@ const NavBar = () => {
             className="btn btn-square btn-ghost drawer-button lg:hidden"
             htmlFor="drawer"
           >
-            <Icon icon="List" size={24} />
+            <List size={24} />
           </label>
         </div>
         <div className="flex-1"></div>

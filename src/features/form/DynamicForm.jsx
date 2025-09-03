@@ -6,7 +6,7 @@ import {
 } from "react-hook-form";
 import classNames from "classnames";
 import schema from "./schema";
-import Icon from "../Icon";
+import { Plus, Trash } from "lucide-react";
 import { get } from "../../utils/object";
 
 const renderForms = (register, control, errors, setValue, schema, parent = null) => {
@@ -24,13 +24,8 @@ const renderListInput = (register, control, errors, setValue, listKey, listItemS
       <label className="label py-1">
         <span className="label-text">{schema[listKey].label}</span>
         <span className="label-text-alt">
-          <button className="btn btn-circle btn-outline btn-xs">
-            <Icon
-              icon="Plus"
-              className="mx-1"
-              size={18}
-              onClick={() => fieldArray.append("")}
-            />
+          <button className="btn btn-circle btn-outline btn-xs" onClick={() => fieldArray.append("") }>
+            <Plus className="mx-1" size={18} />
           </button>
         </span>
       </label>
@@ -48,13 +43,12 @@ const renderListInput = (register, control, errors, setValue, listKey, listItemS
             listItemSchema,
             parent
           )}
-          <Icon
+          <Trash
             className={classNames(
               "mx-1 flex-none cursor-pointer text-error/70",
               listItemSchema.label && "mt-11"
             )}
             size={16}
-            icon="Trash"
             onClick={() => fieldArray.remove(index)}
           />
         </div>

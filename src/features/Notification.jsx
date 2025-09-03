@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { X } from "phosphor-react";
+import { X } from "lucide-react";
 import classNames from "classnames";
 import { useNotificationsReducer } from "../atoms/notification";
 

@@ -10,7 +10,7 @@ import {
   CheckCircle,
   Pencil,
   List,
-} from "phosphor-react";
+} from "lucide-react";
 import classNames from "classnames";
 import { getReadableSize } from "../../utils/formatter";
 import { useModalReducer } from "../../atoms/modal";

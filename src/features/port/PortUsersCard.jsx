@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, X, Minus } from "phosphor-react";
+import { Plus, X, Minus } from "lucide-react";
 import classNames from "classnames";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import DataLoading from "../DataLoading";

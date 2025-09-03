@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { gql, useQuery }  from "@apollo/client";
-import Icon from "../Icon";
+import { Plus } from "lucide-react";
 import Error from "../layout/Error";
 import { motion, AnimatePresence } from "framer-motion";
 import useQueryParams from "../../hooks/useQueryParams";
@@ -135,7 +135,7 @@ const ServerPorts = () => {
               )
             }
           >
-            <Icon icon="Plus" />
+            <Plus />
           </label>
         </div>
       </div>

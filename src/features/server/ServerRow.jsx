@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 
-import Icon from "../Icon";
 import { useNotificationsReducer } from "../../atoms/notification";
 import { copyToClipboard } from "../../utils/clipboard";
 import ServerPortsStat from "./ServerPortsStat";

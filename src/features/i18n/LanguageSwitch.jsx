@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import Icon from "../Icon";
+import { Languages } from "lucide-react";
 
 
 const LanguageSwitch = () => {
@@ -8,7 +8,7 @@ const LanguageSwitch = () => {
         <div className="dropdown dropdown-end">
             <label tabIndex="0" className="btn btn-ghost btn-circle label-text bg-base-100/20">
                 <div className="indicator">
-                    <Icon icon="Translate" size={20} />
+                    <Languages size={20} />
                 </div>
             </label>
             <ul

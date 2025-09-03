@@ -4,7 +4,7 @@ import ReactLoading from "react-loading";
 import { gql, useQuery, NetworkStatus, useApolloClient } from "@apollo/client";
 import classNames from "classnames";
 import useSubscribe from "@/hooks/useSubscribe";
-import Icon from "../Icon";
+import { CircleAlert, CircleCheck } from "lucide-react";
 import { use } from "i18next";
 
 const CONNECT_SERVER_SUBSCRIPTION = gql`
@@ -63,12 +63,12 @@ const ServerSSHStat = ({ server, sshConnected, setSSHConnected, registerSSHRefet
                 </div>
               </div>
               <button className="stat-value" onClick={() => subscribe()}>
-                <Icon icon="WarningCircle" className="text-error" />
+                <CircleAlert className="text-error" />
               </button>
             </>
           ) : data && data.connectServer.success ? (
             <button className="stat-value" onClick={() => subscribe()}>
-              <Icon icon="CheckCircle" className="text-success" />
+              <CircleCheck className="text-success" />
             </button>
           ) : null}
         </div>
@@ -77,7 +77,7 @@ const ServerSSHStat = ({ server, sshConnected, setSSHConnected, registerSSHRefet
         <div className="stat place-items-center">
           <div className="stat-title">{t("SSH")}</div>
           <button className="stat-value tooltip" data-tip="hello">
-            <Icon icon="WarningCircle" className="text-error" />
+            <CircleAlert className="text-error" />
           </button>
         </div>
       )} */}

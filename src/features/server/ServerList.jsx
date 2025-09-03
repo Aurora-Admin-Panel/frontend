@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ServerCard from "./ServerCard";
 import ServerRow from "./ServerRow";
-import Icon from "../Icon";
+import { Plus, List, LayoutGrid } from "lucide-react";
 import { gql, useQuery, useSubscription } from "@apollo/client";
 
 import { GET_SERVERS_QUERY } from "../../quries/server";
@@ -73,7 +73,7 @@ const ServerList = () => {
               className="modal-button btn btn-circle btn-primary btn-xs ml-2"
               onClick={() => showModal({ modalType: "serverInfo", onConfirm: refetch })}
             >
-              <Icon icon="Plus" />
+              <Plus />
             </label>
           </div>
           <div className="flex flex-row items-center justify-end space-x-2">
@@ -86,8 +86,8 @@ const ServerList = () => {
                   onClick={() => setListStyle(listStyle === "Cards view" ? "List view" : "Cards view")}
                 />
 
-                <div className="swap-on"><Icon icon="ListDashes" size={20} /></div>
-                <div className="swap-off"><Icon icon="Cards" size={20} /></div>
+                <div className="swap-on"><List size={20} /></div>
+                <div className="swap-off"><LayoutGrid size={20} /></div>
               </label>
             </div>
           </div>

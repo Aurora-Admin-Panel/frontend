@@ -1,8 +1,7 @@
 import classNames from "classnames";
-import * as Icons from "phosphor-react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
-import Icon from "../Icon";
+import { Users, Layers, FileUp, Activity, Settings, AtSign } from "lucide-react";
 
 const routes = [
   {
@@ -47,6 +46,14 @@ const SideBar = () => {
   const location = useLocation();
   const matchDesktop = window.matchMedia("(min-width: 1024px)").matches;
   const { t, i18n } = useTranslation();
+  const routeIconMap = {
+    Users: Users,
+    Stack: Layers,
+    FileArrowUp: FileUp,
+    Activity: Activity,
+    Gear: Settings,
+    At: AtSign,
+  };
   return (
     <>
       <label htmlFor="drawer" className="drawer-overlay"></label>
@@ -73,11 +80,12 @@ const SideBar = () => {
                 }}
               >
                 <NavLink to={route.path} className="pb-3 pt-3">
-                  <Icon
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    icon={route.icon}
-                  />
+                  {(() => {
+                    const RIcon = routeIconMap[route.icon];
+                    return RIcon ? (
+                      <RIcon className="h-5 w-5" aria-hidden="true" />
+                    ) : null;
+                  })()}
                   <span className="ml-4">{t(route.name)}</span>
                 </NavLink>
               </li>

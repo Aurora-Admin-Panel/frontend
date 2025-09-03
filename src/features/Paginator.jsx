@@ -6,7 +6,6 @@ import {
 } from "lucide-react"
 import classNames from "classnames";
 import DataLoading from "./DataLoading";
-import Icon from "./Icon";
 
 const LIMIT_OPTIONS = [1, 2, 5, 10, 20, 30, 50];
 

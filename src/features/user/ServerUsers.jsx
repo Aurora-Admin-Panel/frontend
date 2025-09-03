@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import Icon from "../Icon";
+import { Plus } from "lucide-react";
 
 const ServerUsers = () => {
   const { serverId } = useParams();
@@ -16,7 +16,7 @@ const ServerUsers = () => {
               className="btn btn-primary btn-xs btn-circle ml-2 modal-button"
               htmlFor="server-edit-modal"
             >
-              <Icon icon="Plus" />
+            <Plus />
             </label>
           </div>
           <div className="flex flex-col ssm:flex-row items-center">

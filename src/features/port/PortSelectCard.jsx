@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Plus, X, Minus } from "phosphor-react";
+import { Plus, X, Minus } from "lucide-react";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
 import { useModalReducer } from "../../atoms/modal";

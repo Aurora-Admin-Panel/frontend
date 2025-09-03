@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { animate } from "framer-motion";
 import { gql, useQuery } from "@apollo/client";
-import Icon from "../Icon";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { getReadableSize } from "../../utils/formatter";
 
 const GET_SERVER_TRAFFIC_QUERY = gql`
@@ -51,7 +51,7 @@ const ServerTrafficStat = ({
               sshConnected ? "text-accent-focus" : "text-accent-focus/50"
             )}
           >
-            <Icon icon="ArrowUp" size={16} />
+            <ArrowUp size={16} />
             {getReadableSize(downloadTotal)}
           </span>
           <span
@@ -60,7 +60,7 @@ const ServerTrafficStat = ({
               sshConnected ? "text-accent-focus" : "text-accent-focus/50"
             )}
           >
-            <Icon icon="ArrowDown" size={16} />
+            <ArrowDown size={16} />
             {getReadableSize(uploadTotal)}
           </span>
         </div>

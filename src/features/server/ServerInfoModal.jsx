@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
 import classNames from "classnames";
 import { useDispatch, } from "react-redux";
-import Icon from "../Icon";
+import { AtSign } from "lucide-react";
 import { GET_SERVER_QUERY, ADD_SERVER_MUTATION, UPDATE_SERVER_MUTATION, DELETE_SERVER_MUTATION } from "../../quries/server";
 import { GET_SECRETS_QUERY, UPLOAD_FILE_MUTATION } from "../../quries/file";
-import { TwoDotIcon } from "../../icons";
 import { useModalReducer } from "../../atoms/modal";
 import { FileTypeEnum } from "../../store/apis/types.generated";
 import DataLoading from "../DataLoading";
@@ -198,7 +197,7 @@ const ServerInfoModal = () => {
           </label>
           <h3 className="-mt-3 text-lg font-bold">{serverId ? t("Edit Server") : t("Add Server")}</h3>
 
-          <div className="mt-4 flex w-full flex-col space-y-0 px-2">
+          <div className="mt-4 flex w-full flex-col space-y-2 md:space-y-3 px-2">
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">{t("Name")}</span>
@@ -235,7 +234,7 @@ const ServerInfoModal = () => {
                   placeholder={t("Username")}
                   className="input input-bordered w-1/4 text-xs"
                 />
-                <Icon icon="At" className="mx-1" />
+                <span className="mx-1 text-bold text-2xl">@</span>
                 <input
                   type="text"
                   value={host}
@@ -243,7 +242,7 @@ const ServerInfoModal = () => {
                   placeholder={t("Host") + " " + t("Default as address")}
                   className="input input-bordered w-1/2 text-xs"
                 />
-                <TwoDotIcon />
+                <span className="mx-1 text-bold text-2xl">:</span>
                 <input
                   type="number"
                   value={port}

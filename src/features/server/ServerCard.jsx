@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { gql, useSubscription } from "@apollo/client";
 
-import Icon from "../Icon";
+import { Pencil } from "lucide-react";
 import ServerPortsStat from "./ServerPortsStat";
 import ServerSSHStat from "./ServerSSHStat";
 import ServerStat from "./ServerStat";
@@ -57,7 +57,7 @@ const ServerCard = ({ server, refetch }) => {
             className={classNames("text-primary", show ? "block" : "invisible")}
             onClick={handleEdit}
           >
-            <Icon icon="Pencil" size={24} />
+            <Pencil size={24} />
           </button>
         </div>
         {/* Server name */}

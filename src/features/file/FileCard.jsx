@@ -6,7 +6,7 @@ import { getReadableSize } from "../../utils/formatter";
 import { useModalReducer } from "../../atoms/modal"
 import { DELETE_FILE_MUTATION } from "../../quries/file";
 import { useEffect } from "react";
-import Icon from "../Icon";
+import { Image, Video, FileText, Terminal, Key, File as FileIcon } from "lucide-react";
 
 
 const fileTypeToBadge = (type) => {
@@ -29,17 +29,17 @@ const fileTypeToBadge = (type) => {
 const fileTypeToIcon = (type) => {
   switch (type) {
     case "IMAGE":
-      return <Icon icon="Image" />;
+      return <Image />;
     case "VIDEO":
-      return <Icon icon="VideoCamera" />;
+      return <Video />;
     case "TEXT":
-      return <Icon icon="FileText" />;
+      return <FileText />;
     case "EXECUTABLE":
-      return <Icon icon="Terminal" />;
+      return <Terminal />;
     case "SECRET":
-      return <Icon icon="Key" />;
+      return <Key />;
     default:
-      return <Icon icon="File" />;
+      return <FileIcon />;
   }
 };
 

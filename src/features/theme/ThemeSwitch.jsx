@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import Icon from "../Icon";
+import { Palette } from "lucide-react";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import themes from "../../utils/themes";
 
@@ -12,7 +12,7 @@ const ThemeSwitch = () => {
                 tabIndex="0"
                 className="btn btn-ghost btn-circle label-text bg-base-100/20"
             >
-                <Icon icon="Palette" size={20} />
+                <Palette size={20} />
             </label>
             <ul
                 tabIndex="0"

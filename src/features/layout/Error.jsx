@@ -1,4 +1,3 @@
-import Icon from "../Icon";
 import { Navigate } from "react-router-dom";
 
 const Error = ({ error }) => {

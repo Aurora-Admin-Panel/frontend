@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import Icon from "../Icon";
+import { Plus } from "lucide-react";
 import Paginator from "../Paginator";
 import FileCard from "./FileCard";
 import useQueryParams from "../../hooks/useQueryParams";
@@ -50,7 +50,7 @@ const FileCenter = () => {
               )
             }
           >
-            <Icon icon="Plus" />
+            <Plus />
           </label>
         </div>
       </div>

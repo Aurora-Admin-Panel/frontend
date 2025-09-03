@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import ServerCard from "./ServerCard";
 import ServerRow from "./ServerRow";
 import Icon from "../Icon";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
+
 import { GET_SERVERS_QUERY } from "../../quries/server";
 import Error from "../layout/Error";
 import Paginator from "../Paginator";
@@ -11,6 +12,25 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { useAtom } from "jotai";
 import serverLimitAtom from "../../atoms/server/limit";
 import { useModalReducer } from "../../atoms/modal";
+
+const SERVER_METRIC_SUBSCRIPTION = gql`
+subscription ServerMetric {
+  serverMetric {
+    cpuUtilPct
+    fsRootUsedPct
+    load15m
+    load1m
+    load5m
+    memUsedPct
+    netRxBps
+    netTxBps
+    serverId
+    swapUsedPct
+    time
+    isOnline
+  }
+}
+`;
 
 const ServerList = () => {
   const { t } = useTranslation();
@@ -30,6 +50,7 @@ const ServerList = () => {
       replace: false,
     },
   ]);
+  const { data: metrics, loading: metricsLoading, error: metricsError } = useSubscription(SERVER_METRIC_SUBSCRIPTION);
   const { data, loading, error, refetch } = useQuery(
     GET_SERVERS_QUERY,
     { variables: { limit, offset } }
@@ -92,7 +113,7 @@ const ServerList = () => {
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="table border-separate border-spacing-y-2.5 table-fixed max-w-screen-lg mx-auto">
+            <table className="table border-separate border-spacing-y-3 table-fixed max-w-screen-lg px-1 mx-auto">
               <thead className="text-center">
                 <tr>
                   <th className="w-32 sticky left-0 z-10 bg-base-100">
@@ -109,7 +130,7 @@ const ServerList = () => {
                 </tr>
               </thead>
               <tbody className="text-center">
-                { loading ? (
+                {loading ? (
                   Array.from(Array(limit)).map((_, i) => (
                     <tr key={i} className="w-full">
                       <td className="h-20 w-full skeleton" colSpan={9}></td>
@@ -117,7 +138,12 @@ const ServerList = () => {
                   ))
                 ) : (
                   (data?.paginatedServers?.items ?? []).map((server) => (
-                    <ServerRow key={server.id} server={server} refetch={refetch} />
+                    <ServerRow
+                      key={server.id}
+                      server={server}
+                      refetch={refetch}
+                      metric={!metricsLoading && metrics && metrics.serverMetric && metrics.serverMetric.serverId === server.id ? metrics.serverMetric : null}
+                    />
                   ))
                 )}
               </tbody>

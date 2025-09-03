@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
 import { gql, useQuery, NetworkStatus, useApolloClient } from "@apollo/client";
 import classNames from "classnames";
-import useSubscripe from "../../hooks/useSubscripe";
+import useSubscribe from "@/hooks/useSubscribe";
 import Icon from "../Icon";
 import { use } from "i18next";
 
@@ -13,15 +13,17 @@ const CONNECT_SERVER_SUBSCRIPTION = gql`
   }
 `;
 
-const ServerSSHStat = ({ serverId, sshConnected, setSSHConnected, registerSSHRefetch }) => {
+const ServerSSHStat = ({ server, sshConnected, setSSHConnected, registerSSHRefetch }) => {
   const { t } = useTranslation();
-  const { data, loading, error, subscribe } = useSubscripe(
+  const { data, loading, error, subscribe } = useSubscribe(
     CONNECT_SERVER_SUBSCRIPTION,
-    { serverId }
+    { serverId: server.id }
   );
   useEffect(() => {
-    subscribe();
-  }, []);
+    if (!sshConnected) {
+      subscribe();
+    }
+  }, [server.id]);
   useEffect(() => {
     if (loading) setSSHConnected(null);
     else if (data && data.connectServer.success) {
@@ -37,7 +39,7 @@ const ServerSSHStat = ({ serverId, sshConnected, setSSHConnected, registerSSHRef
   }, [registerSSHRefetch]);
 
   return (
-    <div className={classNames("overflow-x-visible shadow-nones bg-base-200")}>
+    <div className={classNames("overflow-x-visible shadow-nones")}>
       <div className="place-items-center">
         <div className="group relative">
           {loading ? (

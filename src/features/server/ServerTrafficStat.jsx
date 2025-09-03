@@ -42,7 +42,7 @@ const ServerTrafficStat = ({
   const { t } = useTranslation();
 
   return (
-    <div className={classNames("shadow-none", sshConnected === false ? "bg-base-200" : "")}>
+    <div className={classNames("shadow-none")}>
       <div className="grid-cols-2 place-items-center">
         <div className="flex flex-col items-center text-md font-bold text-accent">
           <span

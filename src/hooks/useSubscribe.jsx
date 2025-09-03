@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
 
-const useSubscripe = (query, variables) => {
+const useSubscribe = (query, variables) => {
   const client = useApolloClient();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,4 +39,4 @@ const useSubscripe = (query, variables) => {
   return { data, loading, error, subscribe };
 };
 
-export default useSubscripe
+export default useSubscribe

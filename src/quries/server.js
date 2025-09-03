@@ -11,6 +11,8 @@ export const GET_SERVERS_QUERY = gql`
         portTotal
         downloadTotal
         uploadTotal
+        osRelease
+        lastSeen
       }
       count
     }

@@ -17,6 +17,7 @@
     "EN": "EN",
     "English": "English",
     "中文": "中文",
+    "No data available": "暂无数据",
 
     "Email": "邮箱",
     "Email Placeholder": "邮箱",
@@ -66,6 +67,9 @@
     "CPU": "CPU",
     "Mem": "内存",
     "Disk": "硬盘",
+    "Network": "网络",
+    "Up(Net)": "上传",
+    "Down(Net)": "下载",
     "Connecting": "连接中",
     "Actions": "操作",
     "total": "共{{count}}项",

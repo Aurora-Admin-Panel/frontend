@@ -17,6 +17,7 @@
     "EN": "EN",
     "English": "English",
     "中文": "中文",
+    "No data available": "No data available",
 
     "Email": "Email",
     "Email Placeholder": "Email",
@@ -67,6 +68,9 @@
     "CPU": "CPU",
     "Mem": "Mem",
     "Disk": "Disk",
+    "Network": "Network",
+    "Up(Net)": "Up",
+    "Down(Net)": "Down",
     "Connecting": "Connecting",
     "Actions": "Actions",
     "total": "{{count}} total",

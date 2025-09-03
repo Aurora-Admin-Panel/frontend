@@ -4,6 +4,65 @@
   themes: all;
 }
 
+/* Custom DaisyUI v5 themes using the new theme plugin API */
+@plugin 'daisyui/theme' {
+  name: "aurora-classic";
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-neutral: #24262D;
+  --color-primary: #7E3AF2;
+  --color-secondary: #7E3AF2;
+  --color-accent: #7E3AF2;
+  --color-info: #3ABFF8;
+  --color-success: #4ADE80;
+  --color-warning: #FACC15;
+  --color-error: #F87171;
+  /* Optional: app-specific extras carried over */
+  --primary-light: hsl(var(--p) / 0.8);
+  --primary-dark: hsl(var(--p) / 1.2);
+  /* Radius/border (mapped from previous rounded vars) */
+  --radius-box: 1rem;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --border: 1px;
+}
+
+@plugin 'daisyui/theme' {
+  name: "sunset";
+  color-scheme: dark;
+  --color-base-100: #151726;
+  --color-neutral: #DEE0EF;
+  --color-primary: #EE8679;
+  --color-secondary: #F8D2C9;
+  --color-accent: #5BA2D0;
+  --color-info: #94B8FF;
+  --color-success: #33ddbe;
+  --color-warning: #f6c33f;
+  --color-error: #F87272;
+  --radius-box: 1rem;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --border: 1px;
+}
+
+@plugin 'daisyui/theme' {
+  name: "morning";
+  color-scheme: light;
+  --color-base-100: #FDFDFE;
+  --color-neutral: #4E5377;
+  --color-primary: #D26A5D;
+  --color-secondary: #F19A8E;
+  --color-accent: #3788BE;
+  --color-info: #7397DE;
+  --color-success: #33ddbe;
+  --color-warning: #f6c33f;
+  --color-error: #F87272;
+  --radius-box: 1rem;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --border: 1px;
+}
+
 /* Custom breakpoints matching previous config
 @theme {
   --breakpoint-*: initial;

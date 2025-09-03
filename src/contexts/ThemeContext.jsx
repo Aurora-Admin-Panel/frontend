@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
-import { useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { themeSelectionAtom } from "../atoms/theme";
 import { light_theme, dark_theme } from "../utils/themes";
 
 // create context
@@ -11,34 +12,42 @@ const setHtmlDataTheme = (theme) => {
 }
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState('')
+    const [selection, setSelection] = useAtom(themeSelectionAtom)
+    const [systemDark, setSystemDark] = useState(() =>
+        typeof window !== 'undefined'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            : false
+    )
 
-    useEffect(() => {
-        let theme = localStorage.getItem('aurora-theme')
-        if (!!!theme) {
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? dark_theme : light_theme
+    // Determine the actually applied theme
+    const appliedTheme = useMemo(() => {
+        if (selection === 'auto') {
+            return systemDark ? dark_theme : light_theme
         }
-        // TODO: check valid theme
-        setHtmlDataTheme(theme)
-        setTheme(theme)
+        return selection
+    }, [selection, systemDark])
+
+    // Apply to <html data-theme>
+    useEffect(() => {
+        setHtmlDataTheme(appliedTheme)
+    }, [appliedTheme])
+
+    // Listen to system preference changes when on 'auto'
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)')
+        const handler = (e) => setSystemDark(e.matches)
+        mq.addEventListener?.('change', handler)
+        return () => mq.removeEventListener?.('change', handler)
     }, [])
 
-    const value = useMemo(
-        () => ({
-            theme,
-            setTheme: (_theme) => {
-                console.log(_theme)
-                if (_theme === 'auto') {
-                    _theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? dark_theme : light_theme
-                    localStorage.setItem('aurora-theme', '')
-                } else {
-                    localStorage.setItem('aurora-theme', _theme)
-                }
-                setHtmlDataTheme(_theme)
-                setTheme(_theme)
-            }
-        }),
-        [theme]
-    )
+    const value = useMemo(() => ({
+        // Expose the currently applied theme for consumers
+        theme: appliedTheme,
+        // Setter accepts a theme name or 'auto', persisted via atom
+        setTheme: (next) => {
+            setSelection(next)
+        },
+    }), [appliedTheme, setSelection])
+
     return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }

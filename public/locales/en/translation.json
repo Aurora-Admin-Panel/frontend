@@ -134,5 +134,8 @@
 
     "GraphQL error": "GraphQL error",
     "Network error": "Network error",
-    "User is not an admin": "User is not an admin"
+    "User is not an admin": "User is not an admin",
+    "Click to copy": "Click to copy",
+    "Copied to clipboard": "Copied to clipboard",
+    "Copy failed": "Copy failed"
 }

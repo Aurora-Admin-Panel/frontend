@@ -133,5 +133,8 @@
 
     "GraphQL error": "GraphQL 错误",
     "Network error": "网络错误",
-    "User is not an admin": "用户不是管理员"
+    "User is not an admin": "用户不是管理员",
+    "Click to copy": "点击复制",
+    "Copied to clipboard": "已复制到剪贴板",
+    "Copy failed": "复制失败"
 }

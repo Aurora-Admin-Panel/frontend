@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import classNames from "classnames";
 import { useNotificationsReducer } from "../atoms/notification";
+import { copyToClipboard } from "../utils/clipboard";
+import useMaybeT from "../hooks/useMaybeT";
 
 const typeToClass = (type) => {
   switch (type) {
@@ -55,7 +57,9 @@ const ProgressBar = ({ duration, type, pausedState }) => {
 };
 
 const Notification = () => {
-  const { notifications, removeNotification } = useNotificationsReducer();
+  const maybeT = useMaybeT();
+  const { t } = useTranslation();
+  const { notifications, removeNotification, addNotification } = useNotificationsReducer();
   const timers = useRef(new Map());
   const startTimes = useRef(new Map());
   const remainingDurations = useRef(new Map());
@@ -107,7 +111,7 @@ const Notification = () => {
   }, []);
   return (
     <>
-      <ul className="fixed top-16 right-8 z-50 flex flex-col items-end space-y-2">
+      <ul className="fixed top-16 right-8 z-[1200] flex flex-col items-end space-y-2">
         <AnimatePresence initial={false} mode="popLayout">
           {notifications.map((notification) => (
             <motion.li
@@ -116,30 +120,61 @@ const Notification = () => {
               initial={{ opacity: 0, y: 50, scale: 0.3 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+              className="cursor-pointer"
+              title={t("Click to copy")}
+              onMouseEnter={() => pauseTimer(notification.id)}
+              onMouseLeave={() => resumeTimer(notification.id)}
+              onClick={async () => {
+                const text = [notification.title, notification.body]
+                  .filter(Boolean)
+                  .join(": ");
+                const { ok } = await copyToClipboard(text);
+                if (ok) {
+                  addNotification({
+                    title: "",
+                    body: "Copied to clipboard",
+                    type: "success",
+                    duration: 1000,
+                  });
+                } else {
+                  addNotification({
+                    title: "",
+                    body: "Copy failed",
+                    type: "error",
+                    duration: 2000,
+                  });
+                }
+              }}
             >
               <div
                 className={classNames(
-                  "alert relative flex max-w-xs items-center overflow-hidden shadow-lg",
+                  "alert relative flex w-full max-w-xs items-center overflow-hidden shadow-lg pointer-events-auto",
                   typeToClass(notification.type)
                 )}
               >
-                <div className="flex-1">
-                  <div className="flex flex-row items-center justify-center space-x-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex w-full flex-row items-center justify-center space-x-2">
                     {notification.body && (
-                      <div className={`text-xs text-${notification.type}-content`}>
-                        {notification.title && (<span className="font-bold">[{notification.title}]&nbsp;</span>)}
-                        {notification.body}
+                      <div
+                        className={`block max-w-full overflow-hidden text-xs text-${notification.type}-content whitespace-pre-wrap break-all`}
+                      >
+                        {notification.title && (
+                          <span className="font-bold">[{maybeT(notification.title)}]&nbsp;</span>
+                        )}
+                        {maybeT(notification.body)}
                       </div>
                     )}
                   </div>
                 </div>
                 <button
-                  className={`btn btn-circle btn-outline btn-xs text-${notification.type}-content`}
-                  onClick={() => removeNotification(notification.id)}
+                  className={`btn btn-circle btn-outline btn-xs shrink-0 text-${notification.type}-content`}
+                  aria-label="Close notification"
+                  title="Close"
+                  onClick={(e) => { e.stopPropagation(); removeNotification(notification.id); }}
                 >
                   <X />
                 </button>
-                <div className="absolute inset-x-0 bottom-0 z-40 w-full">
+                <div className="absolute inset-x-0 bottom-0 z-[1200] w-full pointer-events-none">
                   <ProgressBar
                     duration={notification.duration}
                     type={notification.type}

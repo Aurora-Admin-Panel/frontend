@@ -1,5 +1,4 @@
 import i18n from "./i18n";
-import { store } from "./store";
 import {
   split,
   ApolloClient,
@@ -13,20 +12,20 @@ import { createUploadLink } from "apollo-upload-client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient as createWSClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { useNotificationsReducer } from "./atoms/notification";
+import { notify } from "./atoms/notification";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   console.log(graphQLErrors, networkError);
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      useNotificationsReducer().addNotification({
+    graphQLErrors.forEach(({ message }) =>
+      notify({
         title: i18n.t("GraphQL error"),
         body: message,
         type: "error",
       })
     );
   if (networkError)
-    useNotificationsReducer().addNotification({
+    notify({
       title: i18n.t("Network error"),
       body: networkError.message,
       type: "error",

@@ -54,7 +54,7 @@ const FileModal = ({ ...props }) => {
       version: version || null,
       notes: notes || null,
     }
-    await uploadFile({ variables: { ...data }});
+    await uploadFile({ variables: { ...data } });
     if (onConfirm) onConfirm();
     hideModal();
   };
@@ -62,8 +62,6 @@ const FileModal = ({ ...props }) => {
     if (onCancel) onCancel();
     hideModal();
   };
-
-  if (error) return <Error error={error} />;
 
   return (
     <div className="modal-box relative">
@@ -74,14 +72,12 @@ const FileModal = ({ ...props }) => {
         ✕
       </label>
       <h3 className="-mt-3 text-lg font-bold">{t("Add File")}</h3>
-      <div className="mt-4 flex w-full flex-col space-y-0 px-2">
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">
-              {t("File Type")}
-              {fileType}
-            </span>
-          </label>
+      <div className="mt-4 flex w-full flex-col space-y-3 px-2">
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">
+            {t("File Type")}
+
+          </legend>
           <select
             className="select select-bordered w-full"
             value={fileType}
@@ -93,54 +89,46 @@ const FileModal = ({ ...props }) => {
               </option>
             ))}
           </select>
-        </div>
+        </fieldset>
         <div className="flex flex-col items-center md:flex-row md:space-x-2">
-          <div className="form-control w-1/2">
-            <label className="label">
-              <span className="label-text">{t("Name")}</span>
-            </label>
+          <label className="input input-bordered w-1/2">
+            {t("Name")}
             <input
               type="text"
               placeholder={t("File Name Placeholder")}
-              className="input input-bordered w-full"
+              className="grow"
               value={name !== null ? name : file !== null ? file.name : ""}
               onChange={(e) => setName(e.target.value)}
             />
-          </div>
-          <div className="form-control w-1/2">
-            <label className="label">
-              <span className="label-text">{t("Version")}</span>
-            </label>
+          </label>
+          <label className="input input-bordered w-1/2">
+            {t("Version")}
             <input
               type="text"
               placeholder={t("File Version Placeholder")}
-              className="input input-bordered w-full"
+              className="grow"
               value={version}
               onChange={(e) => setVersion(e.target.value)}
             />
-          </div>
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">{t("Upload File")}</span>
           </label>
+        </div>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">{t("Upload File")}</legend>
           <input
             type="file"
             className="file-input file-input-bordered file-input-primary mx-auto w-full"
             onChange={(e) => setFile(e.target.files[0])}
           />
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">{t("Notes")}</span>
-          </label>
+        </fieldset>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">{t("Notes")}</legend>
           <textarea
             placeholder={t("File Notes Placeholder")}
-            className="textarea textarea-bordered"
+            className="textarea textarea-bordered w-full"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-        </div>
+        </fieldset>
       </div>
       <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
         <button className="btn btn-outline btn-primary" onClick={handleCancel}>

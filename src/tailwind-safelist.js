@@ -34,10 +34,14 @@ export const TAILWIND_SAFE_CLASSES = [
   // Paddings used dynamically in ObjectField nesting
   "pl-1","pl-2","pl-3","pl-4","pl-5","pl-6",
   "pr-1","pr-2","pr-3","pr-4","pr-5","pr-6",
+  // Dynamic notification classes
+  "alert-success","alert-info","alert-warning","alert-error",
+  "text-success-content","text-info-content","text-warning-content","text-error-content",
+  "bg-success","bg-info","bg-warning","bg-error",
+  "bg-success/50","bg-info/50","bg-warning/50","bg-error/50",
 ]
 
 // Touch the array so bundlers keep it and Tailwind sees the strings
 export function __useTailwindSafelist() {
   return TAILWIND_SAFE_CLASSES.join(" ").length
 }
-

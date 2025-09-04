@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
@@ -13,7 +12,6 @@ import { GET_FILES_QUERY } from "../../quries/file";
 
 const FileCenter = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const { showModal } = useModalReducer();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
@@ -29,11 +27,10 @@ const FileCenter = () => {
       replace: false,
     },
   ]);
-  const { loading, error, data, refetch } = useQuery(GET_FILES_QUERY, {
+  const { loading, data, refetch } = useQuery(GET_FILES_QUERY, {
     variables: { limit, offset },
   });
 
-  if (error) return <Error error={error} />;
   return (
     <>
       <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
@@ -42,12 +39,10 @@ const FileCenter = () => {
           <label
             className="modal-button btn btn-circle btn-primary btn-xs ml-2"
             onClick={() =>
-              dispatch(
-                showModal({
-                  modalType: "file",
-                  onConfirm: refetch,
-                })
-              )
+              showModal({
+                modalType: "file",
+                onConfirm: refetch,
+              })
             }
           >
             <Plus />

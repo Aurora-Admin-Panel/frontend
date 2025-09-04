@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { gql, useMutation } from "@apollo/client";
 import { getReadableSize } from "../../utils/formatter";
 import { useModalReducer } from "../../atoms/modal"
+import { downloadFile } from "../../utils/download";
 import { DELETE_FILE_MUTATION } from "../../quries/file";
 import { useEffect } from "react";
 import { Image, Video, FileText, Terminal, Key, File as FileIcon } from "lucide-react";
@@ -47,6 +48,14 @@ const FileCard = ({ file, onUpdate }) => {
   const { t } = useTranslation();
   const [deleteFile, { called, error }] = useMutation(DELETE_FILE_MUTATION);
   const { showModal } = useModalReducer();
+  const openInModal = () => {
+    showModal({
+      modalType: "filePreview",
+      modalProps: { file },
+    });
+  };
+
+
   const handleClickCancel = () => {
       showModal({
         modalType: "confirmation",
@@ -59,6 +68,18 @@ const FileCard = ({ file, onUpdate }) => {
         onConfirm: () => deleteFile({ variables: { id: file.id } }),
       })
   };
+  const handleCheck = () => {
+    switch (file.type) {
+      case "IMAGE":
+      case "VIDEO":
+      case "TEXT":
+        return openInModal();
+      case "EXECUTABLE":
+      case "SECRET":
+      default:
+        return downloadFile(file.path, file.name);
+    }
+  };
 
   useEffect(() => {
     if (called || error) {
@@ -67,7 +88,7 @@ const FileCard = ({ file, onUpdate }) => {
   }, [called, error]);
 
   return (
-    <div className="card indicator h-32 w-48 justify-self-center bg-base-100 shadow-md">
+    <div className="card indicator h-32 w-full min-w-0 bg-base-300 shadow-md">
       {file.version && (
         <span className="badge indicator-item badge-sm border-base-300 bg-base-200 text-base-content">
           {file.version}
@@ -75,7 +96,7 @@ const FileCard = ({ file, onUpdate }) => {
       )}
       <div className="card-body gap-2 px-4 py-4">
         <div className="tooltip tooltip-bottom" data-tip={file.name}>
-          <h2 className="text-md card-title h-6 justify-start">
+          <h2 className="text-md card-title h-4 justify-start">
             <p className="truncate flex-grow-0">{file.name}</p>
           </h2>
         </div>
@@ -104,7 +125,7 @@ const FileCard = ({ file, onUpdate }) => {
           >
             {t("Delete")}
           </button>
-          <button className="btn btn-primary btn-xs">{t("Check")}</button>
+          <button className="btn btn-primary btn-xs" onClick={handleCheck}>{t("Check")}</button>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import ServerInfoModal from "../server/ServerInfoModal";
 import PortFunctionModal from "../port/PortFunctionModal";
 import PortRestrictionModal from "../port/PortRestrictionModal";
 import FileModal from "../file/FileModal";
+import FilePreviewModal from "../file/FilePreviewModal";
 import ConfirmationModal from "./ConfirmationModal";
 import DataLoading from "../DataLoading";
 import { useModalReducer } from "../../atoms/modal";
@@ -15,8 +16,12 @@ const ModalManager = () => {
     switch (modalType) {
       case "serverInfo":
         return <ServerInfoModal {...modalProps} />;
+      case "port":
+        return <PortFunctionModal {...modalProps} />;
       case "file":
         return <FileModal {...modalProps} />;
+      case "filePreview":
+        return <FilePreviewModal />;
       case "portFunction":
         return <PortFunctionModal {...modalProps} />;
       case "portRestriction":

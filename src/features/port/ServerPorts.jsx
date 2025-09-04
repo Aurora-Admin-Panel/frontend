@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
-import { gql, useQuery }  from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { Plus } from "lucide-react";
 import Error from "../layout/Error";
 import { motion, AnimatePresence } from "framer-motion";
@@ -108,17 +108,16 @@ const ServerPorts = () => {
       replace: false,
     },
   ]);
-  const { data, loading, error, refetch } = useQuery(GET_SERVER_PORTS_QUERY, {
+  const { data, loading, refetch } = useQuery(GET_SERVER_PORTS_QUERY, {
     variables: {
-      
-    serverId: Number(serverId),
-    limit,
-    offset,
+
+      serverId: Number(serverId),
+      limit,
+      offset,
     }
   });
   const [selected, setSelected] = useState(null);
 
-  if (error) return <Error error={error} />;
   return (
     <>
       <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
@@ -127,12 +126,11 @@ const ServerPorts = () => {
           <label
             className="modal-button btn btn-circle btn-primary btn-xs ml-2"
             onClick={() =>
-              dispatch(
-                showModal({
-                  modalType: "port",
-                  onConfirm: refetch,
-                })
-              )
+              showModal({
+                modalType: "port",
+                onConfirm: refetch,
+              })
+
             }
           >
             <Plus />
@@ -149,12 +147,12 @@ const ServerPorts = () => {
                 setSelected(
                   payload
                     ? {
-                        ...payload,
-                        id: selected.id,
-                        port: data?.paginatedPorts?.items.find(
-                          (port) => port.id === selected.id
-                        ),
-                      }
+                      ...payload,
+                      id: selected.id,
+                      port: data?.paginatedPorts?.items.find(
+                        (port) => port.id === selected.id
+                      ),
+                    }
                     : null
                 )
               }

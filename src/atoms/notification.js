@@ -1,7 +1,7 @@
 import { atom, getDefaultStore } from "jotai";
 import { useReducerAtom } from "jotai/utils";
 
-const DEFAULT_DURATION = 100000;
+const DEFAULT_DURATION = 5000;
 
 export const notificationsAtom = atom([]);
 

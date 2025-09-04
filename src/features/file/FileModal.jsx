@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+ 
 import { useTranslation } from "react-i18next";
 import { gql, useMutation } from "@apollo/client";
 import classNames from "classnames";
@@ -23,9 +23,7 @@ const UPLOAD_FILE = gql`
 
 const FileModal = ({ ...props }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { hideModal } = useModalReducer();
-  const { onCancel, onConfirm } = useSelector((state) => state.modal);
+  const { hideModal, modal: { onCancel, onConfirm } } = useModalReducer();
   const [name, setName] = useState(null);
   const [fileType, setFileType] = useState(FileTypeEnum.Secret);
   const [file, setFile] = useState(null);

@@ -19,6 +19,7 @@ export const GET_FILES_QUERY = gql`
       items {
         id
         name
+        path
         type
         size
         version

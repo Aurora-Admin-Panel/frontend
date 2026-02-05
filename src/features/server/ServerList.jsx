@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import ServerCard from "./ServerCard";
 import ServerRow from "./ServerRow";
 import { Plus, List, LayoutGrid } from "lucide-react";
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useQuery, useApolloClient } from "@apollo/client";
 
 import { GET_SERVERS_QUERY } from "../../quries/server";
 import Error from "../layout/Error";
@@ -50,7 +50,23 @@ const ServerList = () => {
       replace: false,
     },
   ]);
-  const { data: metrics, loading: metricsLoading, error: metricsError } = useSubscription(SERVER_METRIC_SUBSCRIPTION);
+  const client = useApolloClient();
+  const [metricsMap, setMetricsMap] = useState({});
+  useEffect(() => {
+    const observable = client.subscribe({ query: SERVER_METRIC_SUBSCRIPTION });
+    const sub = observable.subscribe({
+      next({ data }) {
+        if (data?.serverMetric) {
+          const m = data.serverMetric;
+          setMetricsMap((prev) => {
+            if (prev[m.serverId] === m) return prev;
+            return { ...prev, [m.serverId]: m };
+          });
+        }
+      },
+    });
+    return () => sub.unsubscribe();
+  }, [client]);
   const { data, loading, error, refetch } = useQuery(
     GET_SERVERS_QUERY,
     { variables: { limit, offset } }
@@ -98,7 +114,7 @@ const ServerList = () => {
         <>
           <div className="grid grid-cols-1 gap-6 px-2 pb-4 pt-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {(data?.paginatedServers?.items ?? []).map((server) => (
-              <ServerCard key={server.id} server={server} refetch={refetch} />
+              <ServerCard key={server.id} server={server} refetch={refetch} metric={metricsMap[server.id]} />
             ))}
           </div>
           <Paginator
@@ -142,7 +158,7 @@ const ServerList = () => {
                       key={server.id}
                       server={server}
                       refetch={refetch}
-                      metric={!metricsLoading && metrics && metrics.serverMetric && metrics.serverMetric.serverId === server.id ? metrics.serverMetric : null}
+                      metric={metricsMap[server.id]}
                     />
                   ))
                 )}

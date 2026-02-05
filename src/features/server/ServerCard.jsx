@@ -1,43 +1,19 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
-import { gql, useSubscription } from "@apollo/client";
-
 import { Pencil } from "lucide-react";
 import ServerPortsStat from "./ServerPortsStat";
 import ServerSSHStat from "./ServerSSHStat";
 import ServerStat from "./ServerStat";
 import ServerTrafficStat from "./ServerTrafficStat";
-import { useModalReducer } from "../../atoms/modal";
+import useServerItem from "@/hooks/useServerItem";
 
-const ServerCard = ({ server, refetch }) => {
-  const dispatch = useDispatch();
+const ServerCard = ({ server, refetch, metric }) => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-  const { showModal } = useModalReducer();
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
-  const [sshRefetch, setSSHRefetch] = useState(null);
-  const [sshConnected, setSSHConnected] = useState(false);
-
-  const registerSSHRefetch = useCallback((func) => {
-    setSSHRefetch(func);
-  }, []);
-
-  const handleEdit = () => {
-      showModal({
-        modalType: "serverInfo",
-        modalProps: {
-          serverId: server.id,
-          refetch: refetch,
-        },
-        onConfirm: () => {
-          refetch();
-          if (sshRefetch) sshRefetch();
-        },
-      })
-  };
+  const { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit } = useServerItem(server, refetch);
 
   return (
     <div
@@ -65,7 +41,7 @@ const ServerCard = ({ server, refetch }) => {
         <div className="flex grow flex-col items-center">
           <div className="flex flex-row items-center justify-center">
             <ServerSSHStat
-              serverId={server.id}
+              server={server}
               sshConnected={sshConnected}
               setSSHConnected={setSSHConnected}
               registerSSHRefetch={registerSSHRefetch}
@@ -87,7 +63,7 @@ const ServerCard = ({ server, refetch }) => {
           </div>
           <div className="flex grow flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center  ">
-              <ServerStat serverId={server.id} sshConnected={sshConnected} />
+              <ServerStat serverId={server.id} sshConnected={sshConnected} metric={metric} as="div" />
             </div>
           </div>
         </div>
@@ -114,4 +90,4 @@ const ServerCard = ({ server, refetch }) => {
   );
 };
 
-export default ServerCard;
+export default React.memo(ServerCard);

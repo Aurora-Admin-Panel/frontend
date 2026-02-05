@@ -1,6 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 
@@ -10,36 +9,15 @@ import ServerPortsStat from "./ServerPortsStat";
 import ServerSSHStat from "./ServerSSHStat";
 import ServerStat from "./ServerStat";
 import ServerTrafficStat from "./ServerTrafficStat";
-import { useModalReducer } from "../../atoms/modal";
+import useServerItem from "@/hooks/useServerItem";
 
 
 const ServerRow = ({ server, refetch, metric }) => {
   const { addNotification } = useNotificationsReducer()
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-  const { showModal } = useModalReducer();
-  const [show, setShow] = useState(false);
-  const [sshRefetch, setSSHRefetch] = useState(null);
-  const [sshConnected, setSSHConnected] = useState(false);
+  const { t } = useTranslation();
+  const { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit } = useServerItem(server, refetch);
 
-
-  const registerSSHRefetch = useCallback((func) => {
-    setSSHRefetch(func);
-  }, []);
-
-  const handleEdit = () => {
-    showModal({
-      modalType: "serverInfo",
-      modalProps: {
-        serverId: server.id,
-        refetch: refetch,
-      },
-      onConfirm: () => {
-        refetch();
-        if (sshRefetch) sshRefetch();
-      },
-    })
-  };
   const handleCopy = (address) => {
     copyToClipboard(address);
     addNotification({
@@ -48,14 +26,6 @@ const ServerRow = ({ server, refetch, metric }) => {
       type: "success",
     });
   }
-
-  useEffect(() => {
-    if (Date.now() - server.lastSeen > 1000 * 60 * 10) {
-      setSSHConnected(false);
-    } else {
-      setSSHConnected(true);
-    }
-  }, [server]);
 
   return (
     <tr className="h-20 w-full shadow-lg rounded-box ring-1 ring-base-300">
@@ -118,4 +88,4 @@ const ServerRow = ({ server, refetch, metric }) => {
   );
 };
 
-export default ServerRow;
+export default React.memo(ServerRow);

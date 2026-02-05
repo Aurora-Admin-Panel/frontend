@@ -1,38 +1,7 @@
-import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
-import { animate } from "framer-motion";
-import { gql, useQuery } from "@apollo/client";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { getReadableSize } from "../../utils/formatter";
-
-const GET_SERVER_TRAFFIC_QUERY = gql`
-  query GetServerTraffic($serverId: Int!) {
-    server(id: $serverId) {
-      uploadTotal
-      downloadTotal
-    }
-  }
-`;
-
-function Counter({ from, to }) {
-  const nodeRef = useRef();
-
-  useEffect(() => {
-    const node = nodeRef.current;
-
-    const controls = animate(from, to, {
-      duration: 1,
-      onUpdate(value) {
-        node.textContent = value.toFixed(2);
-      }
-    });
-
-    return () => controls.stop();
-  }, [from, to]);
-
-  return <p ref={nodeRef} />;
-}
 
 const ServerTrafficStat = ({
   uploadTotal,

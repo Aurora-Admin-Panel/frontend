@@ -20,6 +20,9 @@ const ServerContainer = lazy(() => import("./features/server/ServerContainer"));
 const ServerPorts = lazy(() => import("./features/port/ServerPorts"));
 const ServerUsers = lazy(() => import("./features/user/ServerUsers"));
 const Form = lazy(() => import("./features/form/DynamicForm"));
+const ExecutableContractSchemas = lazy(() =>
+  import("./features/form/ExecutableContractSchemas")
+);
 const Users = lazy(() => import("./features/user/Users"));
 const FileCenterContainer = lazy(() => import("./features/file/FileCenterContainer"));
 const FileCenter = lazy(() => import("./features/file/FileCenter"));
@@ -53,7 +56,10 @@ const App = () => {
             <Route index element={<FileCenter />}/>
           </Route>
           <Route path="about" element={<About />} />
-          <Route path="form" element={<Form />} />
+          <Route path="contracts" element={<ExecutableContractSchemas />} />
+          <Route path="contracts/builder" element={<Form />} />
+          <Route path="contracts/builder/:contractId" element={<Form />} />
+          <Route path="form" element={<Navigate to="/app/contracts/builder" replace />} />
           <Route path="themes" element={<Themes />} />
           <Route path="*" element={<NoMatch />} />
         </Route>

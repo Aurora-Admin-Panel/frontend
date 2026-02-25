@@ -52,7 +52,7 @@ export default function useDynamicForm({ schema, onSubmit, onCancel, defaultValu
         </div>
       </form>
     </div>
-  ), [schema, register, control, errors, setValue, handleSubmit, onSubmit]);
+  ), [schema, register, control, errors, setValue, handleSubmit, onSubmit, onCancel, t]);
 
   return { form, methods };
 }

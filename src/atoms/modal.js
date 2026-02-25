@@ -1,56 +1,124 @@
-import { atom } from "jotai";
-import { useReducerAtom } from "jotai/utils";
+import { atom, useAtom } from "jotai";
+
+let modalCounter = 0;
+
+const createModalId = () => {
+  if (typeof globalThis?.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  modalCounter += 1;
+  return `modal-${Date.now()}-${modalCounter}`;
+};
+
+const settleModal = (modal, value) => {
+  if (!modal || modal._settled || typeof modal.resolver !== "function") {
+    return;
+  }
+  modal._settled = true;
+  modal.resolver(value);
+};
 
 export const modalAtom = atom({
-    isOpen: false,
-    modalType: null,
-    hasBackdrop: false,
-    modalProps: {},
-    onConfirm: null,
-    onCancel: null,
-})
+  stack: [],
+});
 
-const modalReducer = (prev, action) => {
-    if (action.type === 'showModal') {
-        return {
-            isOpen: true,
-            hasBackdrop: action.payload.hasBackdrop || false,
-            modalType: action.payload.modalType,
-            modalProps: action.payload.modalProps || {},
-            onConfirm: action.payload.onConfirm || null,
-            onCancel: action.payload.onCancel || null,
-        }
-    } else if (action.type === 'hideModal') {
-        return {
-            isOpen: false,
-            hasBackdrop: false,
-            modalType: null,
-            modalProps: {},
-            onConfirm: null,
-            onCancel: null,
-        }
-    } else if (action.type === 'showConfirmationModal') {
-        console.log(action.payload.dispatch)
-        const { dispatch } = action.payload
-        return {
-            isOpen: true,
-            hasBackdrop: false,
-            modalType: 'confirmation',
-            modalProps: action.payload.modalProps || {},
-            onConfirm: action.payload.onConfirm || null,
-            onCancel: () => dispatch({ type: 'showModal', payload: { ...prev } }),
-        }
-    } else {
-        throw new Error(`unhandled action type: ${action.type}`)
-    }
-}
+export const useModal = () => {
+  const [modalState, setModalState] = useAtom(modalAtom);
 
-export const useModalReducer = () => {
-    const [modal, dispatch] = useReducerAtom(modalAtom, modalReducer);
-    return {
-        modal,
-        showModal: (payload) => dispatch({ type: 'showModal', payload }),
-        hideModal: () => dispatch({ type: 'hideModal' }),
-        showConfirmationModal: (payload) => dispatch({ type: 'showConfirmationModal', payload: { ...payload, dispatch } }),
-    }
-}
+  const open = (type, props = {}, options = {}) => {
+    const { defaultResult, ...modalOptions } = options || {};
+    const modalId = createModalId();
+
+    const promise = new Promise((resolver) => {
+      setModalState((prev) => ({
+        ...prev,
+        stack: [
+          ...prev.stack,
+          {
+            id: modalId,
+            type,
+            props: props || {},
+            options: {
+              hasBackdrop: true,
+              closeOnBackdrop: true,
+              closeOnEsc: true,
+              dismissible: true,
+              ...modalOptions,
+            },
+            defaultResult,
+            createdAt: Date.now(),
+            resolver,
+            _settled: false,
+          },
+        ],
+      }));
+    });
+
+    promise.modalId = modalId;
+    return promise;
+  };
+
+  const resolveModal = (modalId, value) => {
+    setModalState((prev) => {
+      const target = prev.stack.find((modal) => modal.id === modalId);
+      settleModal(target, value);
+      return prev;
+    });
+  };
+
+  const close = (modalId) => {
+    setModalState((prev) => {
+      if (!prev.stack.length) return prev;
+
+      const targetId = modalId || prev.stack[prev.stack.length - 1].id;
+      const target = prev.stack.find((modal) => modal.id === targetId);
+      if (!target) return prev;
+
+      settleModal(target, target.defaultResult);
+
+      return {
+        ...prev,
+        stack: prev.stack.filter((modal) => modal.id !== targetId),
+      };
+    });
+  };
+
+  const closeAll = () => {
+    setModalState((prev) => {
+      prev.stack.forEach((modal) => settleModal(modal, modal.defaultResult));
+      return {
+        ...prev,
+        stack: [],
+      };
+    });
+  };
+
+  const replaceTop = (type, props = {}, options = {}) => {
+    close();
+    return open(type, props, options);
+  };
+
+  const confirm = async (props = {}, options = {}) => {
+    const result = await open("confirmation", props, {
+      defaultResult: false,
+      ...options,
+    });
+    return Boolean(result);
+  };
+
+  const stack = modalState.stack || [];
+  const topModal = stack[stack.length - 1] || null;
+
+  return {
+    stack,
+    isOpen: stack.length > 0,
+    topModal,
+    open,
+    close,
+    closeAll,
+    replaceTop,
+    resolveModal,
+    confirm,
+  };
+};
+

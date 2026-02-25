@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { useModalReducer } from "../atoms/modal";
+import { useModal } from "../atoms/modal";
 
 const useServerItem = (server, refetch) => {
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
   const [sshRefetch, setSSHRefetch] = useState(null);
   const [sshConnected, setSSHConnected] = useState(false);
 
@@ -19,19 +19,16 @@ const useServerItem = (server, refetch) => {
     }
   }, [server]);
 
-  const handleEdit = useCallback(() => {
-    showModal({
-      modalType: "serverInfo",
-      modalProps: {
-        serverId: server.id,
-        refetch: refetch,
-      },
-      onConfirm: () => {
-        refetch();
-        if (sshRefetch) sshRefetch();
-      },
+  const handleEdit = useCallback(async () => {
+    const result = await open("serverInfo", {
+      serverId: server.id,
     });
-  }, [server.id, refetch, sshRefetch, showModal]);
+
+    if (result) {
+      refetch();
+      if (sshRefetch) sshRefetch();
+    }
+  }, [server.id, refetch, sshRefetch, open]);
 
   return { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit };
 };

@@ -1,15 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { Plus, X, Minus } from "lucide-react";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
-import { useModalReducer } from "../../atoms/modal";
+import { useModal } from "../../atoms/modal";
 
 const PortSelectCard = ({ port, setSelected }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
 
   return (
     <div className="relative flex w-72  flex-col items-center justify-center space-y-2 py-4 px-4">
@@ -35,15 +33,10 @@ const PortSelectCard = ({ port, setSelected }) => {
           className="btn btn-accent btn-sm"
           onClick={() => {
             setSelected(null);
-            dispatch(
-              showModal({
-                modalType: "portFunction",
-                modalProps: {
-                  port,
-                  serverId: 44,
-                },
-              })
-            );
+            open("portFunction", {
+              port,
+              serverId: 44,
+            });
           }}
         >
           {t("Change Port Function")}
@@ -52,14 +45,9 @@ const PortSelectCard = ({ port, setSelected }) => {
           className="btn btn-outline btn-sm"
           onClick={() => {
             setSelected(null);
-            dispatch(
-              showModal({
-                modalType: "portRestriction",
-                modalProps: {
-                  port,
-                },
-              })
-            );
+            open("portRestriction", {
+              port,
+            });
           }}
         >
           {t("Restrict Port")}

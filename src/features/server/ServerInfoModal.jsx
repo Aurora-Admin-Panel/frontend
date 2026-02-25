@@ -6,25 +6,17 @@ import { useDispatch, } from "react-redux";
 import { AtSign } from "lucide-react";
 import { GET_SERVER_QUERY, ADD_SERVER_MUTATION, UPDATE_SERVER_MUTATION, DELETE_SERVER_MUTATION } from "../../quries/server";
 import { GET_SECRETS_QUERY, UPLOAD_FILE_MUTATION } from "../../quries/file";
-import { useModalReducer } from "../../atoms/modal";
+import { useModal } from "../../atoms/modal";
 import { FileTypeEnum } from "../../store/apis/types.generated";
 import DataLoading from "../DataLoading";
 import { showNotification } from "../../store/reducers/notification";
 
 
-const ServerInfoModal = () => {
+const ServerInfoModal = ({ modalProps = {}, close, resolve }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const {
-    modal: {
-      modalProps: { serverId },
-      onCancel,
-      onConfirm,
-    },
-    showModal,
-    showConfirmationModal,
-    hideModal
-  } = useModalReducer();
+  const { confirm } = useModal();
+  const { serverId } = modalProps;
   const {
     data: secretsData,
     loading: secretsLoading,
@@ -53,37 +45,37 @@ const ServerInfoModal = () => {
           body: "Server saved successfully",
         })
       );
-      if (onConfirm) onConfirm();
-      hideModal();
+      if (resolve) resolve({ action: "saved" });
+      close();
     },
   });
   const [addServer, { loading: addServerLoading, error: addServerError }] =
     useMutation(ADD_SERVER_MUTATION, {
-      onCompleted: () => {
-        dispatch(
-          showNotification({
-            type: "success",
-            body: "Server added successfully",
-          })
-        );
-        if (onConfirm) onConfirm();
-        hideModal();
-      },
-    });
+    onCompleted: () => {
+      dispatch(
+        showNotification({
+          type: "success",
+          body: "Server added successfully",
+        })
+      );
+      if (resolve) resolve({ action: "added" });
+      close();
+    },
+  });
 
   const [deleteServer, { loading: deleteServerLoading, error: deleteServerError }] =
     useMutation(DELETE_SERVER_MUTATION, {
-      onCompleted: () => {
-        dispatch(
-          showNotification({
-            type: "success",
-            body: "Server deleted successfully",
-          })
-        );
-        if (onConfirm) onConfirm();
-        hideModal();
-      },
-    });
+    onCompleted: () => {
+      dispatch(
+        showNotification({
+          type: "success",
+          body: "Server deleted successfully",
+        })
+      );
+      if (resolve) resolve({ action: "deleted" });
+      close();
+    },
+  });
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -100,22 +92,18 @@ const ServerInfoModal = () => {
   const [keyFileId, setKeyFileId] = useState("");
   console.log(sshPassword)
 
-  const handleDelete = () => {
-    showConfirmationModal({
-      modalProps: {
+  const handleDelete = async () => {
+    const confirmed = await confirm({
         title: t("Delete Server"),
         message: t("Are you sure you want to delete this server?"),
-      },
-      onConfirm: async () => {
-        if (serverId) {
-          await deleteServer({ variables: { id: serverId } });
-        }
-      },
-    })
-  }
+      });
+    if (confirmed && serverId) {
+      await deleteServer({ variables: { id: serverId } });
+    }
+  };
   const handleCancel = () => {
-    if (onCancel) onCancel();
-    hideModal();
+    if (resolve) resolve(false);
+    close();
   };
   const handleSubmit = async () => {
     let actualKeyFileId = keyFileId;
@@ -191,7 +179,7 @@ const ServerInfoModal = () => {
         <div className="modal-box relative">
           <label
             className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-            onClick={() => hideModal()}
+            onClick={close}
           >
             ✕
           </label>

@@ -6,13 +6,13 @@ import FileCard from "./FileCard";
 import useQueryParams from "../../hooks/useQueryParams";
 import Error from "../layout/Error";
 import DataLoading from "../DataLoading";
-import { useModalReducer } from "../../atoms/modal"
+import { useModal } from "../../atoms/modal"
 import { GET_FILES_QUERY } from "../../quries/file";
 
 
 const FileCenter = () => {
   const { t } = useTranslation();
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
       name: "limit",
@@ -38,12 +38,10 @@ const FileCenter = () => {
           <h1 className="text-2xl font-extrabold">{t("Files")}</h1>
           <label
             className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-            onClick={() =>
-              showModal({
-                modalType: "file",
-                onConfirm: refetch,
-              })
-            }
+            onClick={async () => {
+              const result = await open("file");
+              if (result) refetch();
+            }}
           >
             <Plus />
           </label>

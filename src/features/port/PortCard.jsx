@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import classNames from "classnames";
 import { getReadableSize } from "../../utils/formatter";
-import { useModalReducer } from "../../atoms/modal";
+import { useModal } from "../../atoms/modal";
 
 
 const methodToBadge = (method) => {
@@ -35,7 +35,7 @@ const methodToBadge = (method) => {
 
 const PortCard = ({ port, onUpdate, setSelected }) => {
   const { t, i18n } = useTranslation();
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
 
   return (
     <div className="card relative h-44 w-40 justify-self-center bg-base-200 border-primary border-1 shadow-xl rounded-box">
@@ -84,25 +84,14 @@ const PortCard = ({ port, onUpdate, setSelected }) => {
               <div
                 className="flex flex-row max-w-16 badge badge-secondary tooltip cursor-pointer items-center justify-center truncate px-1 text-xs"
                 data-tip={port.forwardRule.method}
-                onClick={() =>
-                    showModal({
-                      modalType: "portFunction",
-                      modalProps: { port, serverId: 44 },
-                  })
-                }
+                onClick={() => open("portFunction", { port, serverId: 44 })}
               >
                 {port.forwardRule.method}
               </div>
             ) : (
               <div
                 className="badge badge-outline w-8 cursor-pointer px-1 text-xs"
-                onClick={() =>
-                    showModal({
-                      modalType: "portFunction",
-                      modalProps: { port, serverId: 44 },
-                    })
-                  
-                }
+                onClick={() => open("portFunction", { port, serverId: 44 })}
               >
                 <Plus size={12} />
               </div>

@@ -11,7 +11,7 @@ import Paginator from "../Paginator";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useAtom } from "jotai";
 import serverLimitAtom from "../../atoms/server/limit";
-import { useModalReducer } from "../../atoms/modal";
+import { useModal } from "../../atoms/modal";
 
 const SERVER_METRIC_SUBSCRIPTION = gql`
 subscription ServerMetric {
@@ -34,7 +34,7 @@ subscription ServerMetric {
 
 const ServerList = () => {
   const { t } = useTranslation();
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
   const [atomLimit, setAtomLimit] = useAtom(serverLimitAtom);
   const [limit, offset, setQueryLimit, setOffset] = useQueryParams([
     {
@@ -87,7 +87,10 @@ const ServerList = () => {
             <h2 className="not-prose text-2xl font-extrabold">{t("Servers")}</h2>
             <label
               className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-              onClick={() => showModal({ modalType: "serverInfo", onConfirm: refetch })}
+              onClick={async () => {
+                const result = await open("serverInfo");
+                if (result) refetch();
+              }}
             >
               <Plus />
             </label>

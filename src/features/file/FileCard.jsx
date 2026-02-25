@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import classNames from "classnames";
 import { gql, useMutation } from "@apollo/client";
 import { getReadableSize } from "../../utils/formatter";
-import { useModalReducer } from "../../atoms/modal"
+import { useModal } from "../../atoms/modal"
 import { downloadFile } from "../../utils/download";
 import { DELETE_FILE_MUTATION } from "../../quries/file";
 import { useEffect } from "react";
@@ -47,26 +47,22 @@ const fileTypeToIcon = (type) => {
 const FileCard = ({ file, onUpdate }) => {
   const { t } = useTranslation();
   const [deleteFile, { called, error }] = useMutation(DELETE_FILE_MUTATION);
-  const { showModal } = useModalReducer();
+  const { open, confirm } = useModal();
   const openInModal = () => {
-    showModal({
-      modalType: "filePreview",
-      modalProps: { file },
-    });
+    open("filePreview", { file });
   };
 
 
-  const handleClickCancel = () => {
-      showModal({
-        modalType: "confirmation",
-        modalProps: {
+  const handleClickCancel = async () => {
+      const confirmed = await confirm({
           title: t("Delete File"),
           message: t("Are you sure you want to delete this file", {
             name: file.name,
           }),
-        },
-        onConfirm: () => deleteFile({ variables: { id: file.id } }),
-      })
+        });
+      if (confirmed) {
+        deleteFile({ variables: { id: file.id } });
+      }
   };
   const handleCheck = () => {
     switch (file.type) {

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
-import { useModalReducer } from "../../atoms/modal";
 
 const GET_PORT_QUERY = gql`
   query GetPort($portId: Int!) {
@@ -14,24 +13,19 @@ const GET_PORT_QUERY = gql`
   }
 `;
 
-const PortRestrictionModal = () => {
+const PortRestrictionModal = ({ modalProps = {}, close, resolve }) => {
   const { t, i18n } = useTranslation();
-  const {
-    modal: {
-      modalProps: { port },
-      onCancel,
-    },
-    hideModal } = useModalReducer();
+  const { port } = modalProps;
+  const portId = port?.id;
   const { data: portData, isLoading: portLoading } = useQuery(GET_PORT_QUERY, {
-    variables: {
-      portId: port.id,
-    },
+    variables: portId ? { portId } : undefined,
+    skip: !portId,
   });
   const [tab, setTab] = useState(1);
 
   const handleCancel = () => {
-    if (onCancel) onCancel();
-    hideModal();
+    if (resolve) resolve(false);
+    close();
   };
   const handleSubmit = async () => { };
 
@@ -41,7 +35,7 @@ const PortRestrictionModal = () => {
     <div className="modal-box relative">
       <label
         className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={() => hideModal()}
+        onClick={close}
       >
         ✕
       </label>

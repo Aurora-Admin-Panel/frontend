@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
-import { useModalReducer } from "../../atoms/modal";
 
 const GET_RULE_OPTIONS_QUERY = gql`
   query GetRuleOptions($portId: Int!) {
@@ -11,42 +10,40 @@ const GET_RULE_OPTIONS_QUERY = gql`
   }
 `;
 
-const PortFunctionModal = () => {
+const PortFunctionModal = ({ modalProps = {}, close, resolve }) => {
   const { t, i18n } = useTranslation();
-  const {
-    modal: {
-      modalProps: { port, serverId },
-      onCancel,
-    },
-    hideModal,
-  } = useModalReducer();
+  const { port, serverId } = modalProps || {};
+  const portId = port?.id;
   const { data: ruleOptions, loading: ruleOptionsLoading } = useQuery(
     GET_RULE_OPTIONS_QUERY,
-    { variables: { portId: port.id } }
+    {
+      variables: portId ? { portId } : undefined,
+      skip: !portId,
+    }
   );
 
   const [method, setMethod] = useState("iptables");
 
   const handleCancel = () => {
-    if (onCancel) onCancel();
-    hideModal();
+    if (resolve) resolve(false);
+    close();
   };
   const handleSubmit = async () => { };
 
   useEffect(() => { }, []);
-  console.log(ruleOptions, ruleOptionsLoading);
+  const availableRuleOptions = ruleOptions?.ruleOptions ?? [];
 
   return (
     <div className="modal-box relative">
       <label
         className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={() => hideModal()}
+        onClick={close}
       >
         ✕
       </label>
       <div className="-mt-3 flex w-full flex-row items-center space-x-2">
         <h3 className="text-lg font-bold">{t("Port Function")}</h3>
-        {ruleOptionsLoading ? (
+        {!portId ? null : ruleOptionsLoading ? (
           <DataLoading />
         ) : (
           <select
@@ -54,7 +51,7 @@ const PortFunctionModal = () => {
             value={method}
             onChange={(e) => setMethod(e.target.value)}
           >
-            {ruleOptions.ruleOptions.map((option) => (
+            {availableRuleOptions.map((option) => (
               <option value={option} key={option}>
                 {t(option)}
               </option>
@@ -62,6 +59,11 @@ const PortFunctionModal = () => {
           </select>
         )}
       </div>
+      {!portId && (
+        <div className="mt-4 px-2 text-sm text-warning">
+          {t("No port selected for function configuration.")}
+        </div>
+      )}
       <div className="mt-4 flex w-full flex-col space-y-0 px-2"></div>
       <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
         <label

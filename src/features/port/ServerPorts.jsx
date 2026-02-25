@@ -13,7 +13,7 @@ import PortCard from "./PortCard";
 import DataLoading from "../DataLoading";
 import PortUsersCard from "./PortUsersCard";
 import PortSelectCard from "./PortSelectCard";
-import { useModalReducer } from "../../atoms/modal"
+import { useModal } from "../../atoms/modal"
 
 const GET_SERVER_PORTS_QUERY = gql`
   query GetServerPorts(
@@ -93,7 +93,7 @@ const SelectCard = ({ selected, setSelected }) => {
 const ServerPorts = () => {
   const { serverId } = useParams();
   const { t } = useTranslation();
-  const { showModal } = useModalReducer();
+  const { open } = useModal();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
       name: "limit",
@@ -125,13 +125,10 @@ const ServerPorts = () => {
           <h1 className="text-2xl font-extrabold">{t("Ports")}</h1>
           <label
             className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-            onClick={() =>
-              showModal({
-                modalType: "port",
-                onConfirm: refetch,
-              })
-
-            }
+            onClick={async () => {
+              const result = await open("port");
+              if (result) refetch();
+            }}
           >
             <Plus />
           </label>

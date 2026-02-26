@@ -52,7 +52,7 @@ export const COMPILE_EXECUTABLE_CONTRACT_PREVIEW_BY_ID = gql`
 `;
 
 export const DEFAULT_CONTRACT_TEMPLATE = {
-  schemaVersion: "exec-authoring/v1",
+  schemaVersion: "aurora-exec/v1",
   contractKey: "demo_contract",
   version: 1,
   title: "Demo Contract",

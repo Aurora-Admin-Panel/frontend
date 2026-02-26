@@ -1,6 +1,5 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import FieldsRenderer from "./FieldsRenderer";
 import { deriveDefaultValues } from "./utils";
 
@@ -26,11 +25,26 @@ function buildGridContainerClasses(gridCfg) {
 // Usage:
 //   const { form, methods } = useDynamicForm({ schema, onSubmit, defaultValues });
 //   return form;
-export default function useDynamicForm({ schema, onSubmit, onCancel, defaultValues } = {}) {
-  const { t } = useTranslation();
+export default function useDynamicForm({
+  schema,
+  onSubmit,
+  defaultValues,
+  onValuesChange,
+} = {}) {
   const computedDefaults = defaultValues ?? deriveDefaultValues(schema);
   const methods = useForm({ defaultValues: computedDefaults });
   const { register, control, handleSubmit, formState: { errors }, setValue } = methods;
+
+  useEffect(() => {
+    if (!onValuesChange) return undefined;
+
+    onValuesChange(methods.getValues(), { type: "init" });
+    const subscription = methods.watch((values, meta) => {
+      onValuesChange(values, meta);
+    });
+
+    return () => subscription?.unsubscribe?.();
+  }, [methods, onValuesChange]);
 
   const form = useMemo(() => (
     <div className="w-full">
@@ -45,21 +59,10 @@ export default function useDynamicForm({ schema, onSubmit, onCancel, defaultValu
             errors={errors}
             setValue={setValue}
           />
-          <fieldset className="col-span-full fieldset rounded-box border border-base-300 bg-base-100 p-3 mt-2">
-            <legend className="fieldset-legend px-1 text-sm">{t("Actions")}</legend>
-            <div className="flex w-full flex-row justify-end gap-2">
-              <button className="btn btn-outline btn-accent" type="button" onClick={onCancel}>
-                {t("Cancel")}
-              </button>
-              <button className="btn btn-primary" type="submit">
-                {t("Confirm")}
-              </button>
-            </div>
-          </fieldset>
         </div>
       </form>
     </div>
-  ), [schema, register, control, errors, setValue, handleSubmit, onSubmit, onCancel, t]);
+  ), [schema, register, control, errors, setValue, handleSubmit, onSubmit]);
 
   return { form, methods };
 }

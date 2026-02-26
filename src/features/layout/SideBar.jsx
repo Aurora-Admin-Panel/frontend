@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, Layers, FileUp, Activity, Settings, AtSign, FileCode2, Hammer } from "lucide-react";
+import { Users, Layers, FileUp, Activity, Settings, AtSign, FileCode2 } from "lucide-react";
 
 const routes = [
   {
@@ -23,6 +23,13 @@ const routes = [
     permissions: ["admin", "ops", "user"],
   },
   {
+    path: "/app/contracts",
+    icon: "FileCode2",
+    name: "Schemas",
+    permissions: ["admin", "ops"],
+    end: true,
+  },
+  {
     path: "/app/activity",
     icon: "Activity",
     name: "Activity",
@@ -40,19 +47,6 @@ const routes = [
     name: "About",
     permissions: ["admin", "ops", "user"],
   },
-  {
-    path: "/app/contracts",
-    icon: "FileCode2",
-    name: "Schemas",
-    permissions: ["admin", "ops"],
-    end: true,
-  },
-  {
-    path: "/app/contracts/builder",
-    icon: "Hammer",
-    name: "Schema Builder",
-    permissions: ["admin", "ops"],
-  },
 ];
 
 const SideBar = () => {
@@ -67,7 +61,6 @@ const SideBar = () => {
     Gear: Settings,
     At: AtSign,
     FileCode2: FileCode2,
-    Hammer: Hammer,
   };
   return (
     <>

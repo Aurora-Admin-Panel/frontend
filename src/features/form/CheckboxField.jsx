@@ -1,17 +1,19 @@
 import FieldError from "./FieldError";
-import useMaybeT from "../../hooks/useMaybeT";
+import FieldShell from "./FieldShell";
 import classNames from "classnames";
 
 const CheckboxField = ({ register, errors, name, label, rules, className }) => {
-  const maybeT = useMaybeT();
   return (
-    <fieldset className={classNames("fieldset w-full px-2", className)} key={name}>
-      <legend className="fieldset-legend flex items-center justify-between">
-        <span>{maybeT(label)}</span>
-        <input type="checkbox" className="checkbox" {...register(name, rules)} />
-      </legend>
+    <FieldShell className={classNames("px-2", className)} label={label} key={name}>
+      <div className="flex h-full items-center justify-start gap-3">
+        <input
+          type="checkbox"
+          className="toggle toggle-primary toggle-sm"
+          {...register(name, rules)}
+        />
+      </div>
       <FieldError errors={errors} name={name} />
-    </fieldset>
+    </FieldShell>
   );
 };
 

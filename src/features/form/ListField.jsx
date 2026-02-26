@@ -1,18 +1,16 @@
 import { useFieldArray } from "react-hook-form";
 import { Plus, Trash } from "lucide-react";
 import FieldsRenderer from "./FieldsRenderer";
-import useMaybeT from "../../hooks/useMaybeT";
+import FieldShell from "./FieldShell";
 import classNames from "classnames";
 
 const ListField = ({ name, label, itemSchema, parent, register, control, errors, setValue, className }) => {
   const fullName = parent ? `${parent}.${name}` : name;
   const fieldArray = useFieldArray({ control, name: fullName });
-  const maybeT = useMaybeT();
 
   return (
-    <fieldset className={classNames("fieldset w-full px-2", className)} key={fullName}>
-      <legend className="fieldset-legend flex items-center justify-between">
-        <span>{maybeT(label)}</span>
+    <FieldShell className={classNames("px-2", className)} label={label} key={fullName}>
+      <div className="mb-2 flex justify-end">
         <button
           type="button"
           className="btn btn-circle btn-outline btn-xs"
@@ -20,7 +18,7 @@ const ListField = ({ name, label, itemSchema, parent, register, control, errors,
         >
           <Plus className="mx-1" size={18} />
         </button>
-      </legend>
+      </div>
       <div className="flex w-full flex-col space-y-2">
         {fieldArray.fields.map((item, index) => (
           <div className="flex w-full flex-row items-start" key={item.id}>
@@ -45,7 +43,7 @@ const ListField = ({ name, label, itemSchema, parent, register, control, errors,
           </div>
         ))}
       </div>
-    </fieldset>
+    </FieldShell>
   );
 };
 

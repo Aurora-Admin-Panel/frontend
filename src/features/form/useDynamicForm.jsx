@@ -45,10 +45,17 @@ export default function useDynamicForm({ schema, onSubmit, onCancel, defaultValu
             errors={errors}
             setValue={setValue}
           />
-          <div className="col-span-full flex w-full flex-row justify-end space-x-2 mt-2">
-            <button className="btn btn-outline btn-accent" type="button" onClick={onCancel}>{t("Cancel")}</button>
-            <button className="btn btn-primary" type="submit">{t("Confirm")}</button>
-          </div>
+          <fieldset className="col-span-full fieldset rounded-box border border-base-300 bg-base-100 p-3 mt-2">
+            <legend className="fieldset-legend px-1 text-sm">{t("Actions")}</legend>
+            <div className="flex w-full flex-row justify-end gap-2">
+              <button className="btn btn-outline btn-accent" type="button" onClick={onCancel}>
+                {t("Cancel")}
+              </button>
+              <button className="btn btn-primary" type="submit">
+                {t("Confirm")}
+              </button>
+            </div>
+          </fieldset>
         </div>
       </form>
     </div>

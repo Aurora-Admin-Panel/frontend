@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import FieldsRenderer from "./FieldsRenderer";
-import useMaybeT from "../../hooks/useMaybeT";
+import FieldShell from "./FieldShell";
 
 function buildGridContainerClasses(gridCfg) {
   const cols = gridCfg?.cols || {};
@@ -23,10 +23,12 @@ function buildGridContainerClasses(gridCfg) {
 const ObjectField = ({ schema, parent, register, control, errors, setValue, name, label, className }) => {
   const fullName = parent ? `${parent}.${name}` : name;
   const level = parent ? parent.split(".").length + 1 : 1;
-  const maybeT = useMaybeT();
   return (
-    <fieldset className={classNames("fieldset w-full border border-base-300 rounded-box bg-base-200 p-2", className)} key={fullName}>
-      <legend className={classNames("fieldset-legend")}>{maybeT(label)}</legend>
+    <FieldShell
+      className={classNames("bg-base-200 px-2", className)}
+      label={label}
+      key={fullName}
+    >
       <div className={classNames(buildGridContainerClasses(schema?.$grid), `pl-${level}`, `pr-${level}`)}>
         <FieldsRenderer
           schema={schema}
@@ -37,7 +39,7 @@ const ObjectField = ({ schema, parent, register, control, errors, setValue, name
           setValue={setValue}
         />
       </div>
-    </fieldset>
+    </FieldShell>
   );
 };
 

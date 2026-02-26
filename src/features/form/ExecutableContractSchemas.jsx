@@ -60,7 +60,7 @@ const ExecutableContractSchemas = () => {
             onClick={() => navigate("/app/contracts/builder")}
           >
             <Plus size={14} />
-            {t("New Schema")}
+            {t("Schema Builder")}
           </button>
         </div>
       </div>

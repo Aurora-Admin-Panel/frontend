@@ -1,4 +1,5 @@
 import FieldError from "./FieldError";
+import FieldShell from "./FieldShell";
 import { get } from "../../utils/object";
 import classNames from "classnames";
 import useMaybeT from "../../hooks/useMaybeT";
@@ -6,8 +7,7 @@ import useMaybeT from "../../hooks/useMaybeT";
 const SelectField = ({ register, errors, name, label, options = [], rules, className }) => {
   const maybeT = useMaybeT();
   return (
-    <fieldset className={classNames("fieldset w-full px-2", className)} key={name}>
-      <legend className="fieldset-legend">{maybeT(label)}</legend>
+    <FieldShell className={classNames("px-2", className)} label={label} key={name}>
       <select
         className={classNames("select select-bordered w-full", {
           "select-error": !!get(errors, name),
@@ -21,7 +21,7 @@ const SelectField = ({ register, errors, name, label, options = [], rules, class
         ))}
       </select>
       <FieldError errors={errors} name={name} />
-    </fieldset>
+    </FieldShell>
   );
 };
 

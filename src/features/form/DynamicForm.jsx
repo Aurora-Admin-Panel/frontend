@@ -223,10 +223,17 @@ function ParamBuilderPanel({
   setSelectedParamIndex,
   applyDraftMutation,
 }) {
+  const { t } = useTranslation();
   const params = Array.isArray(contract?.params) ? contract.params : [];
   const execConfig = contract?.exec || {};
   const selected = params[selectedParamIndex] ?? null;
   const emitPreset = selected ? getEmitPresetKind(selected) : "arg";
+
+  const patchContract = (fn) => {
+    applyDraftMutation((draft) => {
+      fn(draft);
+    });
+  };
 
   const patchSelected = (fn) => {
     if (selectedParamIndex == null || selectedParamIndex < 0) return;
@@ -259,7 +266,7 @@ function ParamBuilderPanel({
     <div className="card bg-base-200 shadow-md">
       <div className="card-body gap-3 p-4">
         <div className="flex items-center justify-between">
-          <h2 className="card-title text-base">Builder (v1)</h2>
+          <h2 className="card-title text-base">{t("Builder (v1)")}</h2>
           <button
             type="button"
             className="btn btn-primary btn-xs"
@@ -272,17 +279,81 @@ function ParamBuilderPanel({
             }}
           >
             <Plus size={14} />
-            Add Param
+            {t("Add Param")}
           </button>
         </div>
 
         <div className="rounded-box border border-base-300 bg-base-100 p-3">
           <div className="mb-2 text-xs font-semibold uppercase opacity-70">
-            Exec (command prefix)
+            {t("Contract")}
           </div>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             <label className="input input-bordered input-sm w-full md:col-span-2">
-              <span className="text-xs opacity-70">bin</span>
+              <span className="text-xs opacity-70">{t("Title")}</span>
+              <input
+                className="grow"
+                value={contract?.title || ""}
+                onChange={(e) =>
+                  patchContract((draft) => {
+                    draft.title = e.target.value;
+                  })
+                }
+              />
+            </label>
+
+            <label className="input input-bordered input-sm w-full">
+              <span className="text-xs opacity-70">{t("Contract Key")}</span>
+              <input
+                className="grow font-mono"
+                value={contract?.contractKey || ""}
+                onChange={(e) =>
+                  patchContract((draft) => {
+                    draft.contractKey = e.target.value;
+                  })
+                }
+              />
+            </label>
+
+            <label className="input input-bordered input-sm w-full">
+              <span className="text-xs opacity-70">{t("Version")}</span>
+              <input
+                type="number"
+                className="grow"
+                value={contract?.version ?? 1}
+                min={1}
+                onChange={(e) =>
+                  patchContract((draft) => {
+                    const next = Number(e.target.value || 1);
+                    draft.version = Number.isFinite(next) && next > 0 ? Math.trunc(next) : 1;
+                  })
+                }
+              />
+            </label>
+
+            <div className="md:col-span-2">
+              <div className="mb-1 text-xs opacity-70">{t("Description")}</div>
+              <textarea
+                className="textarea textarea-bordered textarea-sm w-full text-xs"
+                rows={2}
+                value={contract?.description || ""}
+                onChange={(e) =>
+                  patchContract((draft) => {
+                    if (!e.target.value.trim()) delete draft.description;
+                    else draft.description = e.target.value;
+                  })
+                }
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-box border border-base-300 bg-base-100 p-3">
+          <div className="mb-2 text-xs font-semibold uppercase opacity-70">
+            {t("Exec (command prefix)")}
+          </div>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <label className="input input-bordered input-sm w-full md:col-span-2">
+              <span className="text-xs opacity-70">{t("Binary")}</span>
               <input
                 className="grow"
                 value={execConfig.bin || ""}
@@ -295,11 +366,11 @@ function ParamBuilderPanel({
             </label>
 
             <label className="input input-bordered input-sm w-full">
-              <span className="text-xs opacity-70">workingDir</span>
+              <span className="text-xs opacity-70">{t("Working Directory")}</span>
               <input
                 className="grow"
                 value={execConfig.workingDir || ""}
-                placeholder="/opt/app (optional)"
+                placeholder={t("Working Directory Placeholder")}
                 onChange={(e) =>
                   patchExec((exec) => {
                     if (!e.target.value) delete exec.workingDir;
@@ -310,7 +381,7 @@ function ParamBuilderPanel({
             </label>
 
             <label className="input input-bordered input-sm w-full">
-              <span className="text-xs opacity-70">timeoutSeconds</span>
+              <span className="text-xs opacity-70">{t("Timeout Seconds")}</span>
               <input
                 type="number"
                 className="grow"
@@ -325,7 +396,7 @@ function ParamBuilderPanel({
             </label>
 
             <div className="md:col-span-2">
-              <div className="mb-1 text-xs opacity-70">baseArgs (one per line)</div>
+              <div className="mb-1 text-xs opacity-70">{t("Base Args (one per line)")}</div>
               <textarea
                 className="textarea textarea-bordered textarea-sm w-full font-mono text-xs"
                 rows={3}
@@ -345,7 +416,7 @@ function ParamBuilderPanel({
 
         <div className="grid grid-cols-1 gap-3 2xl:grid-cols-2">
           <div className="space-y-2">
-            <div className="text-xs font-semibold uppercase opacity-70">Params</div>
+            <div className="text-xs font-semibold uppercase opacity-70">{t("Params")}</div>
             <div className="max-h-72 space-y-2 overflow-auto pr-1">
               {params.map((param, idx) => (
                 <div
@@ -422,22 +493,22 @@ function ParamBuilderPanel({
                 </div>
               ))}
               {params.length === 0 && (
-                <div className="text-sm opacity-70">No params yet. Add one to start.</div>
+                <div className="text-sm opacity-70">{t("No params yet. Add one to start.")}</div>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="text-xs font-semibold uppercase opacity-70">Selected Param</div>
+            <div className="text-xs font-semibold uppercase opacity-70">{t("Selected Param")}</div>
             {!selected ? (
               <div className="rounded-box border border-base-300 bg-base-100 p-3 text-sm opacity-70">
-                Select a param to edit.
+                {t("Select a param to edit.")}
               </div>
             ) : (
               <div className="space-y-2 rounded-box border border-base-300 bg-base-100 p-3">
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                   <label className="input input-bordered input-sm w-full">
-                    <span className="text-xs opacity-70">key</span>
+                    <span className="text-xs opacity-70">{t("Key")}</span>
                     <input
                       className="grow"
                       value={selected.key || ""}
@@ -455,7 +526,7 @@ function ParamBuilderPanel({
                     />
                   </label>
                   <label className="input input-bordered input-sm w-full">
-                    <span className="text-xs opacity-70">label</span>
+                    <span className="text-xs opacity-70">{t("Label")}</span>
                     <input
                       className="grow"
                       value={selected.label || ""}
@@ -470,7 +541,7 @@ function ParamBuilderPanel({
 
                 <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                   <label className="form-control">
-                    <span className="mb-1 text-xs opacity-70">type</span>
+                    <span className="mb-1 text-xs opacity-70">{t("Type")}</span>
                     <select
                       className="select select-bordered select-sm"
                       value={selected.type || "string"}
@@ -519,7 +590,7 @@ function ParamBuilderPanel({
                   </label>
 
                   <label className="form-control">
-                    <span className="mb-1 text-xs opacity-70">emit preset</span>
+                    <span className="mb-1 text-xs opacity-70">{t("Emit Preset")}</span>
                     <select
                       className="select select-bordered select-sm"
                       value={emitPreset}
@@ -529,20 +600,20 @@ function ParamBuilderPanel({
                         })
                       }
                     >
-                      <option value="arg">arg (--x value)</option>
-                      <option value="flag">flag (--x)</option>
-                      <option value="flagTrue">flagTrue/flagFalse</option>
-                      <option value="env">env</option>
-                      <option value="pos">positional</option>
-                      <option value="file">file</option>
-                      <option value="stdin">stdin</option>
+                      <option value="arg">{t("Arg Preset Label")}</option>
+                      <option value="flag">{t("Flag Preset Label")}</option>
+                      <option value="flagTrue">{t("Flag Pair Preset Label")}</option>
+                      <option value="env">{t("Env Preset Label")}</option>
+                      <option value="pos">{t("Positional Preset Label")}</option>
+                      <option value="file">{t("File Preset Label")}</option>
+                      <option value="stdin">{t("Stdin Preset Label")}</option>
                     </select>
                   </label>
                 </div>
 
                 <div className="flex flex-wrap gap-4 text-sm">
                   <label className="label cursor-pointer gap-2 p-0">
-                    <span className="label-text">required</span>
+                    <span className="label-text">{t("Required")}</span>
                     <input
                       type="checkbox"
                       className="checkbox checkbox-sm"
@@ -555,7 +626,7 @@ function ParamBuilderPanel({
                     />
                   </label>
                   <label className="label cursor-pointer gap-2 p-0">
-                    <span className="label-text">secret</span>
+                    <span className="label-text">{t("Secret")}</span>
                     <input
                       type="checkbox"
                       className="checkbox checkbox-sm"
@@ -570,7 +641,7 @@ function ParamBuilderPanel({
                 </div>
 
                 <div>
-                  <div className="mb-1 text-xs opacity-70">default</div>
+                  <div className="mb-1 text-xs opacity-70">{t("Default")}</div>
                   {selected.type === "bool" ? (
                     <input
                       type="checkbox"
@@ -606,7 +677,9 @@ function ParamBuilderPanel({
 
                 {selected.type === "enum" && (
                   <div>
-                    <div className="mb-1 text-xs opacity-70">enum options (one per line: value | label)</div>
+                    <div className="mb-1 text-xs opacity-70">
+                      {t("Enum Options Hint")}
+                    </div>
                     <textarea
                       className="textarea textarea-bordered textarea-sm w-full font-mono text-xs"
                       rows={4}
@@ -634,11 +707,11 @@ function ParamBuilderPanel({
                 )}
 
                 <div className="rounded-box border border-base-300 bg-base-200 p-2">
-                  <div className="mb-1 text-xs opacity-70">emit config</div>
+                  <div className="mb-1 text-xs opacity-70">{t("Emit Config")}</div>
                   {emitPreset === "arg" && (
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                       <label className="input input-bordered input-sm">
-                        <span className="text-xs opacity-70">arg</span>
+                        <span className="text-xs opacity-70">{t("Arg")}</span>
                         <input
                           className="grow"
                           value={selected.emit?.arg || ""}
@@ -650,7 +723,7 @@ function ParamBuilderPanel({
                         />
                       </label>
                       <label className="form-control">
-                        <span className="mb-1 text-xs opacity-70">mode (lists only)</span>
+                        <span className="mb-1 text-xs opacity-70">{t("Mode (lists only)")}</span>
                         <select
                           className="select select-bordered select-sm"
                           value={selected.emit?.mode || "repeat"}
@@ -669,7 +742,7 @@ function ParamBuilderPanel({
                   )}
                   {emitPreset === "flag" && (
                     <label className="input input-bordered input-sm w-full">
-                      <span className="text-xs opacity-70">flag</span>
+                      <span className="text-xs opacity-70">{t("Flag")}</span>
                       <input
                         className="grow"
                         value={selected.emit?.flag || ""}
@@ -684,7 +757,7 @@ function ParamBuilderPanel({
                   {emitPreset === "flagTrue" && (
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                       <label className="input input-bordered input-sm">
-                        <span className="text-xs opacity-70">flagTrue</span>
+                        <span className="text-xs opacity-70">{t("Flag True")}</span>
                         <input
                           className="grow"
                           value={selected.emit?.flagTrue || ""}
@@ -696,7 +769,7 @@ function ParamBuilderPanel({
                         />
                       </label>
                       <label className="input input-bordered input-sm">
-                        <span className="text-xs opacity-70">flagFalse</span>
+                        <span className="text-xs opacity-70">{t("Flag False")}</span>
                         <input
                           className="grow"
                           value={selected.emit?.flagFalse || ""}
@@ -712,7 +785,7 @@ function ParamBuilderPanel({
                   )}
                   {emitPreset === "env" && (
                     <label className="input input-bordered input-sm w-full">
-                      <span className="text-xs opacity-70">env</span>
+                      <span className="text-xs opacity-70">{t("Env")}</span>
                       <input
                         className="grow"
                         value={selected.emit?.env || ""}
@@ -726,7 +799,7 @@ function ParamBuilderPanel({
                   )}
                   {emitPreset === "pos" && (
                     <label className="input input-bordered input-sm w-full">
-                      <span className="text-xs opacity-70">pos</span>
+                      <span className="text-xs opacity-70">{t("Position")}</span>
                       <input
                         type="number"
                         className="grow"
@@ -742,7 +815,7 @@ function ParamBuilderPanel({
                   {emitPreset === "file" && (
                     <div className="space-y-2">
                       <label className="input input-bordered input-sm w-full">
-                        <span className="text-xs opacity-70">pathTemplate</span>
+                        <span className="text-xs opacity-70">{t("Path Template")}</span>
                         <input
                           className="grow"
                           value={selected.emit?.file?.pathTemplate || ""}

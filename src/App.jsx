@@ -1,7 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
-import ReactLoading from "react-loading";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,7 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import ThemedSuspense from "./features/ThemedSuspense";
-
+import { routes } from "./routes";
 
 const ModalManager = lazy(() => import("./features/modal/ModalManager"));
 const Notification = lazy(() => import("./features/Notification"));
@@ -32,6 +31,7 @@ const NoMatch = lazy(() => import("./features/layout/NoMatch"));
 
 const App = () => {
   const { t } = useTranslation();
+  const routeMap = Object.fromEntries(routes.map((route) => [route.key, route]));
 
   return (
     <Router>
@@ -41,32 +41,38 @@ const App = () => {
       <ModalManager />
       <Notification />
       <Routes>
-        <Route path="login" element={<Login />} />
-        <Route path="create-account" element={<CreateAccount />} />
+        <Route path={routeMap.login.path} element={<Login />} />
+        <Route path={routeMap.createAccount.path} element={<CreateAccount />} />
         <Route path="test" element={<ThemedSuspense />} />
-        <Route path="app" element={<Layout />}>
-          <Route index element={<Navigate to="/app/servers" replace />} />
-          <Route path="servers" element={<ServerContainer />}>
-            <Route path=":serverId" />
-            <Route path=":serverId/ports" element={<ServerPorts />} />
-            <Route path=":serverId/users" element={<ServerUsers />} />
+        <Route path={routeMap.app.path} element={<Layout />}>
+          <Route index element={<Navigate to={routeMap.servers.fullPath} replace />} />
+          <Route path={routeMap.servers.path} element={<ServerContainer />}>
+            <Route path={routeMap.serverId.path} />
+            <Route path={routeMap.serverPorts.path} element={<ServerPorts />} />
+            <Route path={routeMap.serverUsers.path} element={<ServerUsers />} />
           </Route>
-          <Route path="users" element={<Users />} />
-          <Route path="files" element={<FileCenterContainer />}>
-            <Route index element={<FileCenter />}/>
+          <Route path={routeMap.users.path} element={<Users />} />
+          <Route path={routeMap.files.path} element={<FileCenterContainer />}>
+            <Route index element={<FileCenter />} />
           </Route>
-          <Route path="about" element={<About />} />
-          <Route path="contracts" element={<ExecutableContractSchemas />} />
-          <Route path="contracts/builder" element={<Form />} />
-          <Route path="contracts/builder/:contractId" element={<Form />} />
-          <Route path="form" element={<Navigate to="/app/contracts/builder" replace />} />
-          <Route path="themes" element={<Themes />} />
+          <Route path={routeMap.about.path} element={<About />} />
+          <Route path={routeMap.contracts.path} element={<ExecutableContractSchemas />} />
+          <Route path={routeMap.contractBuilder.path} element={<Form />} />
+          <Route path={routeMap.contractBuilderById.path} element={<Form />} />
+          <Route
+            path={routeMap.formRedirect.path}
+            element={<Navigate to={routeMap.contractBuilder.fullPath} replace />}
+          />
+          <Route path={routeMap.themes.path} element={<Themes />} />
           <Route path="*" element={<NoMatch />} />
         </Route>
 
         {/* Place new routes over this */}
         {/* <Route path="/app/*" element={<Layout />} /> */}
-        <Route index path="/" exact element={<Navigate to="/login" />} />
+        <Route
+          path={routeMap.root.path}
+          element={<Navigate to={routeMap.login.fullPath} replace />}
+        />
       </Routes>
     </Router>
   );

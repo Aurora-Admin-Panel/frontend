@@ -1,60 +1,96 @@
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from 'react-router-dom'
-import themes from "../../utils/themes";
-import { List } from "lucide-react";
-import LanguageSwitch from "../i18n/LanguageSwitch"
-import ThemeSwitch from "../theme/ThemeSwitch";
-import { ThemeContext } from "../../contexts/ThemeContext";
+import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { CircleUserRound, Languages, List, Palette } from "lucide-react";
 import { useAuthReducer } from "../../atoms/auth";
+import { drawerOpenAtom } from "../../atoms/layout";
+import Dropdown from "../ui/dropdown/Dropdown";
+import DropdownSubmenu from "../ui/dropdown/DropdownSubmenu";
+import ThemeMenuItems from "../theme/ThemeMenuItems";
+import LanguageMenuItems from "../i18n/LanguageMenuItems";
 
 const NavBar = () => {
-  const { setTheme } = useContext(ThemeContext);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const [, setDrawerOpen] = useAtom(drawerOpenAtom);
   const { logout: logoutAction } = useAuthReducer();
+
   const logout = () => {
     logoutAction();
     navigate("/login");
-  }
-  
+  };
+
   return (
     <div className="sticky top-0 z-30 flex h-16 w-full justify-center bg-base-100 bg-opacity-90 text-base-content backdrop-blur transition-all duration-100 border-base-200 border-b">
       <div className="navbar w-full">
         <div className="flex-none">
-          <label
+          <button
+            type="button"
             className="btn btn-square btn-ghost drawer-button lg:hidden"
-            htmlFor="drawer"
+            aria-label={t("Open navigation")}
+            onClick={() => setDrawerOpen(true)}
           >
             <List size={24} />
-          </label>
+          </button>
         </div>
         <div className="flex-1"></div>
         <div className="flex flex-1 justify-end px-2">
           <div className="flex items-stretch">
-            <ThemeSwitch />
-            <LanguageSwitch />
-            <details className="dropdown dropdown-end">
-              <summary className="avatar btn btn-circle btn-ghost">
-                <div className="w-10 rounded-full">
-                  <img src="https://picsum.photos/80" />
+            <Dropdown
+              align="end"
+              lazyMount
+              trigger={
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-base-200">
+                  <CircleUserRound className="h-6 w-6" aria-hidden="true" />
                 </div>
-              </summary>
-              <ul className="menu-compact menu dropdown-content rounded-box z-[1] mt-3 w-40 bg-base-100 p-2 shadow">
-                <li>
-                  <a className="justify-between">
-                    Profile
-                    <span className="badge">New</span>
-                  </a>
-                </li>
-                <li>
-                  <a>Settings</a>
-                </li>
-                <li>
-                  <a onClick={logout}>Logout</a>
-                </li>
-              </ul>
-            </details>
+              }
+              triggerAriaLabel={t("Account menu")}
+              summaryClassName="avatar btn btn-circle btn-ghost"
+              contentAs="ul"
+              contentClassName="mt-3 menu menu-sm rounded-box w-56 bg-base-100 p-2 shadow"
+            >
+              {({ close: closeAccountMenu }) => (
+                <>
+                  <DropdownSubmenu
+                    label={t("Theme")}
+                    icon={Palette}
+                    align="left"
+                    menuClassName="max-h-96 overflow-y-auto flex-nowrap"
+                    lazyMount
+                  >
+                    {({ close: closeThemeMenu }) => (
+                      <ThemeMenuItems
+                        onSelect={() => {
+                          closeThemeMenu();
+                          closeAccountMenu();
+                        }}
+                      />
+                    )}
+                  </DropdownSubmenu>
+                  <DropdownSubmenu label={t("Language")} icon={Languages} align="left" lazyMount>
+                    {({ close: closeLanguageMenu }) => (
+                      <LanguageMenuItems
+                        onSelect={() => {
+                          closeLanguageMenu();
+                          closeAccountMenu();
+                        }}
+                      />
+                    )}
+                  </DropdownSubmenu>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeAccountMenu();
+                        logout();
+                      }}
+                    >
+                      {t("Logout")}
+                    </button>
+                  </li>
+                </>
+              )}
+            </Dropdown>
           </div>
         </div>
       </div>

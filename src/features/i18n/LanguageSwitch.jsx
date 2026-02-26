@@ -1,33 +1,28 @@
 import { useTranslation } from "react-i18next";
 import { Languages } from "lucide-react";
-
+import Dropdown from "../ui/dropdown/Dropdown";
+import LanguageMenuItems from "./LanguageMenuItems";
 
 const LanguageSwitch = () => {
-    const { t, i18n } = useTranslation();
-    return (
-        <div className="dropdown dropdown-end">
-            <label tabIndex="0" className="btn btn-ghost btn-circle label-text bg-base-100/20">
-                <div className="indicator">
-                    <Languages size={20} />
-                </div>
-            </label>
-            <ul
-                tabIndex="0"
-                className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-            >
-                <li>
-                    <a onClick={() => i18n.changeLanguage("en")}>
-                        {t("English")}
-                    </a>
-                </li>
-                <li>
-                    <a onClick={() => i18n.changeLanguage("zh")}>
-                        {t("中文")}
-                    </a>
-                </li>
-            </ul>
+  const { t } = useTranslation();
+
+  return (
+    <Dropdown
+      align="end"
+      lazyMount
+      trigger={
+        <div className="indicator">
+          <Languages size={20} />
         </div>
-    );
-}
+      }
+      triggerAriaLabel={t("Language switcher")}
+      summaryClassName="btn btn-ghost btn-circle bg-base-100/20"
+      contentAs="ul"
+      contentClassName="mt-3 menu menu-sm rounded-box w-52 bg-base-100 p-2 shadow"
+    >
+      {({ close }) => <LanguageMenuItems onSelect={close} />}
+    </Dropdown>
+  );
+};
 
 export default LanguageSwitch;

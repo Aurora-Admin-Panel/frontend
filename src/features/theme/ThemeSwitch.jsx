@@ -1,36 +1,23 @@
-import { useContext } from "react";
-
 import { Palette } from "lucide-react";
-import { ThemeContext } from "../../contexts/ThemeContext";
-import themes from "../../utils/themes";
+import { useTranslation } from "react-i18next";
+import Dropdown from "../ui/dropdown/Dropdown";
+import ThemeMenuItems from "./ThemeMenuItems";
 
 const ThemeSwitch = () => {
-    const { setTheme } = useContext(ThemeContext);
-    return (
-        <div className="dropdown dropdown-end">
-            <label
-                tabIndex="0"
-                className="btn btn-ghost btn-circle label-text bg-base-100/20"
-            >
-                <Palette size={20} />
-            </label>
-            <ul
-                tabIndex="0"
-                className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box z-10 w-40 h-[70vh] max-h-96 overflow-y-auto flex flex-row"
-            >
-                {themes.map((t) => (
-                    <li key={t} className="w-full">
-                        <a
-                            key={t}
-                            className="overflow-hidden"
-                            onClick={() => setTheme(t)}
-                        >
-                            {t}
-                        </a>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  const { t } = useTranslation();
+
+  return (
+    <Dropdown
+      align="end"
+      lazyMount
+      trigger={<Palette size={20} />}
+      triggerAriaLabel={t("Theme switcher")}
+      summaryClassName="btn btn-ghost btn-circle bg-base-100/20"
+      contentAs="ul"
+      contentClassName="mt-3 menu menu-sm rounded-box max-h-96 w-52 flex-nowrap overflow-y-auto bg-base-100 p-2 shadow"
+    >
+      {({ close }) => <ThemeMenuItems onSelect={close} />}
+    </Dropdown>
+  );
 };
 export default ThemeSwitch;

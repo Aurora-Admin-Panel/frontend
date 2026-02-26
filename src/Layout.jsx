@@ -1,4 +1,5 @@
 import { Suspense, useEffect } from "react";
+import { useAtom } from "jotai";
 import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./features/layout/NavBar";
@@ -7,11 +8,13 @@ import ThemedSuspense from "./features/ThemedSuspense";
 import { initializeWebSocket, closeWebSocket } from "./store/websocketManager";
 import { useAuthReducer } from "./atoms/auth";
 import { getToken } from "./apis/auth";
+import { drawerOpenAtom } from "./atoms/layout";
 
 
 const Layout = () => {
+  const [drawerOpen, setDrawerOpen] = useAtom(drawerOpenAtom);
   const { auth: { token } } = useAuthReducer();
-  const { login, logout } = useAuthReducer()
+  const { login, logout } = useAuthReducer();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +39,13 @@ const Layout = () => {
   return (
     <div>
       <div className="drawer bg-base-100 lg:drawer-open">
-        <input id="drawer" type="checkbox" className="drawer-toggle" />
+        <input
+          id="drawer"
+          type="checkbox"
+          className="drawer-toggle"
+          checked={drawerOpen}
+          onChange={(event) => setDrawerOpen(event.target.checked)}
+        />
         <div className="drawer-content">
           <NavBar />
           <Suspense fallback={<ThemedSuspense />}>

@@ -179,6 +179,14 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
             <span className="text-xs opacity-60">
               {t("Binding")}: #{deployment.serviceBindingId}
             </span>
+            {deployment.port && (
+              <span className="badge badge-outline badge-sm">
+                Port {deployment.port.num}
+                {deployment.port.externalNum && deployment.port.externalNum !== deployment.port.num
+                  ? ` (ext: ${deployment.port.externalNum})`
+                  : ""}
+              </span>
+            )}
             <span className="text-xs opacity-60">
               {t("Updated")}:{" "}
               {deployment.updatedAt

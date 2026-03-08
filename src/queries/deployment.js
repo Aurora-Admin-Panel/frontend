@@ -105,6 +105,10 @@ export const GET_PAGINATED_SERVER_DEPLOYMENTS = gql`
         createdAt
         updatedAt
         serviceTitle
+        port {
+          num
+          externalNum
+        }
       }
       count
     }

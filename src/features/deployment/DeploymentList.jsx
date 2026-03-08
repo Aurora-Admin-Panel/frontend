@@ -91,6 +91,7 @@ const DeploymentList = () => {
                     <tr>
                       <th>ID</th>
                       <th>{t("App")}</th>
+                      <th>{t("Port")}</th>
                       <th>{t("Status")}</th>
                       <th>{t("Updated")}</th>
                       <th className="text-right">{t("Actions")}</th>
@@ -102,6 +103,18 @@ const DeploymentList = () => {
                         <td className="font-mono text-xs">{dep.id}</td>
                         <td className="text-xs">
                           {dep.serviceTitle || (dep.serviceBindingId ? `#${dep.serviceBindingId}` : "-")}
+                        </td>
+                        <td>
+                          {dep.port ? (
+                            <span className="badge badge-outline badge-sm">
+                              Port {dep.port.num}
+                              {dep.port.externalNum && dep.port.externalNum !== dep.port.num
+                                ? ` (${dep.port.externalNum})`
+                                : ""}
+                            </span>
+                          ) : (
+                            <span className="text-xs opacity-40">-</span>
+                          )}
                         </td>
                         <td>
                           <DeploymentStatusBadge status={dep.status} />

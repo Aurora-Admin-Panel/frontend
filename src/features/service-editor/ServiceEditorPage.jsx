@@ -169,11 +169,15 @@ export default function ServiceEditorPage() {
           setCompileResult({ ok: false, error: "Invalid service definition JSON" });
           return;
         }
+        const context = { jobId: "preview-ui" };
+        if (parseState.parsed?.requiresPort !== false) {
+          context.port = 0;
+        }
         const res = await compileDraft({
           variables: {
             contract: parseState.parsed,
             values,
-            context: { jobId: "preview-ui" },
+            context,
           },
         });
         if (requestSeq !== compileRequestSeqRef.current) return;

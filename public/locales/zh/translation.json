@@ -193,6 +193,8 @@
     "Add Param": "添加参数",
     "Service": "服务",
     "Description": "描述",
+    "Requires Port": "需要端口",
+    "{{port}} available in baseArgs, defaults & file templates": "{{port}} 可用于基础参数、默认值和文件模板",
     "Exec (command prefix)": "执行命令前缀",
     "Binary": "可执行文件",
     "Working Directory": "工作目录",

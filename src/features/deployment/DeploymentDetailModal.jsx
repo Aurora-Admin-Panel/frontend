@@ -181,7 +181,7 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
             </span>
             {deployment.port && (
               <span className="badge badge-outline badge-sm">
-                Port {deployment.port.num}
+                {t("Port")} {deployment.port.num}
                 {deployment.port.externalNum && deployment.port.externalNum !== deployment.port.num
                   ? ` (ext: ${deployment.port.externalNum})`
                   : ""}

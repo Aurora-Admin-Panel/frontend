@@ -236,6 +236,24 @@ function ParamEditorPanel({
               />
             </div>
           </div>
+
+          <label className="flex items-center gap-2 md:col-span-2 cursor-pointer">
+            <input
+              type="checkbox"
+              className="toggle toggle-sm toggle-primary"
+              checked={contract?.requiresPort !== false}
+              onChange={(e) =>
+                patchContract((draft) => {
+                  draft.requiresPort = e.target.checked;
+                })
+              }
+            />
+            <span className="text-xs">{t("Requires Port")}</span>
+            <span className="text-xs opacity-50">
+              {"— "}
+              {t("{{port}} available in baseArgs, defaults & file templates")}
+            </span>
+          </label>
         </div>
 
         <div className="rounded-box border border-base-300 bg-base-100 p-3">

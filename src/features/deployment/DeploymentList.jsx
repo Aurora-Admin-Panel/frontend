@@ -107,7 +107,7 @@ const DeploymentList = () => {
                         <td>
                           {dep.port ? (
                             <span className="badge badge-outline badge-sm">
-                              Port {dep.port.num}
+                              {t("Port")} {dep.port.num}
                               {dep.port.externalNum && dep.port.externalNum !== dep.port.num
                                 ? ` (${dep.port.externalNum})`
                                 : ""}

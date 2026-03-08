@@ -191,6 +191,8 @@
     "Add Param": "Add Param",
     "Service": "Service",
     "Description": "Description",
+    "Requires Port": "Requires Port",
+    "{{port}} available in baseArgs, defaults & file templates": "{{port}} available in baseArgs, defaults & file templates",
     "Exec (command prefix)": "Exec (command prefix)",
     "Binary": "Binary",
     "Working Directory": "Working Directory",

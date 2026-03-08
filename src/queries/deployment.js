@@ -1,42 +1,42 @@
 import { gql } from "@apollo/client";
 
-// --- Bindings ---
+// --- Service Bindings ---
 
-export const GET_FILE_CONTRACT_BINDINGS = gql`
-  query GetFileContractBindings($fileId: Int, $contractId: Int) {
-    fileContractBindings(fileId: $fileId, contractId: $contractId) {
+export const GET_SERVICE_BINDINGS = gql`
+  query GetServiceBindings($fileId: Int, $serviceId: Int) {
+    serviceBindings(fileId: $fileId, serviceId: $serviceId) {
       id
       fileId
-      contractId
+      serviceId
       isDefault
       createdAt
     }
   }
 `;
 
-export const CREATE_FILE_CONTRACT_BINDING = gql`
-  mutation CreateFileContractBinding(
+export const CREATE_SERVICE_BINDING = gql`
+  mutation CreateServiceBinding(
     $fileId: Int!
-    $contractId: Int!
+    $serviceId: Int!
     $isDefault: Boolean
   ) {
-    createFileContractBinding(
+    createServiceBinding(
       fileId: $fileId
-      contractId: $contractId
+      serviceId: $serviceId
       isDefault: $isDefault
     ) {
       id
       fileId
-      contractId
+      serviceId
       isDefault
       createdAt
     }
   }
 `;
 
-export const DELETE_FILE_CONTRACT_BINDING = gql`
-  mutation DeleteFileContractBinding($id: Int!) {
-    deleteFileContractBinding(id: $id)
+export const DELETE_SERVICE_BINDING = gql`
+  mutation DeleteServiceBinding($id: Int!) {
+    deleteServiceBinding(id: $id)
   }
 `;
 
@@ -46,15 +46,15 @@ export const GET_SERVER_DEPLOYMENT = gql`
   query GetServerDeployment($id: Int!) {
     serverDeployment(id: $id) {
       id
-      bindingId
-      contractId
+      serviceBindingId
+      serviceId
       serverId
       valuesJson
       status
       isActive
       createdAt
       updatedAt
-      contractTitle
+      serviceTitle
       logs {
         id
         action
@@ -64,10 +64,10 @@ export const GET_SERVER_DEPLOYMENT = gql`
         createdAt
         finishedAt
       }
-      binding {
+      serviceBinding {
         id
         fileId
-        contractId
+        serviceId
       }
     }
   }
@@ -78,27 +78,27 @@ export const GET_PAGINATED_SERVER_DEPLOYMENTS = gql`
     $limit: Int
     $offset: Int
     $serverId: Int
-    $bindingId: Int
+    $serviceBindingId: Int
     $status: String
   ) {
     paginatedServerDeployments(
       limit: $limit
       offset: $offset
       serverId: $serverId
-      bindingId: $bindingId
+      serviceBindingId: $serviceBindingId
       status: $status
     ) {
       items {
         id
-        bindingId
-        contractId
+        serviceBindingId
+        serviceId
         serverId
         valuesJson
         status
         isActive
         createdAt
         updatedAt
-        contractTitle
+        serviceTitle
       }
       count
     }
@@ -109,17 +109,17 @@ export const GET_PAGINATED_SERVER_DEPLOYMENTS = gql`
 
 export const DEPLOY_EXECUTABLE = gql`
   mutation DeployExecutable(
-    $bindingId: Int!
+    $serviceBindingId: Int!
     $serverIds: [Int!]!
     $values: JSON!
   ) {
     deployExecutable(
-      bindingId: $bindingId
+      serviceBindingId: $serviceBindingId
       serverIds: $serverIds
       values: $values
     ) {
       id
-      bindingId
+      serviceBindingId
       serverId
       status
       createdAt
@@ -128,19 +128,19 @@ export const DEPLOY_EXECUTABLE = gql`
   }
 `;
 
-export const DEPLOY_CONTRACT = gql`
-  mutation DeployContract(
-    $contractId: Int!
+export const DEPLOY_SERVICE = gql`
+  mutation DeployService(
+    $serviceId: Int!
     $serverIds: [Int!]!
     $values: JSON!
   ) {
-    deployContract(
-      contractId: $contractId
+    deployService(
+      serviceId: $serviceId
       serverIds: $serverIds
       values: $values
     ) {
       id
-      contractId
+      serviceId
       serverId
       status
       createdAt
@@ -218,16 +218,16 @@ export const GET_EXECUTABLE_FILES = gql`
   }
 `;
 
-export const GET_CONTRACTS_FOR_BINDING = gql`
-  query GetContractsForBinding {
-    executableContracts(isActive: true) {
+export const GET_SERVICES_FOR_BINDING = gql`
+  query GetServicesForBinding {
+    serviceDefinitions(isActive: true) {
       id
-      contractKey
+      serviceKey
       version
       title
       isBuiltin
       hasSource
-      schemaJson
+      configJson
     }
   }
 `;

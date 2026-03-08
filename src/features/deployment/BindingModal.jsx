@@ -5,11 +5,11 @@ import classNames from "classnames";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal";
 import {
-  GET_FILE_CONTRACT_BINDINGS,
+  GET_SERVICE_BINDINGS,
   GET_EXECUTABLE_FILES,
-  GET_CONTRACTS_FOR_BINDING,
-  CREATE_FILE_CONTRACT_BINDING,
-  DELETE_FILE_CONTRACT_BINDING,
+  GET_SERVICES_FOR_BINDING,
+  CREATE_SERVICE_BINDING,
+  DELETE_SERVICE_BINDING,
 } from "../../queries/deployment";
 import ModalShell from "../ui/ModalShell";
 
@@ -18,38 +18,38 @@ const BindingModal = ({ close, resolve }) => {
   const { confirm } = useModal();
 
   const [selectedFileId, setSelectedFileId] = useState("");
-  const [selectedContractId, setSelectedContractId] = useState("");
+  const [selectedServiceId, setSelectedServiceId] = useState("");
   const [isDefault, setIsDefault] = useState(false);
 
   const {
     data: bindingsData,
     loading: bindingsLoading,
     refetch,
-  } = useQuery(GET_FILE_CONTRACT_BINDINGS);
+  } = useQuery(GET_SERVICE_BINDINGS);
   const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
-  const { data: contractsData, loading: contractsLoading } =
-    useQuery(GET_CONTRACTS_FOR_BINDING);
+  const { data: servicesData, loading: servicesLoading } =
+    useQuery(GET_SERVICES_FOR_BINDING);
 
   const [createBinding, { loading: creating }] = useMutation(
-    CREATE_FILE_CONTRACT_BINDING
+    CREATE_SERVICE_BINDING
   );
-  const [deleteBinding] = useMutation(DELETE_FILE_CONTRACT_BINDING);
+  const [deleteBinding] = useMutation(DELETE_SERVICE_BINDING);
 
-  const bindings = bindingsData?.fileContractBindings ?? [];
+  const bindings = bindingsData?.serviceBindings ?? [];
   const files = filesData?.files ?? [];
-  const contracts = contractsData?.executableContracts ?? [];
+  const services = servicesData?.serviceDefinitions ?? [];
 
   const handleCreate = async () => {
-    if (!selectedFileId || !selectedContractId) return;
+    if (!selectedFileId || !selectedServiceId) return;
     await createBinding({
       variables: {
         fileId: Number(selectedFileId),
-        contractId: Number(selectedContractId),
+        serviceId: Number(selectedServiceId),
         isDefault,
       },
     });
     setSelectedFileId("");
-    setSelectedContractId("");
+    setSelectedServiceId("");
     setIsDefault(false);
     refetch();
   };
@@ -69,11 +69,11 @@ const BindingModal = ({ close, resolve }) => {
     close();
   };
 
-  const isLoading = bindingsLoading || filesLoading || contractsLoading;
+  const isLoading = bindingsLoading || filesLoading || servicesLoading;
 
   return (
     <ModalShell
-      title={t("File-Contract Bindings")}
+      title={t("Service Bindings")}
       onClose={handleClose}
       maxWidth="max-w-2xl"
       footer={
@@ -106,13 +106,13 @@ const BindingModal = ({ close, resolve }) => {
               </select>
               <select
                 className="select select-bordered select-sm flex-1"
-                value={selectedContractId}
-                onChange={(e) => setSelectedContractId(e.target.value)}
+                value={selectedServiceId}
+                onChange={(e) => setSelectedServiceId(e.target.value)}
               >
-                <option value="">{t("Contract")}</option>
-                {contracts.map((c) => (
+                <option value="">{t("Service")}</option>
+                {services.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.title} ({c.contractKey} v{c.version})
+                    {c.title} ({c.serviceKey} v{c.version})
                   </option>
                 ))}
               </select>
@@ -129,7 +129,7 @@ const BindingModal = ({ close, resolve }) => {
                 className={classNames("btn btn-primary btn-sm", {
                   loading: creating,
                 })}
-                disabled={!selectedFileId || !selectedContractId}
+                disabled={!selectedFileId || !selectedServiceId}
                 onClick={handleCreate}
               >
                 {t("Add")}
@@ -151,7 +151,7 @@ const BindingModal = ({ close, resolve }) => {
                     <tr>
                       <th>ID</th>
                       <th>{t("File")}</th>
-                      <th>{t("Contract")}</th>
+                      <th>{t("Service")}</th>
                       <th>{t("Default")}</th>
                       <th>{t("Created")}</th>
                       <th></th>
@@ -160,8 +160,8 @@ const BindingModal = ({ close, resolve }) => {
                   <tbody>
                     {bindings.map((b) => {
                       const file = files.find((f) => f.id === b.fileId);
-                      const contract = contracts.find(
-                        (c) => c.id === b.contractId
+                      const service = services.find(
+                        (c) => c.id === b.serviceId
                       );
                       return (
                         <tr key={b.id}>
@@ -170,9 +170,9 @@ const BindingModal = ({ close, resolve }) => {
                             {file?.name || `#${b.fileId}`}
                           </td>
                           <td className="text-sm">
-                            {contract?.title ||
-                              contract?.contractKey ||
-                              `#${b.contractId}`}
+                            {service?.title ||
+                              service?.serviceKey ||
+                              `#${b.serviceId}`}
                           </td>
                           <td>
                             {b.isDefault ? (

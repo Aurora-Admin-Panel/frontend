@@ -18,9 +18,9 @@ const CreateAccount = lazy(() => import("./features/auth/CreateAccoount"));
 const ServerContainer = lazy(() => import("./features/server/ServerContainer"));
 const ServerPorts = lazy(() => import("./features/port/ServerPorts"));
 const ServerUsers = lazy(() => import("./features/user/ServerUsers"));
-const ContractBuilderPage = lazy(() => import("./features/contract-builder"));
-const ContractListPage = lazy(() =>
-  import("./features/contract-builder/ContractListPage")
+const ServiceEditorPage = lazy(() => import("./features/service-editor"));
+const ServiceListPage = lazy(() =>
+  import("./features/service-editor/ServiceListPage")
 );
 const DeploymentList = lazy(() => import("./features/deployment/DeploymentList"));
 const Users = lazy(() => import("./features/user/Users"));
@@ -57,16 +57,16 @@ const App = () => {
             <Route index element={<FileCenter />} />
           </Route>
           <Route path={routeMap.about.path} element={<About />} />
-          <Route path={routeMap.contracts.path} element={<ContractListPage />} />
+          <Route path={routeMap.services.path} element={<ServiceListPage />} />
           <Route
             path={routeMap.deployments.path}
             element={<Navigate to={routeMap.servers.fullPath} replace />}
           />
-          <Route path={routeMap.contractBuilder.path} element={<ContractBuilderPage />} />
-          <Route path={routeMap.contractBuilderById.path} element={<ContractBuilderPage />} />
+          <Route path={routeMap.serviceEditor.path} element={<ServiceEditorPage />} />
+          <Route path={routeMap.serviceEditorById.path} element={<ServiceEditorPage />} />
           <Route
             path={routeMap.formRedirect.path}
-            element={<Navigate to={routeMap.contractBuilder.fullPath} replace />}
+            element={<Navigate to={routeMap.serviceEditor.fullPath} replace />}
           />
           <Route path={routeMap.themes.path} element={<Themes />} />
           <Route path="*" element={<NoMatch />} />

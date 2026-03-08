@@ -177,7 +177,7 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
               {t("Server")}: #{deployment.serverId}
             </span>
             <span className="text-xs opacity-60">
-              {t("Binding")}: #{deployment.bindingId}
+              {t("Binding")}: #{deployment.serviceBindingId}
             </span>
             <span className="text-xs opacity-60">
               {t("Updated")}:{" "}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import DataLoading from "../DataLoading";
 import useDynamicForm from "./useDynamicForm";
 
-function ContractValuesForm({ formSchema, onSubmit, onValuesChange }) {
+function ServiceValuesForm({ formSchema, onSubmit, onValuesChange }) {
   const { form } = useDynamicForm({
     schema: formSchema,
     onSubmit,
@@ -33,7 +33,7 @@ const FormPreviewPanel = memo(function FormPreviewPanel({
           <div className="text-sm opacity-70">{t("Fix schema JSON to render the form preview.")}</div>
         ) : (
           <div className="max-h-[44vh] overflow-auto pr-1">
-            <ContractValuesForm
+            <ServiceValuesForm
               key={previewSchemaKey}
               formSchema={formSchema}
               onSubmit={onSubmit}
@@ -43,7 +43,7 @@ const FormPreviewPanel = memo(function FormPreviewPanel({
         )}
         <div className="text-xs opacity-70">
           {selectedId
-            ? t("Preview Auto Compiles By Stored Contract")
+            ? t("Preview Auto Compiles By Stored Service")
             : t("Preview Auto Compiles Unsaved Draft")}
         </div>
       </div>

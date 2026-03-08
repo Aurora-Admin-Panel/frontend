@@ -3,15 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
-import useDynamicForm from "../contract-builder/useDynamicForm";
-import { authoringContractToDynamicSchema } from "../contract-builder/authoringAdapter";
+import useDynamicForm from "../service-editor/useDynamicForm";
+import { serviceDefinitionToDynamicSchema } from "../service-editor/serviceAdapter";
 import {
-  GET_FILE_CONTRACT_BINDINGS,
+  GET_SERVICE_BINDINGS,
   GET_EXECUTABLE_FILES,
-  GET_CONTRACTS_FOR_BINDING,
-  CREATE_FILE_CONTRACT_BINDING,
+  GET_SERVICES_FOR_BINDING,
+  CREATE_SERVICE_BINDING,
   DEPLOY_EXECUTABLE,
-  DEPLOY_CONTRACT,
+  DEPLOY_SERVICE,
 } from "../../queries/deployment";
 import ModalShell from "../ui/ModalShell";
 
@@ -25,69 +25,69 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   const [tab, setTab] = useState("catalog");
 
   // Binding selection (for binding tab)
-  const [selectedBindingId, setSelectedBindingId] = useState(null);
+  const [selectedServiceBindingId, setSelectedServiceBindingId] = useState(null);
   const [selectedFileId, setSelectedFileId] = useState("");
-  const [selectedContractId, setSelectedContractId] = useState("");
+  const [selectedServiceId, setSelectedServiceId] = useState("");
 
   // Catalog selection (for catalog tab)
-  const [selectedCatalogContractId, setSelectedCatalogContractId] = useState(null);
+  const [selectedCatalogServiceId, setSelectedCatalogServiceId] = useState(null);
 
   // Form values
   const [formValues, setFormValues] = useState({});
 
   // Queries
   const { data: bindingsData, loading: bindingsLoading, refetch: refetchBindings } =
-    useQuery(GET_FILE_CONTRACT_BINDINGS);
+    useQuery(GET_SERVICE_BINDINGS);
   const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
-  const { data: contractsData, loading: contractsLoading } =
-    useQuery(GET_CONTRACTS_FOR_BINDING);
+  const { data: servicesData, loading: servicesLoading } =
+    useQuery(GET_SERVICES_FOR_BINDING);
 
   // Mutations
   const [createBinding, { loading: creatingBinding }] = useMutation(
-    CREATE_FILE_CONTRACT_BINDING
+    CREATE_SERVICE_BINDING
   );
   const [deployExecutable, { loading: deploying }] = useMutation(DEPLOY_EXECUTABLE);
-  const [deployContract, { loading: deployingContract }] = useMutation(DEPLOY_CONTRACT);
+  const [deployService, { loading: deployingService }] = useMutation(DEPLOY_SERVICE);
 
-  const bindings = bindingsData?.fileContractBindings ?? [];
+  const bindings = bindingsData?.serviceBindings ?? [];
   const files = filesData?.files ?? [];
-  const contracts = contractsData?.executableContracts ?? [];
+  const services = servicesData?.serviceDefinitions ?? [];
 
-  // Contracts with a source (for catalog tab)
-  const catalogContracts = useMemo(
-    () => contracts.filter((c) => c.hasSource),
-    [contracts]
+  // Services with a source (for catalog tab)
+  const catalogServices = useMemo(
+    () => services.filter((c) => c.hasSource),
+    [services]
   );
 
   // Determine which mode we're in
-  const isCatalogMode = tab === "catalog" && selectedCatalogContractId;
+  const isCatalogMode = tab === "catalog" && selectedCatalogServiceId;
 
-  // Find selected contract for form rendering
-  const selectedContract = useMemo(() => {
+  // Find selected service for form rendering
+  const selectedService = useMemo(() => {
     if (isCatalogMode) {
-      return contracts.find((c) => c.id === selectedCatalogContractId);
+      return services.find((c) => c.id === selectedCatalogServiceId);
     }
-    if (selectedBindingId) {
-      const binding = bindings.find((b) => b.id === selectedBindingId);
+    if (selectedServiceBindingId) {
+      const binding = bindings.find((b) => b.id === selectedServiceBindingId);
       if (binding) {
-        return contracts.find((c) => c.id === binding.contractId);
+        return services.find((c) => c.id === binding.serviceId);
       }
     }
-    if (selectedContractId) {
-      return contracts.find((c) => c.id === Number(selectedContractId));
+    if (selectedServiceId) {
+      return services.find((c) => c.id === Number(selectedServiceId));
     }
     return null;
-  }, [isCatalogMode, selectedCatalogContractId, selectedBindingId, selectedContractId, bindings, contracts]);
+  }, [isCatalogMode, selectedCatalogServiceId, selectedServiceBindingId, selectedServiceId, bindings, services]);
 
-  // Build form schema from contract
+  // Build form schema from service definition
   const formSchema = useMemo(() => {
-    if (!selectedContract?.schemaJson) return null;
+    if (!selectedService?.configJson) return null;
     try {
-      return authoringContractToDynamicSchema(selectedContract.schemaJson);
+      return serviceDefinitionToDynamicSchema(selectedService.configJson);
     } catch {
       return null;
     }
-  }, [selectedContract]);
+  }, [selectedService]);
 
   const handleValuesChange = useCallback((values) => {
     setFormValues(values);
@@ -98,27 +98,27 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   }, []);
 
   const handleCreateBindingAndContinue = async () => {
-    if (!selectedFileId || !selectedContractId) return;
+    if (!selectedFileId || !selectedServiceId) return;
     const { data } = await createBinding({
       variables: {
         fileId: Number(selectedFileId),
-        contractId: Number(selectedContractId),
+        serviceId: Number(selectedServiceId),
       },
     });
-    if (data?.createFileContractBinding) {
-      setSelectedBindingId(data.createFileContractBinding.id);
+    if (data?.createServiceBinding) {
+      setSelectedServiceBindingId(data.createServiceBinding.id);
       await refetchBindings();
       setStep(2);
     }
   };
 
   const handleSelectExistingBinding = (bindingId) => {
-    setSelectedBindingId(bindingId);
+    setSelectedServiceBindingId(bindingId);
     setStep(2);
   };
 
-  const handleSelectCatalogContract = (contractId) => {
-    setSelectedCatalogContractId(contractId);
+  const handleSelectCatalogService = (serviceId) => {
+    setSelectedCatalogServiceId(serviceId);
     setStep(2);
   };
 
@@ -126,19 +126,19 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     if (!serverId) return;
 
     if (isCatalogMode) {
-      // Deploy via contract directly
-      await deployContract({
+      // Deploy via service directly
+      await deployService({
         variables: {
-          contractId: selectedCatalogContractId,
+          serviceId: selectedCatalogServiceId,
           serverIds: [serverId],
           values: formValues,
         },
       });
-    } else if (selectedBindingId) {
+    } else if (selectedServiceBindingId) {
       // Deploy via binding
       await deployExecutable({
         variables: {
-          bindingId: selectedBindingId,
+          serviceBindingId: selectedServiceBindingId,
           serverIds: [serverId],
           values: formValues,
         },
@@ -154,14 +154,14 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   };
 
   const handleBack = () => {
-    setSelectedCatalogContractId(null);
-    setSelectedBindingId(null);
+    setSelectedCatalogServiceId(null);
+    setSelectedServiceBindingId(null);
     setFormValues({});
     setStep(1);
   };
 
-  const isAnyLoading = bindingsLoading || filesLoading || contractsLoading;
-  const isDeploying = deploying || deployingContract;
+  const isAnyLoading = bindingsLoading || filesLoading || servicesLoading;
+  const isDeploying = deploying || deployingService;
 
   return (
     <ModalShell
@@ -196,7 +196,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                   onClick={() => setTab("catalog")}
                   type="button"
                 >
-                  {t("App Catalog")}
+                  {t("Service Catalog")}
                 </button>
                 <button
                   role="tab"
@@ -211,22 +211,22 @@ const DeployModal = ({ modalProps, close, resolve }) => {
               {/* Catalog tab */}
               {tab === "catalog" && (
                 <div>
-                  {catalogContracts.length === 0 ? (
+                  {catalogServices.length === 0 ? (
                     <div className="py-6 text-center text-sm opacity-60">
-                      {t("No catalog apps available")}
+                      {t("No catalog services available")}
                     </div>
                   ) : (
                     <div className="max-h-64 space-y-1 overflow-auto">
-                      {catalogContracts.map((c) => (
+                      {catalogServices.map((c) => (
                         <div
                           key={c.id}
                           className="flex cursor-pointer items-center justify-between rounded-lg bg-base-300 px-3 py-2 hover:bg-primary/10"
-                          onClick={() => handleSelectCatalogContract(c.id)}
+                          onClick={() => handleSelectCatalogService(c.id)}
                         >
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{c.title}</span>
                             <span className="badge badge-ghost badge-xs font-mono">
-                              {c.contractKey}
+                              {c.serviceKey}
                             </span>
                             {c.isBuiltin && (
                               <span className="badge badge-info badge-xs">
@@ -254,7 +254,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                       <div className="max-h-48 overflow-auto space-y-1">
                         {bindings.map((b) => {
                           const file = files.find((f) => f.id === b.fileId);
-                          const contract = contracts.find((c) => c.id === b.contractId);
+                          const service = services.find((c) => c.id === b.serviceId);
                           return (
                             <div
                               key={b.id}
@@ -267,7 +267,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                                 </span>
                                 <span className="mx-2 opacity-50">&rarr;</span>
                                 <span className="font-mono text-xs">
-                                  {contract?.title || contract?.contractKey || `Contract #${b.contractId}`}
+                                  {service?.title || service?.serviceKey || `Service #${b.serviceId}`}
                                 </span>
                               </div>
                               <span className="badge badge-ghost badge-sm">#{b.id}</span>
@@ -297,16 +297,16 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                       </select>
                     </fieldset>
                     <fieldset className="fieldset">
-                      <legend className="fieldset-legend">{t("Contract")}</legend>
+                      <legend className="fieldset-legend">{t("Service")}</legend>
                       <select
                         className="select select-bordered w-full"
-                        value={selectedContractId}
-                        onChange={(e) => setSelectedContractId(e.target.value)}
+                        value={selectedServiceId}
+                        onChange={(e) => setSelectedServiceId(e.target.value)}
                       >
                         <option value="">{t("Please select")}</option>
-                        {contracts.map((c) => (
+                        {services.map((c) => (
                           <option key={c.id} value={c.id}>
-                            {c.title} ({c.contractKey} v{c.version})
+                            {c.title} ({c.serviceKey} v{c.version})
                           </option>
                         ))}
                       </select>
@@ -321,7 +321,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                       className={classNames("btn btn-primary", {
                         loading: creatingBinding,
                       })}
-                      disabled={!selectedFileId || !selectedContractId}
+                      disabled={!selectedFileId || !selectedServiceId}
                       onClick={handleCreateBindingAndContinue}
                     >
                       {t("Continue")}
@@ -343,14 +343,14 @@ const DeployModal = ({ modalProps, close, resolve }) => {
           {/* Step 2: Fill form + deploy */}
           {step === 2 && (
             <div className="mt-4 space-y-4">
-              {/* Contract form */}
+              {/* Service form */}
               {formSchema && (
                 <div>
                   <h4 className="mb-2 font-semibold text-sm">
                     {t("Parameters")}
                   </h4>
                   <div className="max-h-64 overflow-auto rounded-lg bg-base-300 p-3">
-                    <ContractValuesForm
+                    <ServiceValuesForm
                       formSchema={formSchema}
                       onSubmit={handleFormSubmit}
                       onValuesChange={handleValuesChange}
@@ -365,19 +365,19 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                 <div className="space-y-1 text-sm">
                   {isCatalogMode ? (
                     <div>
-                      <span className="opacity-60">{t("App")}:</span>{" "}
-                      <span>{selectedContract?.title}</span>
+                      <span className="opacity-60">{t("Service")}:</span>{" "}
+                      <span>{selectedService?.title}</span>
                     </div>
                   ) : (
                     <div>
                       <span className="opacity-60">{t("Binding")}:</span>{" "}
-                      <span className="font-mono">#{selectedBindingId}</span>
+                      <span className="font-mono">#{selectedServiceBindingId}</span>
                     </div>
                   )}
                   <div>
-                    <span className="opacity-60">{t("Contract")}:</span>{" "}
+                    <span className="opacity-60">{t("Service")}:</span>{" "}
                     <span>
-                      {selectedContract?.title || selectedContract?.contractKey}
+                      {selectedService?.title || selectedService?.serviceKey}
                     </span>
                   </div>
                   {Object.keys(formValues).length > 0 && (
@@ -411,7 +411,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   );
 };
 
-function ContractValuesForm({ formSchema, onSubmit, onValuesChange }) {
+function ServiceValuesForm({ formSchema, onSubmit, onValuesChange }) {
   const { form } = useDynamicForm({
     schema: formSchema,
     onSubmit,

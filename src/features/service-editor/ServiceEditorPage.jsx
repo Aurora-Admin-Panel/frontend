@@ -3,43 +3,43 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import useDebouncedCallback from "../../hooks/useDebouncedCallback";
-import { authoringContractToDynamicSchema } from "./authoringAdapter";
-import ParamBuilderPanel from "./ParamBuilderPanel";
+import { serviceDefinitionToDynamicSchema } from "./serviceAdapter";
+import ParamEditorPanel from "./ParamEditorPanel";
 import AuthoringJsonPanel from "./AuthoringJsonPanel";
 import FormPreviewPanel from "./FormPreviewPanel";
 import CompileOutputPanel from "./CompileOutputPanel";
 import {
-  COMPILE_EXECUTABLE_CONTRACT_PREVIEW,
-  CREATE_EXECUTABLE_CONTRACT,
-  DEFAULT_CONTRACT_TEMPLATE,
-  LIST_EXECUTABLE_CONTRACTS,
-  UPDATE_EXECUTABLE_CONTRACT,
+  COMPILE_SERVICE_PREVIEW,
+  CREATE_SERVICE_DEFINITION,
+  DEFAULT_SERVICE_TEMPLATE,
+  LIST_SERVICE_DEFINITIONS,
+  UPDATE_SERVICE_DEFINITION,
 } from "./constants";
 import { cloneJson, prettyJson } from "./builderUtils";
 
 const AUTO_COMPILE_DEBOUNCE_MS = 400;
 
-export default function ContractBuilderPage() {
+export default function ServiceEditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { contractId } = useParams();
+  const { serviceId } = useParams();
   const [selectedId, setSelectedId] = useState(null);
   const [selectedParamIndex, setSelectedParamIndex] = useState(0);
-  const [editorText, setEditorText] = useState(prettyJson(DEFAULT_CONTRACT_TEMPLATE));
+  const [editorText, setEditorText] = useState(prettyJson(DEFAULT_SERVICE_TEMPLATE));
   const [saveMessage, setSaveMessage] = useState("");
   const [lastValues, setLastValues] = useState(null);
   const [compileResult, setCompileResult] = useState(null);
   const compileRequestSeqRef = useRef(0);
   const lastAutoValuesKeyRef = useRef(null);
 
-  const { data, error, refetch } = useQuery(LIST_EXECUTABLE_CONTRACTS, {
+  const { data, error, refetch } = useQuery(LIST_SERVICE_DEFINITIONS, {
     variables: { limit: 100, offset: 0 },
     fetchPolicy: "network-only",
   });
-  const [createContract, { loading: createLoading }] = useMutation(CREATE_EXECUTABLE_CONTRACT);
-  const [updateContract, { loading: updateLoading }] = useMutation(UPDATE_EXECUTABLE_CONTRACT);
+  const [createService, { loading: createLoading }] = useMutation(CREATE_SERVICE_DEFINITION);
+  const [updateService, { loading: updateLoading }] = useMutation(UPDATE_SERVICE_DEFINITION);
   const [compileDraft, { loading: compileDraftLoading }] = useMutation(
-    COMPILE_EXECUTABLE_CONTRACT_PREVIEW
+    COMPILE_SERVICE_PREVIEW
   );
 
   const parseState = useMemo(() => {
@@ -55,7 +55,7 @@ export default function ContractBuilderPage() {
     if (!parseState.parsed) return { schema: null, error: null };
     try {
       return {
-        schema: authoringContractToDynamicSchema(parseState.parsed),
+        schema: serviceDefinitionToDynamicSchema(parseState.parsed),
         error: null,
       };
     } catch (e) {
@@ -66,24 +66,24 @@ export default function ContractBuilderPage() {
     }
   }, [parseState]);
 
-  const contracts = data?.paginatedExecutableContracts?.items ?? [];
-  const routeContractId = contractId ? Number(contractId) : null;
+  const services = data?.paginatedServiceDefinitions?.items ?? [];
+  const routeServiceId = serviceId ? Number(serviceId) : null;
   const previewSchemaKey = editorText;
 
   useEffect(() => {
-    if (!routeContractId || Number.isNaN(routeContractId)) {
+    if (!routeServiceId || Number.isNaN(routeServiceId)) {
       return;
     }
-    const item = contracts.find((contract) => Number(contract.id) === routeContractId);
+    const item = services.find((svc) => Number(svc.id) === routeServiceId);
     if (!item) {
       return;
     }
     setSelectedId(item.id);
-    setEditorText(prettyJson(item.schemaJson));
+    setEditorText(prettyJson(item.configJson));
     setSelectedParamIndex(0);
     setSaveMessage("");
     setCompileResult(null);
-  }, [routeContractId, contracts]);
+  }, [routeServiceId, services]);
 
   const applyDraftMutation = useCallback(
     (mutator) => {
@@ -98,9 +98,9 @@ export default function ContractBuilderPage() {
   );
 
   const handleNew = () => {
-    navigate("/app/contracts/builder");
+    navigate("/app/services/editor");
     setSelectedId(null);
-    setEditorText(prettyJson(DEFAULT_CONTRACT_TEMPLATE));
+    setEditorText(prettyJson(DEFAULT_SERVICE_TEMPLATE));
     setSelectedParamIndex(0);
     setSaveMessage("");
     setCompileResult(null);
@@ -113,16 +113,16 @@ export default function ContractBuilderPage() {
       return;
     }
     try {
-      const res = await createContract({
-        variables: { schemaJson: parseState.parsed },
+      const res = await createService({
+        variables: { configJson: parseState.parsed },
       });
-      const created = res?.data?.createExecutableContract;
+      const created = res?.data?.createServiceDefinition;
       if (created?.id) {
         setSelectedId(created.id);
-        setEditorText(prettyJson(created.schemaJson));
-        setSaveMessage(`Created contract #${created.id}`);
+        setEditorText(prettyJson(created.configJson));
+        setSaveMessage(`Created service #${created.id}`);
         await refetch();
-        navigate(`/app/contracts/builder/${created.id}`);
+        navigate(`/app/services/editor/${created.id}`);
       } else {
         setSaveMessage("Create failed.");
       }
@@ -134,7 +134,7 @@ export default function ContractBuilderPage() {
   const handleUpdate = async () => {
     setSaveMessage("");
     if (!selectedId) {
-      setSaveMessage("Select or create a contract first.");
+      setSaveMessage("Select or create a service first.");
       return;
     }
     if (!parseState.parsed) {
@@ -142,14 +142,14 @@ export default function ContractBuilderPage() {
       return;
     }
     try {
-      const res = await updateContract({
+      const res = await updateService({
         variables: {
           id: Number(selectedId),
-          schemaJson: parseState.parsed,
+          configJson: parseState.parsed,
         },
       });
-      if (res?.data?.updateExecutableContract) {
-        setSaveMessage(`Updated contract #${selectedId}`);
+      if (res?.data?.updateServiceDefinition) {
+        setSaveMessage(`Updated service #${selectedId}`);
         await refetch();
       } else {
         setSaveMessage(`Update failed for #${selectedId}`);
@@ -166,7 +166,7 @@ export default function ContractBuilderPage() {
       try {
         if (!parseState.parsed) {
           if (requestSeq !== compileRequestSeqRef.current) return;
-          setCompileResult({ ok: false, error: "Invalid contract JSON" });
+          setCompileResult({ ok: false, error: "Invalid service definition JSON" });
           return;
         }
         const res = await compileDraft({
@@ -177,7 +177,7 @@ export default function ContractBuilderPage() {
           },
         });
         if (requestSeq !== compileRequestSeqRef.current) return;
-        setCompileResult(res?.data?.compileExecutableContractPreview ?? null);
+        setCompileResult(res?.data?.compileServicePreview ?? null);
       } catch (e) {
         if (requestSeq !== compileRequestSeqRef.current) return;
         setCompileResult({ ok: false, error: String(e?.message || e) });
@@ -272,7 +272,7 @@ export default function ContractBuilderPage() {
       )}
 
       {!parseState.parseError && parseState.parsed && (
-        <ParamBuilderPanel
+        <ParamEditorPanel
           contract={parseState.parsed}
           selectedParamIndex={selectedParamIndex}
           setSelectedParamIndex={setSelectedParamIndex}

@@ -85,7 +85,7 @@ function mapParamToDynamicField(param) {
         }),
       };
     case "object": {
-      const nested = authoringParamsToDynamicSchema(param.properties || []);
+      const nested = serviceParamsToDynamicSchema(param.properties || []);
       return {
         ...base,
         type: "object",
@@ -98,7 +98,7 @@ function mapParamToDynamicField(param) {
   }
 }
 
-export function authoringParamsToDynamicSchema(params) {
+export function serviceParamsToDynamicSchema(params) {
   const out = {};
   for (const param of ensureArray(params)) {
     if (!param?.key) continue;
@@ -107,15 +107,15 @@ export function authoringParamsToDynamicSchema(params) {
   return out;
 }
 
-export function authoringContractToDynamicSchema(contract) {
+export function serviceDefinitionToDynamicSchema(contract) {
   if (!contract || typeof contract !== "object") {
-    throw new Error("Contract must be an object");
+    throw new Error("Service definition must be an object");
   }
   if (!Array.isArray(contract.params)) {
-    throw new Error("Contract params must be an array");
+    throw new Error("Service definition params must be an array");
   }
 
-  const schema = authoringParamsToDynamicSchema(contract.params);
+  const schema = serviceParamsToDynamicSchema(contract.params);
   if (contract.ui?.grid) {
     schema.$grid = contract.ui.grid;
   }

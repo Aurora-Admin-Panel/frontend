@@ -122,7 +122,7 @@ function ToggleField({ label, checked, onChange }) {
   );
 }
 
-function ParamBuilderPanel({
+function ParamEditorPanel({
   contract,
   selectedParamIndex,
   setSelectedParamIndex,
@@ -176,7 +176,7 @@ function ParamBuilderPanel({
 
         <div className="rounded-box border border-base-300 bg-base-100 p-3">
           <div className="mb-2 text-xs font-semibold uppercase opacity-70">
-            {t("Contract")}
+            {t("Service")}
           </div>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             <label className="input input-bordered input-sm w-full md:col-span-2">
@@ -193,7 +193,7 @@ function ParamBuilderPanel({
             </label>
 
             <label className="input input-bordered input-sm w-full">
-              <span className="text-xs opacity-70">{t("Contract Key")}</span>
+              <span className="text-xs opacity-70">{t("Service Key")}</span>
               <input
                 className="grow font-mono"
                 value={contract?.contractKey || ""}
@@ -817,4 +817,4 @@ function ParamBuilderPanel({
 }
 
 
-export default ParamBuilderPanel;
+export default ParamEditorPanel;

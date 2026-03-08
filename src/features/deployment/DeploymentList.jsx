@@ -101,7 +101,7 @@ const DeploymentList = () => {
                       <tr key={dep.id} className="hover">
                         <td className="font-mono text-xs">{dep.id}</td>
                         <td className="text-xs">
-                          {dep.contractTitle || (dep.bindingId ? `#${dep.bindingId}` : "-")}
+                          {dep.serviceTitle || (dep.serviceBindingId ? `#${dep.serviceBindingId}` : "-")}
                         </td>
                         <td>
                           <DeploymentStatusBadge status={dep.status} />

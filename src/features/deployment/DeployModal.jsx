@@ -9,6 +9,7 @@ import {
   GET_SERVICE_BINDINGS,
   GET_EXECUTABLE_FILES,
   GET_SERVICES_FOR_BINDING,
+  GET_AVAILABLE_PORTS,
   CREATE_SERVICE_BINDING,
   DEPLOY_EXECUTABLE,
   DEPLOY_SERVICE,
@@ -32,6 +33,9 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   // Catalog selection (for catalog tab)
   const [selectedCatalogServiceId, setSelectedCatalogServiceId] = useState(null);
 
+  // Port selection
+  const [selectedPortId, setSelectedPortId] = useState(null);
+
   // Form values
   const [formValues, setFormValues] = useState({});
 
@@ -41,6 +45,10 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
   const { data: servicesData, loading: servicesLoading } =
     useQuery(GET_SERVICES_FOR_BINDING);
+  const { data: portsData, loading: portsLoading } = useQuery(GET_AVAILABLE_PORTS, {
+    variables: { serverId },
+    skip: !serverId,
+  });
 
   // Mutations
   const [createBinding, { loading: creatingBinding }] = useMutation(
@@ -89,6 +97,9 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     }
   }, [selectedService]);
 
+  // Check if the selected service requires a port (default true)
+  const requiresPort = selectedService?.configJson?.requiresPort !== false;
+
   const handleValuesChange = useCallback((values) => {
     setFormValues(values);
   }, []);
@@ -114,11 +125,13 @@ const DeployModal = ({ modalProps, close, resolve }) => {
 
   const handleSelectExistingBinding = (bindingId) => {
     setSelectedServiceBindingId(bindingId);
+    setSelectedPortId(null);
     setStep(2);
   };
 
   const handleSelectCatalogService = (serviceId) => {
     setSelectedCatalogServiceId(serviceId);
+    setSelectedPortId(null);
     setStep(2);
   };
 
@@ -132,6 +145,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
           serviceId: selectedCatalogServiceId,
           serverIds: [serverId],
           values: formValues,
+          portId: selectedPortId,
         },
       });
     } else if (selectedServiceBindingId) {
@@ -141,6 +155,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
           serviceBindingId: selectedServiceBindingId,
           serverIds: [serverId],
           values: formValues,
+          portId: selectedPortId,
         },
       });
     }
@@ -156,6 +171,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   const handleBack = () => {
     setSelectedCatalogServiceId(null);
     setSelectedServiceBindingId(null);
+    setSelectedPortId(null);
     setFormValues({});
     setStep(1);
   };
@@ -343,6 +359,33 @@ const DeployModal = ({ modalProps, close, resolve }) => {
           {/* Step 2: Fill form + deploy */}
           {step === 2 && (
             <div className="mt-4 space-y-4">
+              {/* Port selector */}
+              {requiresPort && (
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-medium">{t("Port")}</span>
+                  </label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={selectedPortId || ""}
+                    onChange={(e) => setSelectedPortId(e.target.value ? Number(e.target.value) : null)}
+                  >
+                    <option value="">{t("Select a port...")}</option>
+                    {portsData?.availablePortsForDeployment?.map((port) => (
+                      <option key={port.id} value={port.id}>
+                        {t("Port")} {port.num}
+                        {port.externalNum && port.externalNum !== port.num
+                          ? ` → ${port.externalNum}`
+                          : ""}
+                      </option>
+                    ))}
+                  </select>
+                  {!portsLoading && portsData?.availablePortsForDeployment?.length === 0 && (
+                    <p className="text-sm text-error mt-1">{t("No available ports on this server")}</p>
+                  )}
+                </div>
+              )}
+
               {/* Service form */}
               {formSchema && (
                 <div>
@@ -398,7 +441,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                 <button
                   className={classNames("btn btn-primary", { loading: isDeploying })}
                   onClick={handleDeploy}
-                  disabled={isDeploying}
+                  disabled={isDeploying || (requiresPort && !selectedPortId)}
                 >
                   {t("Deploy")}
                 </button>

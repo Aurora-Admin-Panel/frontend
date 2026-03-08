@@ -49,12 +49,17 @@ export const GET_SERVER_DEPLOYMENT = gql`
       serviceBindingId
       serviceId
       serverId
+      portId
       valuesJson
       status
       isActive
       createdAt
       updatedAt
       serviceTitle
+      port {
+        num
+        externalNum
+      }
       logs {
         id
         action
@@ -93,6 +98,7 @@ export const GET_PAGINATED_SERVER_DEPLOYMENTS = gql`
         serviceBindingId
         serviceId
         serverId
+        portId
         valuesJson
         status
         isActive
@@ -112,15 +118,18 @@ export const DEPLOY_EXECUTABLE = gql`
     $serviceBindingId: Int!
     $serverIds: [Int!]!
     $values: JSON!
+    $portId: Int
   ) {
     deployExecutable(
       serviceBindingId: $serviceBindingId
       serverIds: $serverIds
       values: $values
+      portId: $portId
     ) {
       id
       serviceBindingId
       serverId
+      portId
       status
       createdAt
       updatedAt
@@ -133,15 +142,18 @@ export const DEPLOY_SERVICE = gql`
     $serviceId: Int!
     $serverIds: [Int!]!
     $values: JSON!
+    $portId: Int
   ) {
     deployService(
       serviceId: $serviceId
       serverIds: $serverIds
       values: $values
+      portId: $portId
     ) {
       id
       serviceId
       serverId
+      portId
       status
       createdAt
       updatedAt
@@ -228,6 +240,16 @@ export const GET_SERVICES_FOR_BINDING = gql`
       isBuiltin
       hasSource
       configJson
+    }
+  }
+`;
+
+export const GET_AVAILABLE_PORTS = gql`
+  query GetAvailablePorts($serverId: Int!) {
+    availablePortsForDeployment(serverId: $serverId) {
+      id
+      num
+      externalNum
     }
   }
 `;

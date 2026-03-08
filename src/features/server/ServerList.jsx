@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import ServerCard from "./ServerCard";
 import ServerRow from "./ServerRow";
 import { List, LayoutGrid } from "lucide-react";
@@ -104,9 +105,20 @@ const ServerList = () => {
 
       {listStyle === "Cards view" ? (
         <>
-          <div className="grid grid-cols-1 gap-6 px-2 pb-4 pt-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {(data?.paginatedServers?.items ?? []).map((server) => (
-              <ServerCard key={server.id} server={server} refetch={refetch} metric={metricsMap[server.id]} />
+          <div className="grid grid-cols-1 gap-5 px-4 pb-6 pt-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {(data?.paginatedServers?.items ?? []).map((server, i) => (
+              <motion.div
+                key={server.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: i * 0.05,
+                  duration: 0.4,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <ServerCard server={server} refetch={refetch} metric={metricsMap[server.id]} />
+              </motion.div>
             ))}
           </div>
           <Paginator
@@ -145,12 +157,13 @@ const ServerList = () => {
                     </tr>
                   ))
                 ) : (
-                  (data?.paginatedServers?.items ?? []).map((server) => (
+                  (data?.paginatedServers?.items ?? []).map((server, i) => (
                     <ServerRow
                       key={server.id}
                       server={server}
                       refetch={refetch}
                       metric={metricsMap[server.id]}
+                      index={i}
                     />
                   ))
                 )}

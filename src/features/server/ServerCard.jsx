@@ -80,7 +80,7 @@ const ServerCard = ({ server, refetch, metric }) => {
         </button>
         <button
           className="btn btn-primary btn-sm  justify-self-end xl:btn-md"
-          onClick={() => navigate(`/app/servers/${server.id}/ports`)}
+          onClick={() => navigate(`/app/servers/${server.id}`)}
         >
           {t("Check")}
         </button>

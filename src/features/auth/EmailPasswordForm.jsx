@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { useTranslation } from "react-i18next";
 import { useNotificationsReducer } from "../../atoms/notification";
 
-import { resetGraphQLLink } from "../../grapgql"
+import { resetGraphQLLink } from "../../graphql"
 import { logIn, register } from "../../apis/auth";
 import { useAuthReducer } from "../../atoms/auth";
 import { validateEmail } from "../../utils/validators";

@@ -1,9 +1,10 @@
 import TextField from "./TextField";
+import TextAreaField from "./TextAreaField";
 import SelectField from "./SelectField";
 import CheckboxField from "./CheckboxField";
 import ObjectField from "./ObjectField";
 import ListField from "./ListField";
-import { normalizeValidation } from "./utils";
+import { normalizeValidation } from "../formUtils";
 
 function buildColSpanClasses(gridCfg) {
   if (!gridCfg) return "col-span-12"; // default full row on small screens
@@ -32,6 +33,19 @@ const FieldsRenderer = ({ schema, parent = null, register, control, errors, setV
         const name = parent ? `${parent}.${key}` : key;
         const wrapperClass = buildColSpanClasses(field.grid);
         switch (field.type) {
+          case "textarea":
+            return (
+              <TextAreaField
+                key={name}
+                control={control}
+                errors={errors}
+                name={name}
+                label={field.label}
+                rows={field.rows}
+                rules={normalizeValidation(field.validation)}
+                className={wrapperClass}
+              />
+            );
           case "text":
           case "email":
           case "number":

@@ -1,8 +1,8 @@
 import FieldError from "./FieldError";
 import FieldShell from "./FieldShell";
-import { get } from "../../utils/object";
+import { get } from "../../../utils/object";
 import classNames from "classnames";
-import useMaybeT from "../../hooks/useMaybeT";
+import useMaybeT from "../../../hooks/useMaybeT";
 
 const SelectField = ({ register, errors, name, label, options = [], rules, className }) => {
   const maybeT = useMaybeT();

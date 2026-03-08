@@ -5,7 +5,7 @@ import ServerRow from "./ServerRow";
 import { Plus, List, LayoutGrid } from "lucide-react";
 import { gql, useQuery, useApolloClient } from "@apollo/client";
 
-import { GET_SERVERS_QUERY } from "../../quries/server";
+import { GET_SERVERS_QUERY } from "../../queries/server";
 import Error from "../layout/Error";
 import Paginator from "../Paginator";
 import useQueryParams from "../../hooks/useQueryParams";

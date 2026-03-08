@@ -1,6 +1,6 @@
-import { get } from "../../utils/object";
+import { get } from "../../../utils/object";
 
-import useMaybeT from "../../hooks/useMaybeT";
+import useMaybeT from "../../../hooks/useMaybeT";
 
 const FieldError = ({ errors, name }) => {
   const err = get(errors, name);
@@ -10,4 +10,3 @@ const FieldError = ({ errors, name }) => {
 };
 
 export default FieldError;
-

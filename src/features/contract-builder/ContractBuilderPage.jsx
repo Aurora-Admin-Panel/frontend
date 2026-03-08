@@ -1,234 +1,25 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import DataLoading from "../../DataLoading";
-import useDynamicForm from "../useDynamicForm";
-import useDebouncedCallback from "../useDebouncedCallback";
-import { authoringContractToDynamicSchema } from "../authoringAdapter";
+import useDebouncedCallback from "../../hooks/useDebouncedCallback";
+import { authoringContractToDynamicSchema } from "./authoringAdapter";
 import ParamBuilderPanel from "./ParamBuilderPanel";
+import AuthoringJsonPanel from "./AuthoringJsonPanel";
+import FormPreviewPanel from "./FormPreviewPanel";
+import CompileOutputPanel from "./CompileOutputPanel";
 import {
   COMPILE_EXECUTABLE_CONTRACT_PREVIEW,
-  COMPILE_EXECUTABLE_CONTRACT_PREVIEW_BY_ID,
   CREATE_EXECUTABLE_CONTRACT,
   DEFAULT_CONTRACT_TEMPLATE,
   LIST_EXECUTABLE_CONTRACTS,
   UPDATE_EXECUTABLE_CONTRACT,
 } from "./constants";
-import { cloneJson, prettyJson } from "./utils";
+import { cloneJson, prettyJson } from "./builderUtils";
 
 const AUTO_COMPILE_DEBOUNCE_MS = 400;
 
-function ContractValuesForm({ formSchema, onSubmit, onValuesChange }) {
-  const { form } = useDynamicForm({
-    schema: formSchema,
-    onSubmit,
-    onValuesChange,
-  });
-
-  return form;
-}
-
-const FormPreviewPanel = memo(function FormPreviewPanel({
-  formSchema,
-  previewSchemaKey,
-  selectedId,
-  compileLoading,
-  onSubmit,
-  onValuesChange,
-}) {
-  const { t } = useTranslation();
-  return (
-    <div className="card bg-base-200 shadow-md">
-      <div className="card-body p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="card-title text-base">{t("Parameter Form Preview")}</h2>
-          {compileLoading ? <DataLoading height={24} width={24} /> : null}
-        </div>
-        {!formSchema ? (
-          <div className="text-sm opacity-70">{t("Fix schema JSON to render the form preview.")}</div>
-        ) : (
-          <div className="max-h-[44vh] overflow-auto pr-1">
-            <ContractValuesForm
-              key={previewSchemaKey}
-              formSchema={formSchema}
-              onSubmit={onSubmit}
-              onValuesChange={onValuesChange}
-            />
-          </div>
-        )}
-        <div className="text-xs opacity-70">
-          {selectedId
-            ? t("Preview Auto Compiles By Stored Contract")
-            : t("Preview Auto Compiles Unsaved Draft")}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-const AuthoringJsonPanel = memo(function AuthoringJsonPanel({
-  selectedId,
-  editorText,
-  setEditorText,
-  parseError,
-  adapterError,
-  setCompileResult,
-}) {
-  const { t } = useTranslation();
-  return (
-    <div className="card bg-base-200 shadow-md xl:col-span-6">
-      <div className="card-body p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="card-title text-base">{t("Authoring Schema JSON")}</h2>
-          <div className="text-xs opacity-70">{selectedId ? `#${selectedId}` : t("Unsaved Draft")}</div>
-        </div>
-        <textarea
-          className="textarea textarea-bordered h-[70vh] w-full font-mono text-xs"
-          value={editorText}
-          onChange={(e) => {
-            setEditorText(e.target.value);
-            setCompileResult(null);
-          }}
-          spellCheck={false}
-        />
-        {parseError && (
-          <div className="mt-2 rounded-box border border-error/30 bg-error/10 p-2 text-xs text-error">
-            JSON parse error: {parseError}
-          </div>
-        )}
-        {!parseError && adapterError && (
-          <div className="mt-2 rounded-box border border-warning/30 bg-warning/10 p-2 text-xs text-warning">
-            Form adapter error: {adapterError}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-});
-
-function CompileOutputSectionTitle({ children }) {
-  return <div className="text-[11px] font-semibold uppercase opacity-70">{children}</div>;
-}
-
-function CompileSummaryBadge({ children }) {
-  return <span className="badge badge-ghost badge-sm">{children}</span>;
-}
-
-function CompileOutputEmptyState({ lastValues, t }) {
-  return (
-    <div className="text-xs opacity-70">
-      {lastValues ? t("No compile result yet") : t("Preview Auto Updates While Editing")}
-    </div>
-  );
-}
-
-function CompileOutputErrorState({ compileResult }) {
-  const { t } = useTranslation();
-  return (
-    <div className="space-y-2 text-xs">
-      <div className="font-semibold text-error">{t("Compile Failed")}</div>
-      <div className="whitespace-pre-wrap break-words">
-        {compileResult?.error || t("Unknown Compile Error")}
-      </div>
-      {Array.isArray(compileResult?.details) && compileResult.details.length > 0 ? (
-        <div className="opacity-70">
-          {t("Compile Validation Details Count", { count: compileResult.details.length })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function CompileWarningsList({ warnings }) {
-  const { t } = useTranslation();
-  if (!warnings.length) return null;
-
-  return (
-    <div className="space-y-1">
-      <CompileOutputSectionTitle>{t("Warnings")}</CompileOutputSectionTitle>
-      <ul className="list-disc space-y-1 pl-4">
-        {warnings.slice(0, 5).map((warning, idx) => (
-          <li key={`${warning.code || "warn"}-${idx}`} className="break-words">
-            {warning.message || warning.code || t("Warning")}
-          </li>
-        ))}
-        {warnings.length > 5 ? (
-          <li className="opacity-70">{t("Compile More Warnings Count", { count: warnings.length - 5 })}</li>
-        ) : null}
-      </ul>
-    </div>
-  );
-}
-
-function CompileOutputSuccessState({ preview, warnings, envCount, fileCount, hasStdin }) {
-  const { t } = useTranslation();
-  return (
-    <div className="space-y-3 text-xs">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="badge badge-success badge-sm">{t("Ready")}</span>
-        <span className="opacity-70">
-          {warnings.length > 0
-            ? t("Compiled With Warning Count", { count: warnings.length })
-            : t("Compiled Successfully")}
-        </span>
-      </div>
-
-      <div className="space-y-1">
-        <CompileOutputSectionTitle>{t("Command")}</CompileOutputSectionTitle>
-        <pre className="rounded-box bg-base-100 p-2 whitespace-pre-wrap break-all font-mono text-xs">
-          {preview.shell || t("No Shell Preview Available")}
-        </pre>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <CompileSummaryBadge>{t("Compile Summary Env Count", { count: envCount })}</CompileSummaryBadge>
-        <CompileSummaryBadge>{t("Compile Summary Files Count", { count: fileCount })}</CompileSummaryBadge>
-        <CompileSummaryBadge>
-          {t("Compile Summary Stdin", { value: t(hasStdin ? "Yes" : "No") })}
-        </CompileSummaryBadge>
-      </div>
-
-      <CompileWarningsList warnings={warnings} />
-    </div>
-  );
-}
-
-const CompileOutputPanel = memo(function CompileOutputPanel({ compileResult, lastValues }) {
-  const { t } = useTranslation();
-  const isOk = Boolean(compileResult?.ok);
-  const preview = compileResult?.preview || {};
-  const warnings = Array.isArray(compileResult?.warnings) ? compileResult.warnings : [];
-  const fileCount = Array.isArray(preview.files) ? preview.files.length : 0;
-  const envCount =
-    preview.env && typeof preview.env === "object" ? Object.keys(preview.env).length : 0;
-  const hasStdin = Boolean(preview.stdin);
-
-  return (
-    <div className="card bg-base-200 shadow-md">
-      <div className="card-body p-4">
-        <h2 className="card-title text-base">{t("Compile Preview Output")}</h2>
-        <div className="max-h-[28vh] overflow-auto rounded-box bg-base-300 p-2">
-          {!compileResult ? (
-            <CompileOutputEmptyState lastValues={lastValues} t={t} />
-          ) : !isOk ? (
-            <CompileOutputErrorState compileResult={compileResult} />
-          ) : (
-            <CompileOutputSuccessState
-              preview={preview}
-              warnings={warnings}
-              envCount={envCount}
-              fileCount={fileCount}
-              hasStdin={hasStdin}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-export default function ExecutableContractWorkbench() {
+export default function ContractBuilderPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { contractId } = useParams();
@@ -249,9 +40,6 @@ export default function ExecutableContractWorkbench() {
   const [updateContract, { loading: updateLoading }] = useMutation(UPDATE_EXECUTABLE_CONTRACT);
   const [compileDraft, { loading: compileDraftLoading }] = useMutation(
     COMPILE_EXECUTABLE_CONTRACT_PREVIEW
-  );
-  const [compileById, { loading: compileByIdLoading }] = useMutation(
-    COMPILE_EXECUTABLE_CONTRACT_PREVIEW_BY_ID
   );
 
   const parseState = useMemo(() => {
@@ -376,18 +164,6 @@ export default function ExecutableContractWorkbench() {
       const requestSeq = ++compileRequestSeqRef.current;
       setLastValues(values);
       try {
-        if (selectedId) {
-          const res = await compileById({
-            variables: {
-              id: Number(selectedId),
-              values,
-              context: { jobId: "preview-ui" },
-            },
-          });
-          if (requestSeq !== compileRequestSeqRef.current) return;
-          setCompileResult(res?.data?.compileExecutableContractPreviewById ?? null);
-          return;
-        }
         if (!parseState.parsed) {
           if (requestSeq !== compileRequestSeqRef.current) return;
           setCompileResult({ ok: false, error: "Invalid contract JSON" });
@@ -407,7 +183,7 @@ export default function ExecutableContractWorkbench() {
         setCompileResult({ ok: false, error: String(e?.message || e) });
       }
     },
-    [compileById, compileDraft, parseState, selectedId]
+    [compileDraft, parseState]
   );
 
   const { debouncedCallback: scheduleAutoCompile, cancel: cancelAutoCompile } = useDebouncedCallback(
@@ -444,7 +220,7 @@ export default function ExecutableContractWorkbench() {
     compileRequestSeqRef.current += 1;
   }, [previewSchemaKey, cancelAutoCompile]);
 
-  const compileLoading = compileDraftLoading || compileByIdLoading;
+  const compileLoading = compileDraftLoading;
   const saveLoading = createLoading || updateLoading;
 
   if (error) {

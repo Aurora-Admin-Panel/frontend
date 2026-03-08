@@ -77,7 +77,7 @@ const ServerRow = ({ server, refetch, metric }) => {
           </button>
           <button
             className="btn btn-primary btn-xs w-12 text-xs"
-            onClick={() => navigate(`/app/servers/${server.id}/ports`)}
+            onClick={() => navigate(`/app/servers/${server.id}`)}
           >
             {t("Check")}
           </button>

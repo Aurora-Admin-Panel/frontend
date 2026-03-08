@@ -37,12 +37,13 @@ function mapParamToDynamicField(param) {
   };
 
   switch (param.type) {
-    case "string":
-      return {
-        ...base,
-        type: param.ui?.widget === "email" ? "email" : "text",
-        defaultValue: param.default ?? "",
-      };
+    case "string": {
+      const widget = param.ui?.widget;
+      if (widget === "textarea") {
+        return { ...base, type: "textarea", rows: param.ui?.rows ?? 4, defaultValue: param.default ?? "" };
+      }
+      return { ...base, type: widget === "email" ? "email" : "text", defaultValue: param.default ?? "" };
+    }
     case "secret":
       return {
         ...base,
@@ -120,4 +121,3 @@ export function authoringContractToDynamicSchema(contract) {
   }
   return schema;
 }
-

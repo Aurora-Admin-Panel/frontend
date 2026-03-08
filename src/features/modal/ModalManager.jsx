@@ -6,6 +6,9 @@ import PortRestrictionModal from "../port/PortRestrictionModal";
 import FileModal from "../file/FileModal";
 import FilePreviewModal from "../file/FilePreviewModal";
 import ConfirmationModal from "./ConfirmationModal";
+import DeployModal from "../deployment/DeployModal";
+import DeploymentDetailModal from "../deployment/DeploymentDetailModal";
+import BindingModal from "../deployment/BindingModal";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal";
 
@@ -101,6 +104,21 @@ const MODAL_REGISTRY = {
       closeOnBackdrop: false,
       closeOnEsc: false,
     },
+  },
+  deploy: {
+    component: DeployModal,
+    validateProps: validateOk,
+    defaultOptions: {},
+  },
+  deploymentDetail: {
+    component: DeploymentDetailModal,
+    validateProps: requireField(["deploymentId"]),
+    defaultOptions: {},
+  },
+  binding: {
+    component: BindingModal,
+    validateProps: validateOk,
+    defaultOptions: {},
   },
 };
 

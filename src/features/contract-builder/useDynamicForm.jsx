@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import FieldsRenderer from "./FieldsRenderer";
-import { deriveDefaultValues } from "./utils";
+import { FieldsRenderer } from "./fields";
+import { deriveDefaultValues } from "./formUtils";
 
 function buildGridContainerClasses(gridCfg) {
   const cols = gridCfg?.cols || {};

@@ -12,7 +12,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { store, persistor } from "./store";
 import ThemedSuspense from "./features/ThemedSuspense";
 import { ApolloProvider } from "@apollo/client";
-import { client } from './grapgql'
+import { client } from './graphql'
 import './tailwind-safelist'
 
 if (!!!import.meta.env.DEV) {

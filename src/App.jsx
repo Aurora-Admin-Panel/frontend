@@ -18,10 +18,11 @@ const CreateAccount = lazy(() => import("./features/auth/CreateAccoount"));
 const ServerContainer = lazy(() => import("./features/server/ServerContainer"));
 const ServerPorts = lazy(() => import("./features/port/ServerPorts"));
 const ServerUsers = lazy(() => import("./features/user/ServerUsers"));
-const Form = lazy(() => import("./features/form/DynamicForm"));
-const ExecutableContractSchemas = lazy(() =>
-  import("./features/form/ExecutableContractSchemas")
+const ContractBuilderPage = lazy(() => import("./features/contract-builder"));
+const ContractListPage = lazy(() =>
+  import("./features/contract-builder/ContractListPage")
 );
+const DeploymentList = lazy(() => import("./features/deployment/DeploymentList"));
 const Users = lazy(() => import("./features/user/Users"));
 const FileCenterContainer = lazy(() => import("./features/file/FileCenterContainer"));
 const FileCenter = lazy(() => import("./features/file/FileCenter"));
@@ -47,7 +48,7 @@ const App = () => {
         <Route path={routeMap.app.path} element={<Layout />}>
           <Route index element={<Navigate to={routeMap.servers.fullPath} replace />} />
           <Route path={routeMap.servers.path} element={<ServerContainer />}>
-            <Route path={routeMap.serverId.path} />
+            <Route path={routeMap.serverId.path} element={<DeploymentList />} />
             <Route path={routeMap.serverPorts.path} element={<ServerPorts />} />
             <Route path={routeMap.serverUsers.path} element={<ServerUsers />} />
           </Route>
@@ -56,9 +57,13 @@ const App = () => {
             <Route index element={<FileCenter />} />
           </Route>
           <Route path={routeMap.about.path} element={<About />} />
-          <Route path={routeMap.contracts.path} element={<ExecutableContractSchemas />} />
-          <Route path={routeMap.contractBuilder.path} element={<Form />} />
-          <Route path={routeMap.contractBuilderById.path} element={<Form />} />
+          <Route path={routeMap.contracts.path} element={<ContractListPage />} />
+          <Route
+            path={routeMap.deployments.path}
+            element={<Navigate to={routeMap.servers.fullPath} replace />}
+          />
+          <Route path={routeMap.contractBuilder.path} element={<ContractBuilderPage />} />
+          <Route path={routeMap.contractBuilderById.path} element={<ContractBuilderPage />} />
           <Route
             path={routeMap.formRedirect.path}
             element={<Navigate to={routeMap.contractBuilder.fullPath} replace />}

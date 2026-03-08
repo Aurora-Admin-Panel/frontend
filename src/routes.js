@@ -82,6 +82,13 @@ export const routes = [
     end: true,
   },
   {
+    key: "deployments",
+    path: "deployments",
+    fullPath: "/app/deployments",
+    area: "app",
+    permissions: ["admin", "ops"],
+  },
+  {
     key: "contractBuilder",
     path: "contracts/builder",
     fullPath: "/app/contracts/builder",

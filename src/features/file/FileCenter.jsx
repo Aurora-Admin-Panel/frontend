@@ -7,7 +7,7 @@ import useQueryParams from "../../hooks/useQueryParams";
 import Error from "../layout/Error";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal"
-import { GET_FILES_QUERY } from "../../quries/file";
+import { GET_FILES_QUERY } from "../../queries/file";
 
 
 const FileCenter = () => {

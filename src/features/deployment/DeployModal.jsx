@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import DataLoading from "../DataLoading";
-import useDynamicForm from "../form/useDynamicForm";
-import { authoringContractToDynamicSchema } from "../form/authoringAdapter";
+import useDynamicForm from "../contract-builder/useDynamicForm";
+import { authoringContractToDynamicSchema } from "../contract-builder/authoringAdapter";
 import {
   GET_FILE_CONTRACT_BINDINGS,
   GET_EXECUTABLE_FILES,

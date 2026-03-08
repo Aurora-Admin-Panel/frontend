@@ -5,7 +5,7 @@ import { gql, useMutation } from "@apollo/client";
 import { getReadableSize } from "../../utils/formatter";
 import { useModal } from "../../atoms/modal"
 import { downloadFile } from "../../utils/download";
-import { DELETE_FILE_MUTATION } from "../../quries/file";
+import { DELETE_FILE_MUTATION } from "../../queries/file";
 import { useEffect } from "react";
 import { Image, Video, FileText, Terminal, Key, File as FileIcon } from "lucide-react";
 

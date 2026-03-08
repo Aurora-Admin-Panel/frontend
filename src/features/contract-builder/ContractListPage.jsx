@@ -21,7 +21,7 @@ const LIST_EXECUTABLE_CONTRACTS = gql`
   }
 `;
 
-const ExecutableContractSchemas = () => {
+const ContractListPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useQuery(LIST_EXECUTABLE_CONTRACTS, {
@@ -138,4 +138,4 @@ const ExecutableContractSchemas = () => {
   );
 };
 
-export default ExecutableContractSchemas;
+export default ContractListPage;

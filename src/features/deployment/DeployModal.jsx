@@ -13,6 +13,7 @@ import {
   DEPLOY_EXECUTABLE,
   DEPLOY_CONTRACT,
 } from "../../queries/deployment";
+import ModalShell from "../ui/ModalShell";
 
 const DeployModal = ({ modalProps, close, resolve }) => {
   const { t } = useTranslation();
@@ -163,18 +164,13 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   const isDeploying = deploying || deployingContract;
 
   return (
-    <div className="modal-box relative max-w-3xl">
-      <button
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={handleCancel}
-        type="button"
-      >
-        ✕
-      </button>
-      <h3 className="-mt-3 text-lg font-bold">{t("Deploy Executable")}</h3>
-
+    <ModalShell
+      title={t("Deploy Executable")}
+      onClose={handleCancel}
+      maxWidth="max-w-3xl"
+    >
       {/* Steps indicator */}
-      <ul className="steps steps-horizontal mt-4 w-full">
+      <ul className="steps steps-horizontal w-full">
         <li className={classNames("step", step >= 1 && "step-primary")}>
           {t("Select")}
         </li>
@@ -411,7 +407,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
           )}
         </>
       )}
-    </div>
+    </ModalShell>
   );
 };
 

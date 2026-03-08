@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
+import ModalShell from "../ui/ModalShell";
 
 const GET_PORT_QUERY = gql`
   query GetPort($portId: Int!) {
@@ -32,17 +33,29 @@ const PortRestrictionModal = ({ modalProps = {}, close, resolve }) => {
   useEffect(() => { }, []);
 
   return (
-    <div className="modal-box relative">
-      <label
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={close}
-      >
-        ✕
-      </label>
-      <div className="-mt-3 flex w-full flex-row items-center space-x-2">
-        <h3 className="text-lg font-bold">{t("Port Restriction")}</h3>
-      </div>
-      <div className="mt-4 flex w-full flex-col items-start space-y-0 px-0">
+    <ModalShell
+      title={t("Port Restriction")}
+      onClose={close}
+      footer={
+        <>
+          <label
+            className="btn btn-ghost btn-outline btn-sm md:btn-md"
+            onClick={handleCancel}
+          >
+            {t("Cancel")}
+          </label>
+          <button
+            className={classNames("btn btn-primary btn-sm md:btn-md", {
+              loading: false,
+            })}
+            onClick={handleSubmit}
+          >
+            {t("Save")}
+          </button>
+        </>
+      }
+    >
+      <div className="flex w-full flex-col items-start space-y-0">
         <div className="tabs-boxed tabs">
           <a
             className={classNames("tab", { "tab-active": tab === 1 })}
@@ -71,23 +84,7 @@ const PortRestrictionModal = ({ modalProps = {}, close, resolve }) => {
         </div>
         <div className="flex h-64 w-full flex-col items-center justify-center rounded-b-md rounded-tr-md bg-base-200 shadow-xl"></div>
       </div>
-      <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
-        <label
-          className="btn btn-ghost btn-outline btn-sm md:btn-md"
-          onClick={handleCancel}
-        >
-          {t("Cancel")}
-        </label>
-        <button
-          className={classNames("btn btn-primary btn-sm md:btn-md", {
-            loading: false,
-          })}
-          onClick={handleSubmit}
-        >
-          {t("Save")}
-        </button>
-      </div>
-    </div>
+    </ModalShell>
   );
 };
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DataLoading from "../DataLoading";
 import { downloadFile } from "../../utils/download";
+import ModalShell from "../ui/ModalShell";
 
 const FilePreviewModal = ({ modalProps = {}, close }) => {
   const { t } = useTranslation();
@@ -75,26 +76,22 @@ const FilePreviewModal = ({ modalProps = {}, close }) => {
   };
 
   return (
-    <div className="modal-box relative">
-      <label
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={close}
-      >
-        ✕
-      </label>
-      <h3 className="-mt-3 text-lg font-bold">{file.name}</h3>
-      <div className="mt-4 flex w-full flex-col space-y-3 px-2">
-        {renderContent()}
-      </div>
-      <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
-        <button className="btn btn-outline btn-accent" onClick={close}>
-          {t("Close")}
-        </button>
-        <a className="btn btn-primary" href={file.path} download={file.name} onClick={(e) => { e.preventDefault(); downloadFile(file.path, file.name); }}>
-          {t("Download")}
-        </a>
-      </div>
-    </div>
+    <ModalShell
+      title={file.name}
+      onClose={close}
+      footer={
+        <>
+          <button className="btn btn-outline btn-accent" onClick={close}>
+            {t("Close")}
+          </button>
+          <a className="btn btn-primary" href={file.path} download={file.name} onClick={(e) => { e.preventDefault(); downloadFile(file.path, file.name); }}>
+            {t("Download")}
+          </a>
+        </>
+      }
+    >
+      {renderContent()}
+    </ModalShell>
   );
 };
 

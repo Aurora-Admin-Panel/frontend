@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import classNames from "classnames";
- 
+import ModalShell from "../ui/ModalShell";
+
 const ConfirmationModal = ({ modalProps = {}, close, resolve }) => {
   const { t } = useTranslation();
   const { title, message, confirmText, cancelText } = modalProps;
@@ -15,23 +15,22 @@ const ConfirmationModal = ({ modalProps = {}, close, resolve }) => {
   };
 
   return (
-    <div className="modal-box relative">
-      <h3 className="-mt-3 text-lg font-bold">{title}</h3>
-      <div className="mt-4 flex w-full flex-col space-y-0 px-2 text-base">
-        <p>{message}</p>
-      </div>
-      <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
-        <button className="btn btn-outline btn-primary" onClick={handleCancel}>
-          {cancelText ? t(cancelText) : t("Cancel")}
-        </button>
-        <button
-          className={classNames("btn btn-primary")}
-          onClick={handleConfirm}
-        >
-          {confirmText ? t(confirmText) : t("Confirm")}
-        </button>
-      </div>
-    </div>
+    <ModalShell
+      title={title}
+      onClose={handleCancel}
+      footer={
+        <>
+          <button className="btn btn-outline btn-primary" onClick={handleCancel}>
+            {cancelText ? t(cancelText) : t("Cancel")}
+          </button>
+          <button className="btn btn-primary" onClick={handleConfirm}>
+            {confirmText ? t(confirmText) : t("Confirm")}
+          </button>
+        </>
+      }
+    >
+      <p className="px-2 text-base">{message}</p>
+    </ModalShell>
   );
 };
 

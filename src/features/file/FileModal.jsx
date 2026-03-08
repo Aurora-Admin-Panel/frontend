@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
- 
+
 import { useTranslation } from "react-i18next";
 import { gql, useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { FileTypeEnum } from "../../store/apis/types.generated";
-import Error from "../layout/Error"
+import Error from "../layout/Error";
+import ModalShell from "../ui/ModalShell";
 
 
 const UPLOAD_FILE = gql`
@@ -60,84 +61,77 @@ const FileModal = ({ close, resolve }) => {
   };
 
   return (
-    <div className="modal-box relative">
-      <label
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={handleCancel}
-      >
-        ✕
-      </label>
-      <h3 className="-mt-3 text-lg font-bold">{t("Add File")}</h3>
-      <div className="mt-4 flex w-full flex-col space-y-3 px-2">
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">
-            {t("File Type")}
-
-          </legend>
-          <select
-            className="select select-bordered w-full"
-            value={fileType}
-            onChange={(e) => setFileType(e.target.value)}
+    <ModalShell
+      title={t("Add File")}
+      onClose={handleCancel}
+      footer={
+        <>
+          <button className="btn btn-outline btn-primary" onClick={handleCancel}>
+            {t("Cancel")}
+          </button>
+          <button
+            className={classNames("btn btn-primary", { loading })}
+            onClick={handleSubmit}
           >
-            {Object.values(FileTypeEnum).map((val) => (
-              <option key={val} value={val}>
-                {t(val)}
-              </option>
-            ))}
-          </select>
-        </fieldset>
-        <div className="flex flex-col items-center md:flex-row md:space-x-2">
-          <label className="input input-bordered w-1/2">
-            {t("Name")}
-            <input
-              type="text"
-              placeholder={t("File Name Placeholder")}
-              className="grow"
-              value={name !== null ? name : file !== null ? file.name : ""}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label className="input input-bordered w-1/2">
-            {t("Version")}
-            <input
-              type="text"
-              placeholder={t("File Version Placeholder")}
-              className="grow"
-              value={version}
-              onChange={(e) => setVersion(e.target.value)}
-            />
-          </label>
-        </div>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">{t("Upload File")}</legend>
-          <input
-            type="file"
-            className="file-input file-input-bordered file-input-primary mx-auto w-full"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-        </fieldset>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">{t("Notes")}</legend>
-          <textarea
-            placeholder={t("File Notes Placeholder")}
-            className="textarea textarea-bordered w-full"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </fieldset>
-      </div>
-      <div className="mt-4 flex w-full flex-row justify-end space-x-2 px-2">
-        <button className="btn btn-outline btn-primary" onClick={handleCancel}>
-          取消
-        </button>
-        <button
-          className={classNames("btn btn-primary", { loading })}
-          onClick={handleSubmit}
+            {t("Add")}
+          </button>
+        </>
+      }
+    >
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">{t("File Type")}</legend>
+        <select
+          className="select select-bordered w-full"
+          value={fileType}
+          onChange={(e) => setFileType(e.target.value)}
         >
-          添加
-        </button>
+          {Object.values(FileTypeEnum).map((val) => (
+            <option key={val} value={val}>
+              {t(val)}
+            </option>
+          ))}
+        </select>
+      </fieldset>
+      <div className="flex flex-col items-center md:flex-row md:space-x-2">
+        <label className="input input-bordered w-1/2">
+          {t("Name")}
+          <input
+            type="text"
+            placeholder={t("File Name Placeholder")}
+            className="grow"
+            value={name !== null ? name : file !== null ? file.name : ""}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+        <label className="input input-bordered w-1/2">
+          {t("Version")}
+          <input
+            type="text"
+            placeholder={t("File Version Placeholder")}
+            className="grow"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+          />
+        </label>
       </div>
-    </div>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">{t("Upload File")}</legend>
+        <input
+          type="file"
+          className="file-input file-input-bordered file-input-primary mx-auto w-full"
+          onChange={(e) => setFile(e.target.files[0])}
+        />
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">{t("Notes")}</legend>
+        <textarea
+          placeholder={t("File Notes Placeholder")}
+          className="textarea textarea-bordered w-full"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </fieldset>
+    </ModalShell>
   );
 };
 

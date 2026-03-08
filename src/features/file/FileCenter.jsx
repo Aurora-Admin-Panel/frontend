@@ -1,6 +1,4 @@
 import { useQuery, gql } from "@apollo/client";
-import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
 import Paginator from "../Paginator";
 import FileCard from "./FileCard";
 import useQueryParams from "../../hooks/useQueryParams";
@@ -8,10 +6,10 @@ import Error from "../layout/Error";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal"
 import { GET_FILES_QUERY } from "../../queries/file";
+import PageHeader from "../ui/PageHeader";
 
 
 const FileCenter = () => {
-  const { t } = useTranslation();
   const { open } = useModal();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
@@ -33,20 +31,13 @@ const FileCenter = () => {
 
   return (
     <>
-      <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
-        <div className="flex flex-row items-center justify-start">
-          <h1 className="text-2xl font-extrabold">{t("Files")}</h1>
-          <label
-            className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-            onClick={async () => {
-              const result = await open("file");
-              if (result) refetch();
-            }}
-          >
-            <Plus />
-          </label>
-        </div>
-      </div>
+      <PageHeader
+        title="Files"
+        onAdd={async () => {
+          const result = await open("file");
+          if (result) refetch();
+        }}
+      />
 
       <div className="flex w-full flex-col px-4">
         {loading ? (

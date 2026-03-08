@@ -1,13 +1,14 @@
 import { useQuery } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
-import { Plus, Rocket, Eye, ArrowLeft } from "lucide-react";
+import { Rocket, Eye, ArrowLeft } from "lucide-react";
 import Paginator from "../Paginator";
 import DataLoading from "../DataLoading";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useModal } from "../../atoms/modal";
 import { GET_PAGINATED_SERVER_DEPLOYMENTS } from "../../queries/deployment";
 import DeploymentStatusBadge from "./DeploymentStatusBadge";
+import PageHeader from "../ui/PageHeader";
 
 const DeploymentList = () => {
   const { t } = useTranslation();
@@ -27,11 +28,16 @@ const DeploymentList = () => {
 
   const items = data?.paginatedServerDeployments?.items ?? [];
 
+  const handleDeploy = async () => {
+    const result = await open("deploy", { serverId: serverIdNum });
+    if (result) refetch();
+  };
+
   return (
     <>
-      <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
-        <div className="flex w-full flex-row items-center justify-between">
-          <div className="flex flex-row items-center justify-start gap-2">
+      <PageHeader
+        title={
+          <>
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => navigate("/app/servers")}
@@ -40,46 +46,34 @@ const DeploymentList = () => {
               <ArrowLeft size={16} />
               {t("Back")}
             </button>
-            <h1 className="text-2xl font-extrabold">{t("Deployments")}</h1>
-            <label
-              className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-              onClick={async () => {
-                const result = await open("deploy", { serverId: serverIdNum });
-                if (result) refetch();
-              }}
-            >
-              <Plus />
-            </label>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={() => navigate(`/app/servers/${serverId}/ports`)}
-              type="button"
-            >
-              {t("Ports")}
-            </button>
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={() => refetch()}
-              type="button"
-            >
-              {t("Refresh")}
-            </button>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={async () => {
-                const result = await open("deploy", { serverId: serverIdNum });
-                if (result) refetch();
-              }}
-              type="button"
-            >
-              <Rocket size={14} />
-              {t("Deploy")}
-            </button>
-          </div>
-        </div>
-      </div>
+            <h1 className="not-prose text-2xl font-extrabold">{t("Deployments")}</h1>
+          </>
+        }
+        onAdd={handleDeploy}
+      >
+        <button
+          className="btn btn-outline btn-sm"
+          onClick={() => navigate(`/app/servers/${serverId}/ports`)}
+          type="button"
+        >
+          {t("Ports")}
+        </button>
+        <button
+          className="btn btn-outline btn-sm"
+          onClick={() => refetch()}
+          type="button"
+        >
+          {t("Refresh")}
+        </button>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handleDeploy}
+          type="button"
+        >
+          <Rocket size={14} />
+          {t("Deploy")}
+        </button>
+      </PageHeader>
 
       <div className="mx-auto w-full max-w-screen-2xl px-4">
         <div className="card bg-base-200 shadow-md">

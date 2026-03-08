@@ -11,6 +11,7 @@ import {
   CREATE_FILE_CONTRACT_BINDING,
   DELETE_FILE_CONTRACT_BINDING,
 } from "../../queries/deployment";
+import ModalShell from "../ui/ModalShell";
 
 const BindingModal = ({ close, resolve }) => {
   const { t } = useTranslation();
@@ -71,22 +72,22 @@ const BindingModal = ({ close, resolve }) => {
   const isLoading = bindingsLoading || filesLoading || contractsLoading;
 
   return (
-    <div className="modal-box relative max-w-2xl">
-      <button
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={handleClose}
-        type="button"
-      >
-        ✕
-      </button>
-      <h3 className="-mt-3 text-lg font-bold">{t("File-Contract Bindings")}</h3>
-
+    <ModalShell
+      title={t("File-Contract Bindings")}
+      onClose={handleClose}
+      maxWidth="max-w-2xl"
+      footer={
+        <button className="btn btn-outline" onClick={handleClose}>
+          {t("Close")}
+        </button>
+      }
+    >
       {isLoading ? (
         <div className="py-8">
           <DataLoading />
         </div>
       ) : (
-        <div className="mt-4 space-y-4">
+        <>
           {/* Create new binding */}
           <div className="rounded-lg bg-base-300 p-4">
             <h4 className="mb-2 text-sm font-semibold">{t("Create Binding")}</h4>
@@ -203,15 +204,9 @@ const BindingModal = ({ close, resolve }) => {
               </div>
             )}
           </div>
-        </div>
+        </>
       )}
-
-      <div className="mt-4 flex justify-end">
-        <button className="btn btn-outline" onClick={handleClose}>
-          {t("Close")}
-        </button>
-      </div>
-    </div>
+    </ModalShell>
   );
 };
 

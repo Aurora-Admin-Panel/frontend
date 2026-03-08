@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ServerCard from "./ServerCard";
 import ServerRow from "./ServerRow";
-import { Plus, List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid } from "lucide-react";
 import { gql, useQuery, useApolloClient } from "@apollo/client";
 
 import { GET_SERVERS_QUERY } from "../../queries/server";
@@ -12,6 +12,7 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { useAtom } from "jotai";
 import serverLimitAtom from "../../atoms/server/limit";
 import { useModal } from "../../atoms/modal";
+import PageHeader from "../ui/PageHeader";
 
 const SERVER_METRIC_SUBSCRIPTION = gql`
 subscription ServerMetric {
@@ -81,37 +82,25 @@ const ServerList = () => {
   if (error) return <Error error={error} />;
   return (
     <>
-      <div className="flex-grow-1 container flex h-16 w-full flex-shrink-0 basis-16 flex-row items-center justify-between px-4 sm:px-8">
-        <div className="flex flex-row items-center justify-between w-full">
-          <div className="flex flex-row items-center justify-start">
-            <h2 className="not-prose text-2xl font-extrabold">{t("Servers")}</h2>
-            <label
-              className="modal-button btn btn-circle btn-primary btn-xs ml-2"
-              onClick={async () => {
-                const result = await open("serverInfo");
-                if (result) refetch();
-              }}
-            >
-              <Plus />
-            </label>
-          </div>
-          <div className="flex flex-row items-center justify-end space-x-2">
-            <div className="tooltip tooltip-bottom" data-tip={t(listStyle)}>
-              <label className="swap swap-flip text-9xl">
-                {/* this hidden checkbox controls the state */}
-                <input
-                  type="checkbox"
-                  value={listStyle === "Cards view"}
-                  onClick={() => setListStyle(listStyle === "Cards view" ? "List view" : "Cards view")}
-                />
-
-                <div className="swap-on"><List size={20} /></div>
-                <div className="swap-off"><LayoutGrid size={20} /></div>
-              </label>
-            </div>
-          </div>
+      <PageHeader
+        title="Servers"
+        onAdd={async () => {
+          const result = await open("serverInfo");
+          if (result) refetch();
+        }}
+      >
+        <div className="tooltip tooltip-bottom" data-tip={t(listStyle)}>
+          <label className="swap swap-flip text-9xl">
+            <input
+              type="checkbox"
+              value={listStyle === "Cards view"}
+              onClick={() => setListStyle(listStyle === "Cards view" ? "List view" : "Cards view")}
+            />
+            <div className="swap-on"><List size={20} /></div>
+            <div className="swap-off"><LayoutGrid size={20} /></div>
+          </label>
         </div>
-      </div>
+      </PageHeader>
 
       {listStyle === "Cards view" ? (
         <>

@@ -13,6 +13,7 @@ import {
   TASK_STREAM_SUBSCRIPTION,
 } from "../../queries/deployment";
 import { useModal } from "../../atoms/modal";
+import ModalShell from "../ui/ModalShell";
 
 const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
   const { t } = useTranslation();
@@ -149,18 +150,16 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
   const isActionLoading = redeploying || stopping || starting || removing;
 
   return (
-    <div className="modal-box relative max-w-3xl">
-      <button
-        className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-        onClick={handleClose}
-        type="button"
-      >
-        ✕
-      </button>
-      <h3 className="-mt-3 text-lg font-bold">
-        {t("Deployment")} #{deploymentId}
-      </h3>
-
+    <ModalShell
+      title={`${t("Deployment")} #${deploymentId}`}
+      onClose={handleClose}
+      maxWidth="max-w-3xl"
+      footer={
+        <button className="btn btn-outline" onClick={handleClose}>
+          {t("Close")}
+        </button>
+      }
+    >
       {loading ? (
         <div className="py-8">
           <DataLoading />
@@ -170,7 +169,7 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
           {t("Deployment not found")}
         </div>
       ) : (
-        <div className="mt-4 space-y-4">
+        <>
           {/* Status overview */}
           <div className="flex flex-wrap items-center gap-3">
             <DeploymentStatusBadge status={deployment.status} />
@@ -313,15 +312,9 @@ const DeploymentDetailModal = ({ modalProps, close, resolve }) => {
               </div>
             )}
           </div>
-        </div>
+        </>
       )}
-
-      <div className="mt-4 flex justify-end">
-        <button className="btn btn-outline" onClick={handleClose}>
-          {t("Close")}
-        </button>
-      </div>
-    </div>
+    </ModalShell>
   );
 };
 

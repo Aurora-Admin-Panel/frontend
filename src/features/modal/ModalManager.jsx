@@ -11,6 +11,7 @@ import DeploymentDetailModal from "../deployment/DeploymentDetailModal";
 import BindingModal from "../deployment/BindingModal";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal";
+import ModalShell from "../ui/ModalShell";
 
 const validateOk = () => ({ ok: true });
 
@@ -39,24 +40,19 @@ const LoadingModalContent = () => (
 );
 
 const InvalidModalContent = ({ modalType, reason, close }) => (
-  <div className="modal-box relative">
-    <button
-      className="btn btn-circle btn-outline btn-sm absolute right-2 top-2"
-      onClick={close}
-      type="button"
-    >
-      ✕
-    </button>
-    <h3 className="-mt-3 text-lg font-bold">Modal Error</h3>
-    <div className="mt-4 px-2 text-sm text-error">
-      Failed to open modal `{modalType}`: {reason}
-    </div>
-    <div className="mt-4 flex justify-end px-2">
+  <ModalShell
+    title="Modal Error"
+    onClose={close}
+    footer={
       <button className="btn btn-primary btn-outline" onClick={close} type="button">
         Close
       </button>
+    }
+  >
+    <div className="px-2 text-sm text-error">
+      Failed to open modal `{modalType}`: {reason}
     </div>
-  </div>
+  </ModalShell>
 );
 
 const MODAL_REGISTRY = {

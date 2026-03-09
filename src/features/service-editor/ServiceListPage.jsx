@@ -1,8 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Link as LinkIcon } from "lucide-react";
 import DataLoading from "../DataLoading";
+import { useModal } from "../../atoms/modal";
 
 const LIST_SERVICE_DEFINITIONS = gql`
   query ListServiceDefinitionsForPage($limit: Int, $offset: Int) {
@@ -24,6 +25,7 @@ const LIST_SERVICE_DEFINITIONS = gql`
 const ServiceListPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { open } = useModal();
   const { data, loading, error, refetch } = useQuery(LIST_SERVICE_DEFINITIONS, {
     variables: { limit: 200, offset: 0 },
     fetchPolicy: "network-only",
@@ -114,6 +116,17 @@ const ServiceListPage = () => {
                         {item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "-"}
                       </td>
                       <td className="text-right">
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            open("binding", { serviceId: item.id });
+                          }}
+                        >
+                          <LinkIcon size={14} />
+                          {t("Bindings")}
+                        </button>
                         <button
                           type="button"
                           className="btn btn-ghost btn-xs"

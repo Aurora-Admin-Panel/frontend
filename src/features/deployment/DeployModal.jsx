@@ -77,8 +77,8 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     }
     if (selectedServiceBindingId) {
       const binding = bindings.find((b) => b.id === selectedServiceBindingId);
-      if (binding) {
-        return services.find((c) => c.id === binding.serviceId);
+      if (binding?.service) {
+        return binding.service;
       }
     }
     if (selectedServiceId) {
@@ -268,10 +268,7 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                         {t("Existing Bindings")}
                       </h4>
                       <div className="max-h-48 overflow-auto space-y-1">
-                        {bindings.map((b) => {
-                          const file = files.find((f) => f.id === b.fileId);
-                          const service = services.find((c) => c.id === b.serviceId);
-                          return (
+                        {bindings.map((b) => (
                             <div
                               key={b.id}
                               className="flex cursor-pointer items-center justify-between rounded-lg bg-base-300 px-3 py-2 hover:bg-primary/10"
@@ -279,17 +276,16 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                             >
                               <div className="text-sm">
                                 <span className="font-medium">
-                                  {file?.name || `File #${b.fileId}`}
+                                  {b.file?.name || `File #${b.fileId}`}
                                 </span>
                                 <span className="mx-2 opacity-50">&rarr;</span>
                                 <span className="font-mono text-xs">
-                                  {service?.title || service?.serviceKey || `Service #${b.serviceId}`}
+                                  {b.service?.title || b.service?.serviceKey || `Service #${b.serviceId}`}
                                 </span>
                               </div>
                               <span className="badge badge-ghost badge-sm">#{b.id}</span>
                             </div>
-                          );
-                        })}
+                          ))}
                       </div>
                       <div className="divider text-xs opacity-50">{t("or create new")}</div>
                     </div>

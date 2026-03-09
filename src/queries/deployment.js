@@ -10,6 +10,21 @@ export const GET_SERVICE_BINDINGS = gql`
       serviceId
       isDefault
       createdAt
+      file {
+        id
+        name
+        version
+        size
+      }
+      service {
+        id
+        serviceKey
+        version
+        title
+        isBuiltin
+        hasSource
+        configJson
+      }
     }
   }
 `;

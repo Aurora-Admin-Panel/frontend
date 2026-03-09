@@ -158,20 +158,15 @@ const BindingModal = ({ close, resolve }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {bindings.map((b) => {
-                      const file = files.find((f) => f.id === b.fileId);
-                      const service = services.find(
-                        (c) => c.id === b.serviceId
-                      );
-                      return (
+                    {bindings.map((b) => (
                         <tr key={b.id}>
                           <td className="font-mono text-xs">{b.id}</td>
                           <td className="text-sm">
-                            {file?.name || `#${b.fileId}`}
+                            {b.file?.name || `#${b.fileId}`}
                           </td>
                           <td className="text-sm">
-                            {service?.title ||
-                              service?.serviceKey ||
+                            {b.service?.title ||
+                              b.service?.serviceKey ||
                               `#${b.serviceId}`}
                           </td>
                           <td>
@@ -197,8 +192,7 @@ const BindingModal = ({ close, resolve }) => {
                             </button>
                           </td>
                         </tr>
-                      );
-                    })}
+                      ))}
                   </tbody>
                 </table>
               </div>

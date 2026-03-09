@@ -132,14 +132,16 @@ export const GET_PAGINATED_SERVER_DEPLOYMENTS = gql`
 
 // --- Lifecycle mutations ---
 
-export const DEPLOY_EXECUTABLE = gql`
-  mutation DeployExecutable(
-    $serviceBindingId: Int!
+export const DEPLOY_SERVICE = gql`
+  mutation DeployService(
+    $serviceId: Int
+    $serviceBindingId: Int
     $serverIds: [Int!]!
     $values: JSON!
     $portId: Int
   ) {
-    deployExecutable(
+    deployService(
+      serviceId: $serviceId
       serviceBindingId: $serviceBindingId
       serverIds: $serverIds
       values: $values
@@ -147,29 +149,6 @@ export const DEPLOY_EXECUTABLE = gql`
     ) {
       id
       serviceBindingId
-      serverId
-      portId
-      status
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-export const DEPLOY_SERVICE = gql`
-  mutation DeployService(
-    $serviceId: Int!
-    $serverIds: [Int!]!
-    $values: JSON!
-    $portId: Int
-  ) {
-    deployService(
-      serviceId: $serviceId
-      serverIds: $serverIds
-      values: $values
-      portId: $portId
-    ) {
-      id
       serviceId
       serverId
       portId

@@ -17,6 +17,7 @@ import {
   Trash2,
   Eye,
   Download,
+  Link as LinkIcon,
 } from "lucide-react";
 
 const fileTypeConfig = {
@@ -174,6 +175,15 @@ const FileCard = ({ file, onUpdate, index = 0 }) => {
           <Trash2 size={13} />
           {t("Delete")}
         </button>
+        {file.type === "EXECUTABLE" && (
+          <button
+            className="btn btn-ghost btn-sm flex-1 gap-1.5 text-xs opacity-60 transition-opacity hover:opacity-100"
+            onClick={() => open("binding", { fileId: file.id })}
+          >
+            <LinkIcon size={13} />
+            {t("Bindings")}
+          </button>
+        )}
         <button
           className="btn btn-primary btn-sm flex-1 gap-1.5 text-xs"
           onClick={handleCheck}

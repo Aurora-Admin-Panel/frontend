@@ -13,19 +13,27 @@ import {
 } from "../../queries/deployment";
 import ModalShell from "../ui/ModalShell";
 
-const BindingModal = ({ close, resolve }) => {
+const BindingModal = ({ modalProps, close, resolve }) => {
   const { t } = useTranslation();
   const { confirm } = useModal();
 
-  const [selectedFileId, setSelectedFileId] = useState("");
-  const [selectedServiceId, setSelectedServiceId] = useState("");
+  const filterFileId = modalProps?.fileId ?? null;
+  const filterServiceId = modalProps?.serviceId ?? null;
+
+  const [selectedFileId, setSelectedFileId] = useState(filterFileId ? String(filterFileId) : "");
+  const [selectedServiceId, setSelectedServiceId] = useState(filterServiceId ? String(filterServiceId) : "");
   const [isDefault, setIsDefault] = useState(false);
 
   const {
     data: bindingsData,
     loading: bindingsLoading,
     refetch,
-  } = useQuery(GET_SERVICE_BINDINGS);
+  } = useQuery(GET_SERVICE_BINDINGS, {
+    variables: {
+      ...(filterFileId && { fileId: filterFileId }),
+      ...(filterServiceId && { serviceId: filterServiceId }),
+    },
+  });
   const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
   const { data: servicesData, loading: servicesLoading } =
     useQuery(GET_SERVICES_FOR_BINDING);

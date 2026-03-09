@@ -21,7 +21,7 @@ const NavBar = () => {
   };
 
   return (
-    <div className="sticky top-0 z-30 flex h-16 w-full justify-center bg-base-100 bg-opacity-90 text-base-content backdrop-blur transition-all duration-100 border-base-200 border-b">
+    <div className="sticky top-0 z-30 flex h-16 w-full justify-center bg-base-100 text-base-content transition-colors border-b border-base-content/6">
       <div className="navbar w-full">
         <div className="flex-none">
           <button

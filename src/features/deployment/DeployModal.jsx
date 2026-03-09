@@ -2,16 +2,14 @@ import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@apollo/client";
 import classNames from "classnames";
+import { Package, Link as LinkIcon } from "lucide-react";
 import DataLoading from "../DataLoading";
 import useDynamicForm from "../service-editor/useDynamicForm";
 import { serviceDefinitionToDynamicSchema } from "../service-editor/serviceAdapter";
 import {
   GET_SERVICE_BINDINGS,
-  GET_EXECUTABLE_FILES,
   GET_SERVICES_FOR_BINDING,
   GET_AVAILABLE_PORTS,
-  CREATE_SERVICE_BINDING,
-  DEPLOY_EXECUTABLE,
   DEPLOY_SERVICE,
 } from "../../queries/deployment";
 import ModalShell from "../ui/ModalShell";
@@ -20,29 +18,14 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   const { t } = useTranslation();
   const serverId = modalProps?.serverId;
 
-  // Step: 1 = select source, 2 = fill form + confirm & deploy
   const [step, setStep] = useState(1);
-  // Tab within step 1: "catalog" or "binding"
-  const [tab, setTab] = useState("catalog");
-
-  // Binding selection (for binding tab)
-  const [selectedServiceBindingId, setSelectedServiceBindingId] = useState(null);
-  const [selectedFileId, setSelectedFileId] = useState("");
-  const [selectedServiceId, setSelectedServiceId] = useState("");
-
-  // Catalog selection (for catalog tab)
-  const [selectedCatalogServiceId, setSelectedCatalogServiceId] = useState(null);
-
-  // Port selection
+  const [selectedItem, setSelectedItem] = useState(null);
   const [selectedPortId, setSelectedPortId] = useState(null);
-
-  // Form values
   const [formValues, setFormValues] = useState({});
 
   // Queries
-  const { data: bindingsData, loading: bindingsLoading, refetch: refetchBindings } =
+  const { data: bindingsData, loading: bindingsLoading } =
     useQuery(GET_SERVICE_BINDINGS);
-  const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
   const { data: servicesData, loading: servicesLoading } =
     useQuery(GET_SERVICES_FOR_BINDING);
   const { data: portsData, loading: portsLoading } = useQuery(GET_AVAILABLE_PORTS, {
@@ -50,44 +33,46 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     skip: !serverId,
   });
 
-  // Mutations
-  const [createBinding, { loading: creatingBinding }] = useMutation(
-    CREATE_SERVICE_BINDING
-  );
-  const [deployExecutable, { loading: deploying }] = useMutation(DEPLOY_EXECUTABLE);
-  const [deployService, { loading: deployingService }] = useMutation(DEPLOY_SERVICE);
+  const [deployService, { loading: deploying }] = useMutation(DEPLOY_SERVICE);
 
   const bindings = bindingsData?.serviceBindings ?? [];
-  const files = filesData?.files ?? [];
   const services = servicesData?.serviceDefinitions ?? [];
 
-  // Services with a source (for catalog tab)
   const catalogServices = useMemo(
-    () => services.filter((c) => c.hasSource),
+    () => services.filter((s) => s.hasSource),
     [services]
   );
 
-  // Determine which mode we're in
-  const isCatalogMode = tab === "catalog" && selectedCatalogServiceId;
+  // Build unified list: built-in services first, then bindings
+  const deployableItems = useMemo(() => {
+    const items = [];
+    for (const s of catalogServices) {
+      items.push({
+        key: `service-${s.id}`,
+        type: "service",
+        serviceId: s.id,
+        service: s,
+        label: s.title,
+        sublabel: `${s.serviceKey} v${s.version}`,
+        isBuiltin: s.isBuiltin,
+      });
+    }
+    for (const b of bindings) {
+      items.push({
+        key: `binding-${b.id}`,
+        type: "binding",
+        bindingId: b.id,
+        service: b.service,
+        label: `${b.file?.name || `File #${b.fileId}`}`,
+        sublabel: b.service?.title || b.service?.serviceKey || `Service #${b.serviceId}`,
+        fileVersion: b.file?.version,
+      });
+    }
+    return items;
+  }, [catalogServices, bindings]);
 
-  // Find selected service for form rendering
-  const selectedService = useMemo(() => {
-    if (isCatalogMode) {
-      return services.find((c) => c.id === selectedCatalogServiceId);
-    }
-    if (selectedServiceBindingId) {
-      const binding = bindings.find((b) => b.id === selectedServiceBindingId);
-      if (binding?.service) {
-        return binding.service;
-      }
-    }
-    if (selectedServiceId) {
-      return services.find((c) => c.id === Number(selectedServiceId));
-    }
-    return null;
-  }, [isCatalogMode, selectedCatalogServiceId, selectedServiceBindingId, selectedServiceId, bindings, services]);
+  const selectedService = selectedItem?.service ?? null;
 
-  // Build form schema from service definition
   const formSchema = useMemo(() => {
     if (!selectedService?.configJson) return null;
     try {
@@ -97,7 +82,6 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     }
   }, [selectedService]);
 
-  // Check if the selected service requires a port (default true)
   const requiresPort = selectedService?.configJson?.requiresPort !== false;
 
   const handleValuesChange = useCallback((values) => {
@@ -108,57 +92,28 @@ const DeployModal = ({ modalProps, close, resolve }) => {
     setFormValues(values);
   }, []);
 
-  const handleCreateBindingAndContinue = async () => {
-    if (!selectedFileId || !selectedServiceId) return;
-    const { data } = await createBinding({
-      variables: {
-        fileId: Number(selectedFileId),
-        serviceId: Number(selectedServiceId),
-      },
-    });
-    if (data?.createServiceBinding) {
-      setSelectedServiceBindingId(data.createServiceBinding.id);
-      await refetchBindings();
-      setStep(2);
-    }
-  };
-
-  const handleSelectExistingBinding = (bindingId) => {
-    setSelectedServiceBindingId(bindingId);
-    setSelectedPortId(null);
-    setStep(2);
-  };
-
-  const handleSelectCatalogService = (serviceId) => {
-    setSelectedCatalogServiceId(serviceId);
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
     setSelectedPortId(null);
     setStep(2);
   };
 
   const handleDeploy = async () => {
-    if (!serverId) return;
+    if (!serverId || !selectedItem) return;
 
-    if (isCatalogMode) {
-      // Deploy via service directly
-      await deployService({
-        variables: {
-          serviceId: selectedCatalogServiceId,
-          serverIds: [serverId],
-          values: formValues,
-          portId: selectedPortId,
-        },
-      });
-    } else if (selectedServiceBindingId) {
-      // Deploy via binding
-      await deployExecutable({
-        variables: {
-          serviceBindingId: selectedServiceBindingId,
-          serverIds: [serverId],
-          values: formValues,
-          portId: selectedPortId,
-        },
-      });
+    const variables = {
+      serverIds: [serverId],
+      values: formValues,
+      portId: selectedPortId,
+    };
+
+    if (selectedItem.type === "service") {
+      variables.serviceId = selectedItem.serviceId;
+    } else {
+      variables.serviceBindingId = selectedItem.bindingId;
     }
+
+    await deployService({ variables });
     if (resolve) resolve(true);
     close();
   };
@@ -169,19 +124,17 @@ const DeployModal = ({ modalProps, close, resolve }) => {
   };
 
   const handleBack = () => {
-    setSelectedCatalogServiceId(null);
-    setSelectedServiceBindingId(null);
+    setSelectedItem(null);
     setSelectedPortId(null);
     setFormValues({});
     setStep(1);
   };
 
-  const isAnyLoading = bindingsLoading || filesLoading || servicesLoading;
-  const isDeploying = deploying || deployingService;
+  const isAnyLoading = bindingsLoading || servicesLoading;
 
   return (
     <ModalShell
-      title={t("Deploy Executable")}
+      title={t("Deploy Service")}
       onClose={handleCancel}
       maxWidth="max-w-3xl"
     >
@@ -201,158 +154,75 @@ const DeployModal = ({ modalProps, close, resolve }) => {
         </div>
       ) : (
         <>
-          {/* Step 1: Select source */}
+          {/* Step 1: Pick a deployable item */}
           {step === 1 && (
             <div className="mt-4 space-y-4">
-              {/* Tabs */}
-              <div role="tablist" className="tabs tabs-bordered">
-                <button
-                  role="tab"
-                  className={classNames("tab", tab === "catalog" && "tab-active")}
-                  onClick={() => setTab("catalog")}
-                  type="button"
-                >
-                  {t("Service Catalog")}
-                </button>
-                <button
-                  role="tab"
-                  className={classNames("tab", tab === "binding" && "tab-active")}
-                  onClick={() => setTab("binding")}
-                  type="button"
-                >
-                  {t("From Binding")}
+              {deployableItems.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-sm opacity-60">{t("No services available")}</p>
+                  <div className="mt-3 flex justify-center gap-2">
+                    <a href="/app/services" className="btn btn-outline btn-sm">
+                      {t("Browse Service Definitions")}
+                    </a>
+                    <a href="/app/files" className="btn btn-outline btn-sm">
+                      {t("Upload a File")}
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-h-72 space-y-1 overflow-auto">
+                  {deployableItems.map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex cursor-pointer items-center justify-between rounded-lg bg-base-300 px-3 py-2 hover:bg-primary/10"
+                      onClick={() => handleSelectItem(item)}
+                    >
+                      <div className="flex items-center gap-2">
+                        {item.type === "service" ? (
+                          <Package size={14} className="opacity-40" />
+                        ) : (
+                          <LinkIcon size={14} className="opacity-40" />
+                        )}
+                        <span className="font-medium">{item.label}</span>
+                        {item.type === "binding" && (
+                          <>
+                            <span className="opacity-40">&rarr;</span>
+                            <span className="text-sm opacity-70">{item.sublabel}</span>
+                          </>
+                        )}
+                        {item.type === "service" && (
+                          <span className="badge badge-ghost badge-xs font-mono">
+                            {item.sublabel}
+                          </span>
+                        )}
+                        {item.isBuiltin && (
+                          <span className="badge badge-info badge-xs">
+                            {t("Built-in")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {item.fileVersion && (
+                          <span className="text-xs opacity-50">v{item.fileVersion}</span>
+                        )}
+                        {item.type === "service" && (
+                          <span className="text-xs opacity-50">v{item.service?.version}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button className="btn btn-outline" onClick={handleCancel}>
+                  {t("Cancel")}
                 </button>
               </div>
-
-              {/* Catalog tab */}
-              {tab === "catalog" && (
-                <div>
-                  {catalogServices.length === 0 ? (
-                    <div className="py-6 text-center text-sm opacity-60">
-                      {t("No catalog services available")}
-                    </div>
-                  ) : (
-                    <div className="max-h-64 space-y-1 overflow-auto">
-                      {catalogServices.map((c) => (
-                        <div
-                          key={c.id}
-                          className="flex cursor-pointer items-center justify-between rounded-lg bg-base-300 px-3 py-2 hover:bg-primary/10"
-                          onClick={() => handleSelectCatalogService(c.id)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{c.title}</span>
-                            <span className="badge badge-ghost badge-xs font-mono">
-                              {c.serviceKey}
-                            </span>
-                            {c.isBuiltin && (
-                              <span className="badge badge-info badge-xs">
-                                {t("Built-in")}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs opacity-50">v{c.version}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Binding tab */}
-              {tab === "binding" && (
-                <div className="space-y-4">
-                  {/* Existing bindings */}
-                  {bindings.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 font-semibold text-sm">
-                        {t("Existing Bindings")}
-                      </h4>
-                      <div className="max-h-48 overflow-auto space-y-1">
-                        {bindings.map((b) => (
-                            <div
-                              key={b.id}
-                              className="flex cursor-pointer items-center justify-between rounded-lg bg-base-300 px-3 py-2 hover:bg-primary/10"
-                              onClick={() => handleSelectExistingBinding(b.id)}
-                            >
-                              <div className="text-sm">
-                                <span className="font-medium">
-                                  {b.file?.name || `File #${b.fileId}`}
-                                </span>
-                                <span className="mx-2 opacity-50">&rarr;</span>
-                                <span className="font-mono text-xs">
-                                  {b.service?.title || b.service?.serviceKey || `Service #${b.serviceId}`}
-                                </span>
-                              </div>
-                              <span className="badge badge-ghost badge-sm">#{b.id}</span>
-                            </div>
-                          ))}
-                      </div>
-                      <div className="divider text-xs opacity-50">{t("or create new")}</div>
-                    </div>
-                  )}
-
-                  {/* Create new binding */}
-                  <div className="flex flex-col gap-3">
-                    <fieldset className="fieldset">
-                      <legend className="fieldset-legend">{t("Executable File")}</legend>
-                      <select
-                        className="select select-bordered w-full"
-                        value={selectedFileId}
-                        onChange={(e) => setSelectedFileId(e.target.value)}
-                      >
-                        <option value="">{t("Please select")}</option>
-                        {files.map((f) => (
-                          <option key={f.id} value={f.id}>
-                            {f.name} {f.version ? `(${f.version})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </fieldset>
-                    <fieldset className="fieldset">
-                      <legend className="fieldset-legend">{t("Service")}</legend>
-                      <select
-                        className="select select-bordered w-full"
-                        value={selectedServiceId}
-                        onChange={(e) => setSelectedServiceId(e.target.value)}
-                      >
-                        <option value="">{t("Please select")}</option>
-                        {services.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.title} ({c.serviceKey} v{c.version})
-                          </option>
-                        ))}
-                      </select>
-                    </fieldset>
-                  </div>
-
-                  <div className="flex justify-end gap-2">
-                    <button className="btn btn-outline" onClick={handleCancel}>
-                      {t("Cancel")}
-                    </button>
-                    <button
-                      className={classNames("btn btn-primary", {
-                        loading: creatingBinding,
-                      })}
-                      disabled={!selectedFileId || !selectedServiceId}
-                      onClick={handleCreateBindingAndContinue}
-                    >
-                      {t("Continue")}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {tab === "catalog" && (
-                <div className="flex justify-end">
-                  <button className="btn btn-outline" onClick={handleCancel}>
-                    {t("Cancel")}
-                  </button>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Step 2: Fill form + deploy */}
+          {/* Step 2: Configure & deploy */}
           {step === 2 && (
             <div className="mt-4 space-y-4">
               {/* Port selector */}
@@ -364,7 +234,9 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                   <select
                     className="select select-bordered w-full"
                     value={selectedPortId || ""}
-                    onChange={(e) => setSelectedPortId(e.target.value ? Number(e.target.value) : null)}
+                    onChange={(e) =>
+                      setSelectedPortId(e.target.value ? Number(e.target.value) : null)
+                    }
                   >
                     <option value="">{t("Select a port...")}</option>
                     {portsData?.availablePortsForDeployment?.map((port) => (
@@ -376,18 +248,19 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                       </option>
                     ))}
                   </select>
-                  {!portsLoading && portsData?.availablePortsForDeployment?.length === 0 && (
-                    <p className="text-sm text-error mt-1">{t("No available ports on this server")}</p>
-                  )}
+                  {!portsLoading &&
+                    portsData?.availablePortsForDeployment?.length === 0 && (
+                      <p className="text-sm text-error mt-1">
+                        {t("No available ports on this server")}
+                      </p>
+                    )}
                 </div>
               )}
 
               {/* Service form */}
               {formSchema && (
                 <div>
-                  <h4 className="mb-2 font-semibold text-sm">
-                    {t("Parameters")}
-                  </h4>
+                  <h4 className="mb-2 font-semibold text-sm">{t("Parameters")}</h4>
                   <div className="max-h-64 overflow-auto rounded-lg bg-base-300 p-3">
                     <ServiceValuesForm
                       formSchema={formSchema}
@@ -402,23 +275,18 @@ const DeployModal = ({ modalProps, close, resolve }) => {
               <div className="rounded-lg bg-base-300 p-4">
                 <h4 className="mb-2 font-semibold text-sm">{t("Summary")}</h4>
                 <div className="space-y-1 text-sm">
-                  {isCatalogMode ? (
-                    <div>
-                      <span className="opacity-60">{t("Service")}:</span>{" "}
-                      <span>{selectedService?.title}</span>
-                    </div>
-                  ) : (
-                    <div>
-                      <span className="opacity-60">{t("Binding")}:</span>{" "}
-                      <span className="font-mono">#{selectedServiceBindingId}</span>
-                    </div>
-                  )}
                   <div>
                     <span className="opacity-60">{t("Service")}:</span>{" "}
                     <span>
                       {selectedService?.title || selectedService?.serviceKey}
                     </span>
                   </div>
+                  {selectedItem?.type === "binding" && (
+                    <div>
+                      <span className="opacity-60">{t("File")}:</span>{" "}
+                      <span>{selectedItem.label}</span>
+                    </div>
+                  )}
                   {Object.keys(formValues).length > 0 && (
                     <div>
                       <span className="opacity-60">{t("Parameters")}:</span>
@@ -435,9 +303,9 @@ const DeployModal = ({ modalProps, close, resolve }) => {
                   {t("Back")}
                 </button>
                 <button
-                  className={classNames("btn btn-primary", { loading: isDeploying })}
+                  className={classNames("btn btn-primary", { loading: deploying })}
                   onClick={handleDeploy}
-                  disabled={isDeploying || (requiresPort && !selectedPortId)}
+                  disabled={deploying || (requiresPort && !selectedPortId)}
                 >
                   {t("Deploy")}
                 </button>

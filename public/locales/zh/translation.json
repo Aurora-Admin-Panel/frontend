@@ -252,7 +252,7 @@
 
     "Deployments": "部署管理",
     "Deploy": "部署",
-    "Deploy Executable": "部署可执行文件",
+    "Deploy Service": "部署服务",
     "Deployment": "部署",
     "Deployment not found": "部署未找到",
     "No deployments yet": "暂无部署",
@@ -300,10 +300,11 @@
     "success": "成功",
     "unknown": "未知",
 
-    "Service Catalog": "服务目录",
-    "From Binding": "从绑定部署",
+    "No services available": "暂无可用服务",
+    "Browse Service Definitions": "浏览服务定义",
+    "Upload a File": "上传文件",
+    "Bindings": "绑定",
     "Built-in": "内置",
-    "No catalog services available": "暂无可用目录服务",
     "Service Editor": "服务编辑器",
     "Select": "选择",
 

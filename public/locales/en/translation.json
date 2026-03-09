@@ -250,7 +250,7 @@
 
     "Deployments": "Deployments",
     "Deploy": "Deploy",
-    "Deploy Executable": "Deploy Executable",
+    "Deploy Service": "Deploy Service",
     "Deployment": "Deployment",
     "Deployment not found": "Deployment not found",
     "No deployments yet": "No deployments yet",
@@ -298,10 +298,11 @@
     "success": "Success",
     "unknown": "Unknown",
 
-    "Service Catalog": "Service Catalog",
-    "From Binding": "From Binding",
+    "No services available": "No services available",
+    "Browse Service Definitions": "Browse Service Definitions",
+    "Upload a File": "Upload a File",
+    "Bindings": "Bindings",
     "Built-in": "Built-in",
-    "No catalog services available": "No catalog services available",
     "Service Editor": "Service Editor",
     "Select": "Select",
 

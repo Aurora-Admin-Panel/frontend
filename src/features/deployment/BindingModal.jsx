@@ -57,12 +57,13 @@ const BindingModal = ({ modalProps, close, resolve }) => {
   // (or fall back to a generic title)
   const deriveTitle = () => {
     if (isFileMode) {
-      const file = bindings[0]?.file;
-      if (file) return `${file.name}${file.version ? ` (${file.version})` : ""}`;
+      const name = modalProps?.fileName;
+      const version = modalProps?.fileVersion;
+      if (name) return `${name}${version ? ` (${version})` : ""}`;
       return t("File Bindings");
     } else {
-      const service = bindings[0]?.service;
-      if (service) return service.title || service.serviceKey;
+      const title = modalProps?.serviceTitle;
+      if (title) return title;
       return t("Service Bindings");
     }
   };

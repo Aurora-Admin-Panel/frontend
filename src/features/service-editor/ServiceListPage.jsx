@@ -121,7 +121,7 @@ const ServiceListPage = () => {
                           className="btn btn-ghost btn-xs"
                           onClick={(e) => {
                             e.stopPropagation();
-                            open("binding", { serviceId: item.id });
+                            open("binding", { serviceId: item.id, serviceTitle: item.title || item.serviceKey });
                           }}
                         >
                           <LinkIcon size={14} />

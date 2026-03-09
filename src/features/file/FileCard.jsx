@@ -178,7 +178,7 @@ const FileCard = ({ file, onUpdate, index = 0 }) => {
         {file.type === "EXECUTABLE" && (
           <button
             className="btn btn-ghost btn-sm flex-1 gap-1.5 text-xs opacity-60 transition-opacity hover:opacity-100"
-            onClick={() => open("binding", { fileId: file.id })}
+            onClick={() => open("binding", { fileId: file.id, fileName: file.name, fileVersion: file.version })}
           >
             <LinkIcon size={13} />
             {t("Bindings")}

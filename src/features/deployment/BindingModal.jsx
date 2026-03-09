@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@apollo/client";
 import classNames from "classnames";
+import { getReadableSize } from "../../utils/formatter";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal";
 import {
@@ -17,58 +18,76 @@ const BindingModal = ({ modalProps, close, resolve }) => {
   const { t } = useTranslation();
   const { confirm } = useModal();
 
-  const filterFileId = modalProps?.fileId ?? null;
-  const filterServiceId = modalProps?.serviceId ?? null;
+  const fileId = modalProps?.fileId ?? null;
+  const serviceId = modalProps?.serviceId ?? null;
+  const isFileMode = fileId !== null;
 
-  const [selectedFileId, setSelectedFileId] = useState(filterFileId ? String(filterFileId) : "");
-  const [selectedServiceId, setSelectedServiceId] = useState(filterServiceId ? String(filterServiceId) : "");
-  const [isDefault, setIsDefault] = useState(false);
+  const [selectedBindingId, setSelectedBindingId] = useState(null);
+  const [addValue, setAddValue] = useState("");
 
-  const {
-    data: bindingsData,
-    loading: bindingsLoading,
-    refetch,
-  } = useQuery(GET_SERVICE_BINDINGS, {
-    variables: {
-      ...(filterFileId && { fileId: filterFileId }),
-      ...(filterServiceId && { serviceId: filterServiceId }),
-    },
-  });
-  const { data: filesData, loading: filesLoading } = useQuery(GET_EXECUTABLE_FILES);
-  const { data: servicesData, loading: servicesLoading } =
-    useQuery(GET_SERVICES_FOR_BINDING);
-
-  const [createBinding, { loading: creating }] = useMutation(
-    CREATE_SERVICE_BINDING
+  // Always fetch bindings filtered by the known side
+  const { data: bindingsData, loading: bindingsLoading, refetch } = useQuery(
+    GET_SERVICE_BINDINGS,
+    {
+      variables: {
+        ...(fileId && { fileId }),
+        ...(serviceId && { serviceId }),
+      },
+    }
   );
+
+  // Fetch the "other side" options for the add dropdown
+  const { data: filesData, loading: filesLoading } = useQuery(
+    GET_EXECUTABLE_FILES,
+    { skip: isFileMode } // Only need files list when in service mode
+  );
+  const { data: servicesData, loading: servicesLoading } = useQuery(
+    GET_SERVICES_FOR_BINDING,
+    { skip: !isFileMode } // Only need services list when in file mode
+  );
+
+  const [createBinding, { loading: creating }] = useMutation(CREATE_SERVICE_BINDING);
   const [deleteBinding] = useMutation(DELETE_SERVICE_BINDING);
 
   const bindings = bindingsData?.serviceBindings ?? [];
   const files = filesData?.files ?? [];
   const services = servicesData?.serviceDefinitions ?? [];
 
-  const handleCreate = async () => {
-    if (!selectedFileId || !selectedServiceId) return;
+  // Derive the modal title from the first binding's known-side data
+  // (or fall back to a generic title)
+  const deriveTitle = () => {
+    if (isFileMode) {
+      const file = bindings[0]?.file;
+      if (file) return `${file.name}${file.version ? ` (${file.version})` : ""}`;
+      return t("File Bindings");
+    } else {
+      const service = bindings[0]?.service;
+      if (service) return service.title || service.serviceKey;
+      return t("Service Bindings");
+    }
+  };
+
+  const handleAdd = async () => {
+    if (!addValue) return;
     await createBinding({
       variables: {
-        fileId: Number(selectedFileId),
-        serviceId: Number(selectedServiceId),
-        isDefault,
+        fileId: isFileMode ? fileId : Number(addValue),
+        serviceId: isFileMode ? Number(addValue) : serviceId,
       },
     });
-    setSelectedFileId("");
-    setSelectedServiceId("");
-    setIsDefault(false);
+    setAddValue("");
     refetch();
   };
 
-  const handleDelete = async (id) => {
+  const handleRemove = async () => {
+    if (!selectedBindingId) return;
     const confirmed = await confirm({
-      title: t("Delete Binding"),
-      message: t("Are you sure you want to delete this binding?"),
+      title: t("Remove Binding"),
+      message: t("Are you sure you want to remove this binding?"),
     });
     if (!confirmed) return;
-    await deleteBinding({ variables: { id } });
+    await deleteBinding({ variables: { id: selectedBindingId } });
+    setSelectedBindingId(null);
     refetch();
   };
 
@@ -79,134 +98,128 @@ const BindingModal = ({ modalProps, close, resolve }) => {
 
   const isLoading = bindingsLoading || filesLoading || servicesLoading;
 
+  // Build dropdown options (the "other side")
+  const dropdownOptions = isFileMode
+    ? services.map((s) => ({
+        value: s.id,
+        label: `${s.title} (${s.serviceKey} v${s.version})`,
+      }))
+    : files.map((f) => ({
+        value: f.id,
+        label: `${f.name}${f.version ? ` (${f.version})` : ""}`,
+      }));
+
   return (
     <ModalShell
-      title={t("Service Bindings")}
+      title={deriveTitle()}
       onClose={handleClose}
-      maxWidth="max-w-2xl"
-      footer={
-        <button className="btn btn-outline" onClick={handleClose}>
-          {t("Close")}
-        </button>
-      }
+      maxWidth="max-w-md"
     >
       {isLoading ? (
         <div className="py-8">
           <DataLoading />
         </div>
       ) : (
-        <>
-          {/* Create new binding */}
-          <div className="rounded-lg bg-base-300 p-4">
-            <h4 className="mb-2 text-sm font-semibold">{t("Create Binding")}</h4>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <select
-                className="select select-bordered select-sm flex-1"
-                value={selectedFileId}
-                onChange={(e) => setSelectedFileId(e.target.value)}
-              >
-                <option value="">{t("Executable File")}</option>
-                {files.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.name} {f.version ? `(${f.version})` : ""}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="select select-bordered select-sm flex-1"
-                value={selectedServiceId}
-                onChange={(e) => setSelectedServiceId(e.target.value)}
-              >
-                <option value="">{t("Service")}</option>
-                {services.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title} ({c.serviceKey} v{c.version})
-                  </option>
-                ))}
-              </select>
-              <label className="flex cursor-pointer items-center gap-1">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary checkbox-xs"
-                  checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
-                />
-                <span className="text-xs">{t("Default")}</span>
-              </label>
-              <button
-                className={classNames("btn btn-primary btn-sm", {
-                  loading: creating,
-                })}
-                disabled={!selectedFileId || !selectedServiceId}
-                onClick={handleCreate}
-              >
-                {t("Add")}
-              </button>
+        <div className="space-y-4">
+          {/* Bindings list */}
+          {bindings.length === 0 ? (
+            <div className="py-6 text-center text-sm opacity-50">
+              {t("No bindings yet")}
             </div>
+          ) : (
+            <div className="space-y-0 divide-y divide-base-content/[0.06]">
+              {bindings.map((b) => (
+                <div
+                  key={b.id}
+                  className={classNames(
+                    "flex cursor-pointer items-center justify-between px-3 py-2.5 rounded-lg transition-colors",
+                    selectedBindingId === b.id
+                      ? "bg-primary/10"
+                      : "hover:bg-base-200"
+                  )}
+                  onClick={() =>
+                    setSelectedBindingId(
+                      selectedBindingId === b.id ? null : b.id
+                    )
+                  }
+                >
+                  {isFileMode ? (
+                    /* Show the service side */
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-medium truncate">
+                        {b.service?.title || `Service #${b.serviceId}`}
+                      </span>
+                      <span className="badge badge-ghost badge-xs font-mono shrink-0">
+                        {b.service?.serviceKey}
+                      </span>
+                      {b.service?.version && (
+                        <span className="text-xs opacity-50 shrink-0">
+                          v{b.service.version}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    /* Show the file side */
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-medium truncate">
+                        {b.file?.name || `File #${b.fileId}`}
+                      </span>
+                      {b.file?.version && (
+                        <span className="text-xs opacity-50 shrink-0">
+                          v{b.file.version}
+                        </span>
+                      )}
+                      {b.file?.size && (
+                        <span className="text-xs opacity-40 shrink-0">
+                          {getReadableSize(b.file.size)}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add new binding */}
+          <div className="flex items-center gap-2">
+            <select
+              className="select select-bordered select-sm flex-1"
+              value={addValue}
+              onChange={(e) => setAddValue(e.target.value)}
+            >
+              <option value="">
+                {isFileMode ? t("Select a service...") : t("Select a file...")}
+              </option>
+              {dropdownOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <button
+              className={classNames("btn btn-primary btn-sm", {
+                loading: creating,
+              })}
+              disabled={!addValue}
+              onClick={handleAdd}
+            >
+              {t("Add")}
+            </button>
           </div>
 
-          {/* Existing bindings list */}
-          <div>
-            <h4 className="mb-2 text-sm font-semibold">
-              {t("Existing Bindings")} ({bindings.length})
-            </h4>
-            {bindings.length === 0 ? (
-              <div className="text-xs opacity-60">{t("No bindings yet")}</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>{t("File")}</th>
-                      <th>{t("Service")}</th>
-                      <th>{t("Default")}</th>
-                      <th>{t("Created")}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {bindings.map((b) => (
-                        <tr key={b.id}>
-                          <td className="font-mono text-xs">{b.id}</td>
-                          <td className="text-sm">
-                            {b.file?.name || `#${b.fileId}`}
-                          </td>
-                          <td className="text-sm">
-                            {b.service?.title ||
-                              b.service?.serviceKey ||
-                              `#${b.serviceId}`}
-                          </td>
-                          <td>
-                            {b.isDefault ? (
-                              <span className="badge badge-primary badge-xs">
-                                {t("Default")}
-                              </span>
-                            ) : (
-                              "-"
-                            )}
-                          </td>
-                          <td className="text-xs">
-                            {b.createdAt
-                              ? new Date(b.createdAt).toLocaleString()
-                              : "-"}
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-error btn-outline btn-xs"
-                              onClick={() => handleDelete(b.id)}
-                            >
-                              {t("Delete")}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </>
+          {/* Remove button — only visible when a binding is selected */}
+          {selectedBindingId && (
+            <div className="flex justify-end">
+              <button
+                className="btn btn-error btn-outline btn-sm"
+                onClick={handleRemove}
+              >
+                {t("Remove")}
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </ModalShell>
   );

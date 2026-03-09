@@ -167,6 +167,18 @@ function ParamEditorPanel({
     });
   };
 
+  const patchExecSource = (fn) => {
+    applyDraftMutation((draft) => {
+      if (!draft.exec || typeof draft.exec !== "object") {
+        draft.exec = { bin: "", baseArgs: [], timeoutSeconds: 300 };
+      }
+      fn(draft.exec, draft);
+    });
+  };
+
+  const sourceConfig = execConfig.source || null;
+  const sourceType = sourceConfig?.type || "none";
+
   return (
     <div className="card bg-base-200 shadow-md">
       <div className="card-body gap-3 p-4">
@@ -320,6 +332,209 @@ function ParamEditorPanel({
                 }
               />
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-box border border-base-300 bg-base-100 p-3">
+          <div className="mb-2 text-xs font-semibold uppercase opacity-70">
+            {t("Source (binary acquisition)")}
+          </div>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <FieldBlock label={t("Source Type")} className="md:col-span-2">
+              <select
+                className="select select-bordered select-sm w-full"
+                value={sourceType}
+                onChange={(e) =>
+                  patchExecSource((exec) => {
+                    if (e.target.value === "none") {
+                      delete exec.source;
+                    } else {
+                      exec.source = { type: e.target.value };
+                    }
+                  })
+                }
+              >
+                <option value="none">{t("None (uploaded file)")}</option>
+                <option value="github">{t("GitHub Release")}</option>
+                <option value="url">{t("URL Download")}</option>
+                <option value="package">{t("Package Manager")}</option>
+                <option value="upload">{t("Upload (explicit)")}</option>
+              </select>
+            </FieldBlock>
+
+            {sourceType === "github" && (
+              <>
+                <label className="input input-bordered input-sm w-full md:col-span-2">
+                  <span className="text-xs opacity-70">{t("Repository")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="owner/repo"
+                    value={sourceConfig?.repo || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.repo;
+                        else exec.source.repo = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <label className="input input-bordered input-sm w-full md:col-span-2">
+                  <span className="text-xs opacity-70">{t("Asset Pattern")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="binary-*-linux-{arch}.tar.gz"
+                    value={sourceConfig?.assetPattern || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.assetPattern;
+                        else exec.source.assetPattern = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <label className="input input-bordered input-sm w-full">
+                  <span className="text-xs opacity-70">{t("Tag")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="latest"
+                    value={sourceConfig?.tag || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.tag;
+                        else exec.source.tag = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <label className="input input-bordered input-sm w-full">
+                  <span className="text-xs opacity-70">{t("Extract Path")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="path/to/binary"
+                    value={sourceConfig?.extractPath || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.extractPath;
+                        else exec.source.extractPath = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <label className="input input-bordered input-sm w-full">
+                  <span className="text-xs opacity-70">{t("Strip Components")}</span>
+                  <input
+                    type="number"
+                    className="grow"
+                    min={0}
+                    value={sourceConfig?.strip ?? ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (e.target.value === "") delete exec.source.strip;
+                        else exec.source.strip = Number(e.target.value);
+                      })
+                    }
+                  />
+                </label>
+              </>
+            )}
+
+            {sourceType === "url" && (
+              <>
+                <label className="input input-bordered input-sm w-full md:col-span-2">
+                  <span className="text-xs opacity-70">{t("URL")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="https://..."
+                    value={sourceConfig?.url || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.url;
+                        else exec.source.url = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <div className="md:col-span-2">
+                  <div className="mb-1 text-xs opacity-70">{t("Arch-specific URLs")}</div>
+                  <div className="space-y-1">
+                    {["x86_64", "aarch64", "armv7l"].map((arch) => (
+                      <label key={arch} className="input input-bordered input-sm w-full">
+                        <span className="text-xs font-mono opacity-70">{arch}</span>
+                        <input
+                          className="grow font-mono"
+                          placeholder="https://..."
+                          value={sourceConfig?.arch?.[arch] || ""}
+                          onChange={(e) =>
+                            patchExecSource((exec) => {
+                              if (!e.target.value) {
+                                if (exec.source.arch) delete exec.source.arch[arch];
+                                if (exec.source.arch && !Object.values(exec.source.arch).some(Boolean)) delete exec.source.arch;
+                              } else {
+                                if (!exec.source.arch) exec.source.arch = {};
+                                exec.source.arch[arch] = e.target.value;
+                              }
+                            })
+                          }
+                        />
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-1 text-xs opacity-50">{t("Provide either a single URL or arch-specific URLs")}</div>
+                </div>
+                <label className="input input-bordered input-sm w-full">
+                  <span className="text-xs opacity-70">{t("Extract Path")}</span>
+                  <input
+                    className="grow font-mono"
+                    placeholder="path/to/binary"
+                    value={sourceConfig?.extractPath || ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (!e.target.value) delete exec.source.extractPath;
+                        else exec.source.extractPath = e.target.value;
+                      })
+                    }
+                  />
+                </label>
+                <label className="input input-bordered input-sm w-full">
+                  <span className="text-xs opacity-70">{t("Strip Components")}</span>
+                  <input
+                    type="number"
+                    className="grow"
+                    min={0}
+                    value={sourceConfig?.strip ?? ""}
+                    onChange={(e) =>
+                      patchExecSource((exec) => {
+                        if (e.target.value === "") delete exec.source.strip;
+                        else exec.source.strip = Number(e.target.value);
+                      })
+                    }
+                  />
+                </label>
+              </>
+            )}
+
+            {sourceType === "package" && (
+              <label className="input input-bordered input-sm w-full md:col-span-2">
+                <span className="text-xs opacity-70">{t("Package Name")}</span>
+                <input
+                  className="grow font-mono"
+                  placeholder="nginx"
+                  value={sourceConfig?.packageName || ""}
+                  onChange={(e) =>
+                    patchExecSource((exec) => {
+                      if (!e.target.value) delete exec.source.packageName;
+                      else exec.source.packageName = e.target.value;
+                    })
+                  }
+                />
+              </label>
+            )}
+
+            {sourceType === "upload" && (
+              <div className="md:col-span-2 text-xs opacity-50">
+                {t("Binary will be provided via file upload")}
+              </div>
+            )}
           </div>
         </div>
 

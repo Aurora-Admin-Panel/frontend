@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileUp, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Paginator from "../Paginator";
-import FileCard from "./FileCard";
+import FileRow from "./FileRow";
 import useQueryParams from "../../hooks/useQueryParams";
 import DataLoading from "../DataLoading";
 import { useModal } from "../../atoms/modal";
@@ -33,7 +33,7 @@ const FileEmptyState = ({ onAdd }) => {
         className="btn btn-primary btn-sm mt-6 gap-2"
         onClick={onAdd}
       >
-        <FileUp size={15} />
+        <Upload size={15} />
         {t("Upload File")}
       </button>
     </motion.div>
@@ -41,6 +41,7 @@ const FileEmptyState = ({ onAdd }) => {
 };
 
 const FileCenter = () => {
+  const { t } = useTranslation();
   const { open } = useModal();
   const [limit, offset, setLimit, setOffset] = useQueryParams([
     {
@@ -79,16 +80,44 @@ const FileCenter = () => {
         ) : isEmpty ? (
           <FileEmptyState onAdd={handleAdd} />
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`page-${offset}`}
-              className="grid grid-cols-1 gap-4 overflow-x-hidden pb-4 pt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
-            >
-              {files.map((file, i) => (
-                <FileCard key={file.id} file={file} onUpdate={refetch} index={i} />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <div className="card bg-base-200 shadow-md">
+            <div className="card-body p-0">
+              <div className="overflow-x-auto">
+                <AnimatePresence mode="wait">
+                  <motion.table
+                    key={`page-${offset}`}
+                    className="table"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <thead>
+                      <tr>
+                        <th className="w-0" />
+                        <th>{t("Name")}</th>
+                        <th>{t("Type")}</th>
+                        <th>{t("Size")}</th>
+                        <th>{t("Version")}</th>
+                        <th>{t("Updated")}</th>
+                        <th className="text-right">{t("Actions")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {files.map((file, i) => (
+                        <FileRow
+                          key={file.id}
+                          file={file}
+                          onUpdate={refetch}
+                          index={i}
+                        />
+                      ))}
+                    </tbody>
+                  </motion.table>
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
         )}
         {!isEmpty && (
           <Paginator

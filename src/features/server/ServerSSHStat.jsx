@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ReactLoading from "react-loading";
-import { gql, useQuery, NetworkStatus, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
 import classNames from "classnames";
 import useSubscribe from "@/hooks/useSubscribe";
 import { CircleAlert, CircleCheck } from "lucide-react";
-import { use } from "i18next";
 
 const CONNECT_SERVER_SUBSCRIPTION = gql`
   subscription ConnectServer($serverId: Int!) {
@@ -19,11 +18,6 @@ const ServerSSHStat = ({ server, sshConnected, setSSHConnected, registerSSHRefet
     CONNECT_SERVER_SUBSCRIPTION,
     { serverId: server.id }
   );
-  useEffect(() => {
-    if (!sshConnected) {
-      subscribe();
-    }
-  }, [server.id]);
   useEffect(() => {
     if (loading) setSSHConnected(null);
     else if (data && data.connectServer.success) {
@@ -69,6 +63,14 @@ const ServerSSHStat = ({ server, sshConnected, setSSHConnected, registerSSHRefet
           ) : data && data.connectServer.success ? (
             <button className="stat-value" onClick={() => subscribe()}>
               <CircleCheck className="text-success" />
+            </button>
+          ) : sshConnected ? (
+            <button className="stat-value" onClick={() => subscribe()}>
+              <CircleCheck className="text-success" />
+            </button>
+          ) : sshConnected === false ? (
+            <button className="stat-value" onClick={() => subscribe()}>
+              <CircleAlert className="text-error" />
             </button>
           ) : null}
         </div>

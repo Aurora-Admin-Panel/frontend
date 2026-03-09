@@ -16,7 +16,7 @@ const ServerRow = ({ server, refetch, metric, index = 0 }) => {
   const { addNotification } = useNotificationsReducer()
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit } = useServerItem(server, refetch);
+  const { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit } = useServerItem(server, refetch, metric);
 
   const handleCopy = (address) => {
     copyToClipboard(address);

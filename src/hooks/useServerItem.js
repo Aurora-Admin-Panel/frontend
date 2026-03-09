@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useModal } from "../atoms/modal";
 
-const useServerItem = (server, refetch) => {
+const useServerItem = (server, refetch, metric) => {
   const { open } = useModal();
   const [sshRefetch, setSSHRefetch] = useState(null);
   const [sshConnected, setSSHConnected] = useState(false);
@@ -12,12 +12,19 @@ const useServerItem = (server, refetch) => {
 
   // Initialize sshConnected from lastSeen
   useEffect(() => {
-    if (Date.now() - server.lastSeen > 1000 * 60 * 10) {
+    const lastSeen = server.lastSeen ? new Date(server.lastSeen).getTime() : 0;
+    if (Date.now() - lastSeen > 1000 * 60 * 10) {
       setSSHConnected(false);
     } else {
       setSSHConnected(true);
     }
   }, [server]);
+
+  // Update sshConnected from metric isOnline
+  useEffect(() => {
+    if (metric?.isOnline === true) setSSHConnected(true);
+    else if (metric?.isOnline === false) setSSHConnected(false);
+  }, [metric?.isOnline]);
 
   const handleEdit = useCallback(async () => {
     const result = await open("serverInfo", {

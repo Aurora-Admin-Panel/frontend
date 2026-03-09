@@ -12,7 +12,7 @@ const ServerCard = ({ server, refetch, metric }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { sshConnected, setSSHConnected, registerSSHRefetch, handleEdit } =
-    useServerItem(server, refetch);
+    useServerItem(server, refetch, metric);
 
   const isDown = sshConnected === false;
   const isConnecting = sshConnected === null;

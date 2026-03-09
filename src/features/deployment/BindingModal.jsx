@@ -99,16 +99,23 @@ const BindingModal = ({ modalProps, close, resolve }) => {
 
   const isLoading = bindingsLoading || filesLoading || servicesLoading;
 
-  // Build dropdown options (the "other side")
+  // Build dropdown options (the "other side"), excluding already-bound items
+  const boundIds = new Set(
+    bindings.map((b) => (isFileMode ? b.serviceId : b.fileId))
+  );
   const dropdownOptions = isFileMode
-    ? services.map((s) => ({
-        value: s.id,
-        label: `${s.title} (${s.serviceKey} v${s.version})`,
-      }))
-    : files.map((f) => ({
-        value: f.id,
-        label: `${f.name}${f.version ? ` (${f.version})` : ""}`,
-      }));
+    ? services
+        .filter((s) => !boundIds.has(s.id))
+        .map((s) => ({
+          value: s.id,
+          label: `${s.title} (${s.serviceKey} v${s.version})`,
+        }))
+    : files
+        .filter((f) => !boundIds.has(f.id))
+        .map((f) => ({
+          value: f.id,
+          label: `${f.name}${f.version ? ` (${f.version})` : ""}`,
+        }));
 
   return (
     <ModalShell

@@ -1,69 +1,88 @@
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import classNames from "classnames";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import { motion } from "framer-motion";
 import { getReadableSize } from "../../utils/formatter";
-import { useModal } from "../../atoms/modal"
+import { useModal } from "../../atoms/modal";
 import { downloadFile } from "../../utils/download";
 import { DELETE_FILE_MUTATION } from "../../queries/file";
 import { useEffect } from "react";
-import { Image, Video, FileText, Terminal, Key, File as FileIcon } from "lucide-react";
+import {
+  Image,
+  Video,
+  FileText,
+  Terminal,
+  Key,
+  File as FileIcon,
+  Trash2,
+  Eye,
+  Download,
+} from "lucide-react";
 
-
-const fileTypeToBadge = (type) => {
-  switch (type) {
-    case "IMAGE":
-      return "badge-secondary";
-    case "VIDEO":
-      return "badge-accent";
-    case "TEXT":
-      return "badge-neutral";
-    case "EXECUTABLE":
-      return "badge-info";
-    case "SECRET":
-      return "badge-error";
-    default:
-      return "badge-secondary";
-  }
+const fileTypeConfig = {
+  IMAGE: {
+    icon: Image,
+    accentBar: "bg-secondary/70",
+    iconBg: "bg-secondary/10 text-secondary",
+    label: "IMAGE",
+  },
+  VIDEO: {
+    icon: Video,
+    accentBar: "bg-accent/70",
+    iconBg: "bg-accent/10 text-accent",
+    label: "VIDEO",
+  },
+  TEXT: {
+    icon: FileText,
+    accentBar: "bg-neutral/40",
+    iconBg: "bg-neutral/10 text-neutral",
+    label: "TEXT",
+  },
+  EXECUTABLE: {
+    icon: Terminal,
+    accentBar: "bg-info/70",
+    iconBg: "bg-info/10 text-info",
+    label: "EXECUTABLE",
+  },
+  SECRET: {
+    icon: Key,
+    accentBar: "bg-error/60",
+    iconBg: "bg-error/10 text-error",
+    label: "SECRET",
+  },
 };
 
-const fileTypeToIcon = (type) => {
-  switch (type) {
-    case "IMAGE":
-      return <Image />;
-    case "VIDEO":
-      return <Video />;
-    case "TEXT":
-      return <FileText />;
-    case "EXECUTABLE":
-      return <Terminal />;
-    case "SECRET":
-      return <Key />;
-    default:
-      return <FileIcon />;
-  }
+const fallbackConfig = {
+  icon: FileIcon,
+  accentBar: "bg-base-content/20",
+  iconBg: "bg-base-content/5 text-base-content/60",
+  label: "FILE",
 };
 
-const FileCard = ({ file, onUpdate }) => {
+const FileCard = ({ file, onUpdate, index = 0 }) => {
   const { t } = useTranslation();
   const [deleteFile, { called, error }] = useMutation(DELETE_FILE_MUTATION);
   const { open, confirm } = useModal();
+
+  const config = fileTypeConfig[file.type] || fallbackConfig;
+  const IconComponent = config.icon;
+
   const openInModal = () => {
     open("filePreview", { file });
   };
 
-
   const handleClickCancel = async () => {
-      const confirmed = await confirm({
-          title: t("Delete File"),
-          message: t("Are you sure you want to delete this file", {
-            name: file.name,
-          }),
-        });
-      if (confirmed) {
-        deleteFile({ variables: { id: file.id } });
-      }
+    const confirmed = await confirm({
+      title: t("Delete File"),
+      message: t("Are you sure you want to delete this file", {
+        name: file.name,
+      }),
+    });
+    if (confirmed) {
+      deleteFile({ variables: { id: file.id } });
+    }
   };
+
   const handleCheck = () => {
     switch (file.type) {
       case "IMAGE":
@@ -83,48 +102,87 @@ const FileCard = ({ file, onUpdate }) => {
     }
   }, [called, error]);
 
+  const isPreviewable = ["IMAGE", "VIDEO", "TEXT"].includes(file.type);
+
   return (
-    <div className="card indicator h-32 w-full min-w-0 bg-base-300 shadow-md">
-      {file.version && (
-        <span className="badge indicator-item badge-sm border-base-300 bg-base-200 text-base-content">
-          {file.version}
-        </span>
-      )}
-      <div className="card-body gap-2 px-4 py-4">
-        <div className="tooltip tooltip-bottom" data-tip={file.name}>
-          <h2 className="text-md card-title h-4 justify-start">
-            <p className="truncate flex-grow-0">{file.name}</p>
-          </h2>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="flex flex-row items-center text-xs text-secondary">
-            <div className="mr-1 flex flex-row items-center">
-              {fileTypeToIcon(file.type)}
-            </div>
-            {t(file.type)}
-          </div>
-          <div className="text-xs">{getReadableSize(file.size)}</div>
-        </div>
-        {file.notes ? (
-          <div className="tooltip tooltip-bottom" data-tip={file.notes}>
-            <div className="flex items-start truncate text-xs text-primary">
-              {file.notes}
-            </div>
-          </div>
-        ) : (
-          <div className="h-4"></div>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.35,
+        delay: index * 0.04,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      className="group flex flex-col rounded-xl border border-base-content/6 bg-base-100 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-base-content/4"
+    >
+      {/* Type accent bar */}
+      <div
+        className={classNames(
+          "h-[3px] w-full rounded-t-xl transition-colors duration-500",
+          config.accentBar
         )}
-        <div className="card-actions justify-end">
-          <button
-            className="btn btn-error btn-outline btn-xs"
-            onClick={handleClickCancel}
-          >
-            {t("Delete")}
-          </button>
-          <button className="btn btn-primary btn-xs" onClick={handleCheck}>{t("Check")}</button>
+      />
+
+      {/* Icon + identity */}
+      <div className="flex items-start gap-3 px-4 pt-3.5 pb-1">
+        <div
+          className={classNames(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+            config.iconBg
+          )}
+        >
+          <IconComponent size={18} />
         </div>
+        <div className="min-w-0 flex-1">
+          <h3
+            className="truncate text-sm font-bold leading-snug tracking-tight"
+            title={file.name}
+          >
+            {file.name}
+          </h3>
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs opacity-40">
+            <span>{t(file.type)}</span>
+            <span className="opacity-40">·</span>
+            <span>{getReadableSize(file.size)}</span>
+          </p>
+        </div>
+        {file.version && (
+          <span className="shrink-0 rounded-md bg-base-200 px-1.5 py-0.5 text-[10px] font-medium tracking-wide opacity-50">
+            {file.version}
+          </span>
+        )}
       </div>
-    </div>
+
+      {/* Notes */}
+      {file.notes ? (
+        <p
+          className="truncate px-4 pt-1 pb-2 text-xs opacity-35"
+          title={file.notes}
+        >
+          {file.notes}
+        </p>
+      ) : (
+        <div className="pb-2" />
+      )}
+
+      {/* Actions */}
+      <div className="mt-auto flex items-center gap-1.5 border-t border-base-content/[0.04] px-3 py-2">
+        <button
+          className="btn btn-ghost btn-sm flex-1 gap-1.5 text-xs opacity-60 transition-opacity hover:opacity-100"
+          onClick={handleClickCancel}
+        >
+          <Trash2 size={13} />
+          {t("Delete")}
+        </button>
+        <button
+          className="btn btn-primary btn-sm flex-1 gap-1.5 text-xs"
+          onClick={handleCheck}
+        >
+          {isPreviewable ? <Eye size={13} /> : <Download size={13} />}
+          {isPreviewable ? t("Preview") : t("Download")}
+        </button>
+      </div>
+    </motion.div>
   );
 };
 

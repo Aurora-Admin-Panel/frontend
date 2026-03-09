@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FilePlus2, Save, RefreshCw } from "lucide-react";
 import useDebouncedCallback from "../../hooks/useDebouncedCallback";
 import { serviceDefinitionToDynamicSchema } from "./serviceAdapter";
 import ParamEditorPanel from "./ParamEditorPanel";
@@ -18,6 +20,16 @@ import {
 import { cloneJson, prettyJson } from "./builderUtils";
 
 const AUTO_COMPILE_DEBOUNCE_MS = 400;
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+};
 
 export default function ServiceEditorPage() {
   const { t } = useTranslation();
@@ -238,53 +250,76 @@ export default function ServiceEditorPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4 px-4 py-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("Schema Builder")}</h1>
-          <p className="text-sm opacity-70">
-            Build authoring schema JSON, render a parameter form, and compile a preview.
+    <motion.div
+      className="mx-auto flex w-full max-w-screen-2xl flex-col gap-6 px-4 py-6"
+      variants={stagger}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Page Header */}
+      <motion.div variants={fadeUp} className="flex items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight">{t("Schema Builder")}</h1>
+          <p className="text-sm text-base-content/50">
+            {t("Build authoring schema JSON, render a parameter form, and compile a preview.")}
           </p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn btn-outline btn-sm" onClick={handleNew} type="button">
+        <div className="flex shrink-0 gap-2">
+          <button
+            className="btn btn-ghost btn-sm gap-1.5"
+            onClick={handleNew}
+            type="button"
+          >
+            <FilePlus2 size={15} />
             {t("New")}
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm gap-1.5"
             onClick={handleSaveNew}
             type="button"
             disabled={saveLoading}
           >
+            <Save size={15} />
             {createLoading ? t("Saving") : t("Save New")}
           </button>
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={handleUpdate}
-            type="button"
-            disabled={saveLoading || !selectedId}
-          >
-            {updateLoading ? t("Updating") : t("Update")}
-          </button>
+          {selectedId && (
+            <button
+              className="btn btn-secondary btn-sm gap-1.5"
+              onClick={handleUpdate}
+              type="button"
+              disabled={saveLoading}
+            >
+              <RefreshCw size={15} className={updateLoading ? "animate-spin" : ""} />
+              {updateLoading ? t("Updating") : t("Update")}
+            </button>
+          )}
         </div>
-      </div>
+      </motion.div>
 
       {saveMessage && (
-        <div className="alert alert-info py-2">
+        <motion.div
+          className="alert alert-info py-2"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+        >
           <span>{saveMessage}</span>
-        </div>
+        </motion.div>
       )}
 
+      {/* Builder Panel */}
       {!parseState.parseError && parseState.parsed && (
-        <ParamEditorPanel
-          contract={parseState.parsed}
-          selectedParamIndex={selectedParamIndex}
-          setSelectedParamIndex={setSelectedParamIndex}
-          applyDraftMutation={applyDraftMutation}
-        />
+        <motion.div variants={fadeUp}>
+          <ParamEditorPanel
+            contract={parseState.parsed}
+            selectedParamIndex={selectedParamIndex}
+            setSelectedParamIndex={setSelectedParamIndex}
+            applyDraftMutation={applyDraftMutation}
+          />
+        </motion.div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+      {/* Bottom Panels: JSON | Preview + Compile */}
+      <motion.div variants={fadeUp} className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <AuthoringJsonPanel
           selectedId={selectedId}
           editorText={editorText}
@@ -294,7 +329,7 @@ export default function ServiceEditorPage() {
           setCompileResult={setCompileResult}
         />
 
-        <div className="xl:col-span-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-5 xl:col-span-6">
           <FormPreviewPanel
             formSchema={adaptedFormState.schema}
             previewSchemaKey={previewSchemaKey}
@@ -306,7 +341,7 @@ export default function ServiceEditorPage() {
 
           <CompileOutputPanel compileResult={compileResult} lastValues={lastValues} />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
